@@ -1,0 +1,16 @@
+mixednutz:
+  social:
+    mixednutz:
+      base-url: https://mixednutz.net
+      client-id: mixednutzjavaapi
+      client-secret: mySecret
+      
+spring:
+
+  datasource:
+    #url=jdbc:hsqldb:file:/home/kleber/.webapp/testedb
+    username: sa
+
+  jpa:
+    show-sql: true
+    hibernate.ddl-auto: create

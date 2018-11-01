@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Language" content="en" />
+   
+	<title th:text="#{site.title}">site.title</title>
+	<meta name="description" th:content="#{signup.admin_new.description}" />
+	
+	<!-- Bootstrap Core CSS -->
+	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
+	
+	
+</head>
+<body>
+
+	<div class="container">
+	
+	<h1 th:text="#{signup.admin_new.title}">signup.admin_new.title</h1> 
+	
+	<p>Create your administrator account.  You may add an OAuth Login later.</p>
+
+	<form th:action="@{/admin_signup} " th:object="${user}" method="post">
+	
+		<div class="username form-group required has-feedback">
+			<label for="username" th:text="#{form.username.label}">form.username.label</label>
+			<input id="username" type="text" th:field="*{username}" class="form-control" required="required"/>
+			<span id="username_feedback" class="form-control-feedback" aria-hidden="true"></span>
+			<span class="message text-danger"></span>
+		</div>
+		
+		<div class="passwordRaw form-group required has-feedback">
+			<label for="passwordRaw" th:text="#{form.passwordRaw_new.label}">form.passwordRaw_new.label</label>
+			<input id="passwordRaw" th:field="*{passwordRaw}" type="password" class="form-control" required="required"/>
+			<span id="passwordRaw_feedback" class="form-control-feedback" aria-hidden="true"></span>
+			<span class="message text-danger"></span>
+		</div>
+		
+		
+		<div class="passwordConfirm form-group required has-feedback">
+			<label for="passwordConfirm" th:text="#{form.passwordConfirm.label}">form.passwordConfirm.label</label>
+			<input id="passwordConfirm" th:field="*{passwordConfirm}" type="password" class="form-control" />
+			<span class="message text-danger"></span>
+		</div>
+		
+		<input class="btn btn-success btn-lg disabled" type="submit" disabled="disabled" th:value="#{signup.admin_new.form.submit}" value="signup.admin_new.form.submit"/>
+	
+	</form>
+	
+	</div>
+	
+	<!-- Placed at the end of the document so the pages load faster -->	
+	
+	<!-- JQuery 
+	================================================== -->
+	<script th:src="@{|/webjars/jquery/jquery.min.js|}"></script>
+	
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
+      
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    var usernameMinLength = /*[[#{form.username.minLength}]]*/ 3;
+    var usernameHasError = /*[[#{form.username.error.tooShort}]]*/ 'Too Short';
+    var passwordMinLength = /*[[#{form.passwordRaw_new.minLength}]]*/ 3;
+    var passwordRawHasError = /*[[#{form.passwordRaw_new.error.tooShort}]]*/ 'Too Short';
+    var passwordConfirmHasError = /*[[#{form.passwordConfirm.error.notMatch}]]*/ 'Password does not match';
+    $('form input[type="text"],[type="password"]').keyup(function() {
+    	if (this.id=='username') {
+    		var val = $(this).val();
+  			$('#username_feedback').empty();
+  			if (val.length<usernameMinLength) {
+  				$('#username_feedback').addClass('glyphicon glyphicon-alert');
+  				$('.username.has-feedback').addClass('has-error');
+  				$('.username .message').html(usernameHasError);
+  			} else {
+  				$('#username_feedback').removeClass('glyphicon glyphicon-remove');
+	  			$('.username.has-feedback').removeClass('has-error');
+	  			$('.username .message').html('');
+  			}
+    	}
+    	if (this.id=='passwordRaw') {
+    		var val = $(this).val();
+  			$('#passwordRaw_feedback').empty();
+  			console.log(val.length);
+  			if (val.length<passwordMinLength) {
+  				$('#passwordRaw_feedback').addClass('glyphicon glyphicon-alert');
+  				$('.passwordRaw.has-feedback').addClass('has-error');
+  				$('.passwordRaw .message').html(passwordRawHasError);
+  			} else {
+  				$('#passwordRaw_feedback').removeClass('glyphicon glyphicon-remove');
+	  			$('.passwordRaw.has-feedback').removeClass('has-error');
+	  			$('.passwordRaw .message').html('');
+  			}
+    	}
+    	if (this.id=='passwordRaw' || this.id=='passwordConfirm') {
+    		var passVal = $('form input[name="passwordRaw"]').val();
+    		var confirmVal = $('form input[name="passwordConfirm"]').val();
+    		if (passVal != confirmVal) {
+    			$('#passwordConfirm_feedback').addClass('glyphicon glyphicon-alert');
+  				$('.passwordConfirm.has-feedback').addClass('has-error');
+  				$('.passwordConfirm .message').html(passwordConfirmHasError);
+    		} else {
+    			$('#passwordConfirm_feedback').removeClass('glyphicon glyphicon-remove');
+	  			$('.passwordConfirm.has-feedback').removeClass('has-error');
+	  			$('.passwordConfirm .message').html('');
+    		}
+    	}
+    	
+    	//check for feedback and disable success button if needed
+		if ( $('.username.has-feedback').hasClass('has-error') || 
+				$('.passwordRaw.has-feedback').hasClass('has-error') || 
+				$('.passwordConfirm.has-feedback').hasClass('has-error')) {
+			console.log('has error');
+			$('.btn-success').prop("disabled",true).addClass('disabled');	 
+		} else {
+			console.log('no error');
+			$('.btn-success').prop("disabled",false).removeClass('disabled');
+		}
+    });
+    /*]]>*/
+    </script>
+
+</body>
+</html>
