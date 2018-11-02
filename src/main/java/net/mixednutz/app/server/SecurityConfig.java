@@ -2,6 +2,7 @@ package net.mixednutz.app.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import net.mixednutz.app.server.manager.UserService;
@@ -28,6 +30,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    daoProvider.setPasswordEncoder(passwordEncoder());
 	    return daoProvider;
 	}
+	public RememberMeAuthenticationProvider rememberMeProvider() {
+		return new RememberMeAuthenticationProvider("mixedNutzRox");
+	}
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -39,12 +44,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
 	
-//	    RememberMeAuthenticationProvider rememberMeProvider = 
-//	    		new RememberMeAuthenticationProvider("mixedNutzRox");
-	    
 	    auth
-	    	.authenticationProvider(daoProvider());
-//	    	.authenticationProvider(rememberMeProvider);
+	    	.authenticationProvider(daoProvider())
+	    	.authenticationProvider(rememberMeProvider());
+	}
+	
+	@Bean
+	protected TokenBasedRememberMeServices rememberMeServices() {
+		//TODO - replace with PersistentTokenBasedRememberMeServices and add a table for the token
+		TokenBasedRememberMeServices services = new TokenBasedRememberMeServices(
+				"mixedNutzRox", userService);
+		services.setParameter("setcookie"); //checkbox param
+		services.setCookieName("mixednutzcookie"); //cookie name
+		services.setUseSecureCookie(true);
+		return services;
 	}
 	
 	@Override
