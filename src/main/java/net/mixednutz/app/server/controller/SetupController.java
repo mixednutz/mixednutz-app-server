@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.manager.UserService;
 import net.mixednutz.app.server.repository.UserRepository;
 
 /**
@@ -30,6 +31,9 @@ public class SetupController {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	UserService userService;
 	
 	@PersistenceContext
     EntityManager entityManager;
@@ -67,10 +71,12 @@ public class SetupController {
 			SessionStatus sessionStatus) {
 		
 		if (isFirstTime()) {
+			userService.encryptPassword(user);
 			user = userRepository.save(user);
 			//login(user, request);
 		    return "redirect:/main";
 		}
+		//TODO throw exception here
 		return "";
 	} 
 	

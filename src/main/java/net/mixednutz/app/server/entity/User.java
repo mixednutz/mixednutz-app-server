@@ -49,8 +49,17 @@ public class User extends BaseUserDetails implements IUser {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+	@Override
+	@Column(name="username",
+		length=50,
+		nullable=false)
+	public String getUsername() {
+		return super.getUsername();
+	}
+	@Override
 	@Column(name="password_enc",
 			columnDefinition="CHAR(60)",
+			length=60,
 			nullable=true)
 	public String getPassword() {
 		return super.getPassword();
