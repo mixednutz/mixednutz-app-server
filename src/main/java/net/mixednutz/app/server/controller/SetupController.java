@@ -72,8 +72,10 @@ public class SetupController {
 		
 		if (isFirstTime()) {
 			userService.encryptPassword(user);
+			user.setEnabled(true);
 			user = userRepository.save(user);
 			//login(user, request);
+			userCountAtStartup=null; //Reset this to refresh user count
 		    return "redirect:/main";
 		}
 		//TODO throw exception here

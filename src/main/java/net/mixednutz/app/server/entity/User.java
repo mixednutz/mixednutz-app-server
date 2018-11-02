@@ -26,11 +26,11 @@ public class User extends BaseUserDetails implements IUser {
 	 */
 	private static final long serialVersionUID = -8968161792289432148L;
 	
-	Long userId;
-	String displayName;
-	String avatarSrc;
-	String uri;
-	String url;
+	private Long userId;
+	private String displayName;
+	private String avatarSrc;
+	private String uri;
+	private String url;
 	
 	/*
 	 * password = encrypted password in database
@@ -40,6 +40,13 @@ public class User extends BaseUserDetails implements IUser {
 	private String passwordConfirm;	
 	private String passwordRaw;
 	
+	public User() {
+		super();
+		// Right now we have very simple authentication
+		this.setAccountNonExpired(true);
+		this.setAccountNonLocked(true);
+		this.setCredentialsNonExpired(true);
+	}
 	@Id
 	@GeneratedValue(generator="system-native")
 	@GenericGenerator(name="system-native", strategy = "native")
@@ -63,6 +70,11 @@ public class User extends BaseUserDetails implements IUser {
 			nullable=true)
 	public String getPassword() {
 		return super.getPassword();
+	}
+	@Override
+	@Column(name="enabled")
+	public boolean isEnabled() {
+		return super.isEnabled();
 	}
 	
 	@Transient

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Language" content="en" />
+   
+	<title th:text="|#{login.window-title} - #{site.title}|">login.window-title - site.title</title>
+	<meta name="description" th:content="#{login.description}" />
+		
+	<!-- Bootstrap Core CSS -->
+	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
+	
+	
+</head>
+<body>
+
+	
+	
+	<div class="container">
+	
+		<h1 th:text="#{login.title}">login.title</h1>
+    
+	    <p th:text="#{login.text}">login.text</p>
+	    
+	    
+  		<div class="module" th:include="login/fragments_login :: loginform">Login</div>
+		
+
+    </div>
+
+
+	
+	<!-- Placed at the end of the document so the pages load faster -->	
+	
+	<!-- JQuery 
+	================================================== -->
+	<script th:src="@{|/webjars/jquery/jquery.min.js|}"></script>
+	
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
+    
+</body>
+</html>

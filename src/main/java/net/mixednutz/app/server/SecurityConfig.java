@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //	        .addFilterAfter(lastonlineFilter, AnonymousAuthenticationFilter.class)
         	.authorizeRequests()
 	        	.antMatchers(
+	        			"/admin_signup",
 	        			"/signup",
 	        			"/about",
 	        			"/chromecast",
