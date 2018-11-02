@@ -79,15 +79,7 @@
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity4</artifactId>	
   		</dependency>
-		
-		<!--  Runtime dependencies -->
-		<!--  Databases -->
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		
+				
 		<!-- WebJars -->
 		<dependency>
    			<groupId>org.webjars</groupId>
@@ -126,6 +118,33 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<!-- Database for Production -->
+			<id>prod-mysql</id>
+			<activation>
+				<property><name>prod</name></property>
+			</activation>
+			<dependencies>
+				<!-- MySQL -->
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+			</dependencies>
+		</profile>
+		<profile>
+			<!-- In Memory Database for Development and Automated Testing -->
+			<id>dev-hsqldb</id>
+			<activation>
+				<property><name>!prod</name></property>
+			</activation>
+			<dependencies>
+				<!-- HSQLDB -->
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+			</dependencies>
+		</profile>
+	</profiles>
 
 
 </project>
