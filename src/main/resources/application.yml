@@ -6,11 +6,60 @@ mixednutz:
       client-secret: mySecret
       
 spring:
+  
+  profiles.active: jpa-dev
 
-  datasource:
+  #hsqldb should be properly configured out the box.  remove this
+  #datasource:
     #url=jdbc:hsqldb:file:/home/kleber/.webapp/testedb
-    username: sa
+    #username: sa
 
+---
+spring:
+  profiles: ssl
+  
+keystore:
+  file: ${KEYSTORE_FILE}
+  pass.file: ${KEYSTORE_PASS_FILE}
+  type: ${KEYSTORE_TYPE}
+      
+---
+spring:
+  profiles: jpa-dev
+  
   jpa:
     show-sql: true
-    hibernate.ddl-auto: create
+    hibernate:
+      naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
+      ddl-auto: create
+      
+---
+spring:
+  profiles: jpa-prod
+  
+  jpa:
+    show-sql: false
+    hibernate:
+      naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
+      ddl-auto: update
+      
+---
+spring:
+  profiles: db-docker-mysql
+  # This profile is for Docker containers  the database login configuration is abstracted out to the enviroment.
+  
+  datasource:
+    url: jdbc:mysql://${MYSQL_DB_HOST}:${MYSQL_DB_PORT}/${MYSQL_DB_NAME}
+    username: ${MYSQL_DB_USERNAME}
+    password: ${MYSQL_DB_PASSWORD}
+    driverClassName: com.mysql.jdbc.Driver
+    testOnBorrow: true
+    testWhileIdle: true
+    validationQuery: SELECT 1
+    removeAbandoned: true
+    initialSize: 100
+    
+---
+spring:
+  profiles: db-local-mysql
+  # This profile is for Andy's local environment
