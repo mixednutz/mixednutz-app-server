@@ -1,3 +1,5 @@
+package net.mixednutz.app.server;
+
 /**
  * user this interface to flag unit tests as Integration Tests
  * Usage: @Category(IntegrationTest.class)
