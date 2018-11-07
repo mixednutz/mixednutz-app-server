@@ -25,9 +25,18 @@
 		
 		<mixednutz-java-api-core.version>2.0.0-SNAPSHOT</mixednutz-java-api-core.version>
 	
-		<webjars-locator.version>0.30</webjars-locator.version>
-		<bootstrap.version>3.3.7-1</bootstrap.version>
-		<jquery.version>3.1.1</jquery.version>
+		<version.webjars-locator>0.30</version.webjars-locator>
+		<version.bootstrap>3.3.7-1</version.bootstrap>
+		<version.bootstrap-modal>2.2.5</version.bootstrap-modal>
+		<version.bootstrap-notifications>1.0.3</version.bootstrap-notifications>
+		<version.bootstrap-wysiwyg>1.0.5</version.bootstrap-wysiwyg>
+		<version.idb-keyval>3.0.5</version.idb-keyval>
+		<version.jquery>3.1.1</version.jquery>
+		<version.jquery-easing>1.3</version.jquery-easing>
+		<version.jQuery.Hotkeys>0.2.0</version.jQuery.Hotkeys>
+		<version.snackbarjs>1.1.0</version.snackbarjs>
+		
+		
 	</properties>
 
 	<dependencies>
@@ -84,18 +93,94 @@
 		<dependency>
    			<groupId>org.webjars</groupId>
     		<artifactId>webjars-locator</artifactId>
-    		<version>${webjars-locator.version}</version>
+    		<version>${version.webjars-locator}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.webjars</groupId>
 		    <artifactId>bootstrap</artifactId>
-		    <version>${bootstrap.version}</version>
+		    <version>${version.bootstrap}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.webjars</groupId>
 		    <artifactId>jquery</artifactId>
-		    <version>${jquery.version}</version>
+		    <version>${version.jquery}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap-modal</artifactId>
+			<version>${version.bootstrap-modal}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>bootstrap-wysiwyg-steveathon</artifactId>
+			<version>${version.bootstrap-wysiwyg}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>bootstrap</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>github-com-jeresig-jquery-hotkeys</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency> 
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>jQuery.Hotkeys</artifactId>
+			<version>${version.jQuery.Hotkeys}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>jquery-easing</artifactId>
+		    <version>${version.jquery-easing}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>snackbarjs</artifactId>
+			<version>${version.snackbarjs}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.webjars.bower</groupId>
+		    <artifactId>github-com-skywalkapps-bootstrap-notifications</artifactId>
+		    <version>${version.bootstrap-notifications}</version>
+		    <exclusions>
+			    <exclusion>
+					<groupId>org.webjars.bower</groupId>
+		            <artifactId>bootstrap-dropmenu</artifactId>
+				</exclusion>
+			    <exclusion>
+			    	<groupId>org.webjars.bower</groupId>
+			    	<artifactId>jquery</artifactId>
+			    </exclusion>
+			    <exclusion>
+			    	<groupId>org.webjars.bower</groupId>
+			    	<artifactId>bootstrap</artifactId>
+			    </exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>idb-keyval</artifactId>
+			<version>${version.idb-keyval}</version>
+		</dependency>
+	    
 
 		<!-- Testing -->
 		<dependency>
@@ -128,8 +213,10 @@
 			</activation>
 			<dependencies>
 				<!-- MySQL -->
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
@@ -140,8 +227,10 @@
 			</activation>
 			<dependencies>
 				<!-- HSQLDB -->
-				<groupId>org.hsqldb</groupId>
-				<artifactId>hsqldb</artifactId>
+				<dependency>
+					<groupId>org.hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>

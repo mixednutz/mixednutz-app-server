@@ -89,7 +89,6 @@
     	if (this.id=='passwordRaw') {
     		var val = $(this).val();
   			$('#passwordRaw_feedback').empty();
-  			console.log(val.length);
   			if (val.length<passwordMinLength) {
   				$('#passwordRaw_feedback').addClass('glyphicon glyphicon-alert');
   				$('.passwordRaw.has-feedback').addClass('has-error');
@@ -118,15 +117,16 @@
 		if ( $('.username.has-feedback').hasClass('has-error') || 
 				$('.passwordRaw.has-feedback').hasClass('has-error') || 
 				$('.passwordConfirm.has-feedback').hasClass('has-error')) {
-			console.log('has error');
 			$('.btn-success').prop("disabled",true).addClass('disabled');	 
 		} else {
-			console.log('no error');
 			$('.btn-success').prop("disabled",false).removeClass('disabled');
 		}
     });
     /*]]>*/
     </script>
 
+	 <!-- Google Analytics JavaScript 
+ 	================================================== -->
+    <script th:replace="google_analytics :: tracking"></script>
 </body>
 </html>

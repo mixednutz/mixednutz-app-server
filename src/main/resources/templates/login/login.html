@@ -11,6 +11,8 @@
    
 	<title th:text="|#{login.window-title} - #{site.title}|">login.window-title - site.title</title>
 	<meta name="description" th:content="#{login.description}" />
+	<meta rel="icon" th:sizes="#{pwa.icon.sizes}" th:href="@{|#{pwa.icon.href}|}" href="/img/icon-192x192.png" />
+	<meta name="theme-color" th:content="#{pwa.theme-color}"/>
 		
 	<!-- Bootstrap Core CSS -->
 	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
@@ -19,7 +21,8 @@
 </head>
 <body>
 
-	
+	<!-- Banner -->
+	<div th:replace="header :: navbar_login">navbar</div>
 	
 	<div class="container">
 	
@@ -46,5 +49,8 @@
     ================================================== -->
     <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
     
+     <!-- Google Analytics JavaScript 
+ 	================================================== --> 
+    <script th:replace="google_analytics :: tracking"></script>
 </body>
 </html>

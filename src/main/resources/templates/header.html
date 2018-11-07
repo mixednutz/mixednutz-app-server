@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+  <body>
+ 
+  	
+  	
+ 	<nav th:fragment="navbar" class="navbar navbar-inverse navbar-static-top"> 
+      <div class="container">
+      
+      	<!-- Logo -->
+        <div class="navbar-header">
+          
+          
+          
+          <button sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" 
+          		type="button" class="navbar-toggle collapsed dropdown" data-toggle="collapse" data-target="#notificationbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle notifications</span>
+            
+            <a href="#notifications-panel" class="dropdown-toggle" data-toggle="dropdown">
+              <i th:attr="data-count=${notifications.size()}" class="glyphicon glyphicon-bell" th:classappend="${notifications.size()>0} ? notification-icon : no-notification"></i>
+            </a>
+            <div class="dropdown-container dropdown-position-bottomright">
+	
+	              <div class="dropdown-toolbar">
+	                <div class="dropdown-toolbar-actions">
+	                  <a class="markAllAsRead" href="#">Mark all as read</a>
+	                </div>
+	                <h3 class="dropdown-toolbar-title">Notifications (<span th:text="${notifications.size()}"></span>)</h3>
+	              </div><!-- /dropdown-toolbar -->
+	
+	              <ul class="dropdown-menu notifications ">						
+	              </ul>
+	            </div><!-- /dropdown-container -->
+          </button>
+          
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <!-- Menu <i class="fa fa-bars"></i>-->
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          
+          <a class="navbar-brand" th:text="#{site.title}" href="#">MixedNutz</a>
+        </div>
+        
+        <!-- Main Menu -->
+        <div id="navbar" class="collapse navbar-collapse navbar-left">
+          <ul class="nav navbar-nav">
+          	<li class="hidden"><a href="#page-top"></a></li>
+            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/main|}" href="/main/new">My Timeline</a></li>
+            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/logout|}" href="/logout">Log Out</a></li>
+          	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/login|}" href="/login">Log in</a></li>
+          	<li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" class="hidden-xs dropdown dropdown-notifications">
+	            <a href="#notifications-panel" class="dropdown-toggle" data-toggle="dropdown">
+	              <i th:attr="data-count=${notifications.size()}" class="glyphicon glyphicon-bell" th:classappend="${notifications.size()>0} ? notification-icon : no-notification"></i>
+	            </a>
+	
+	            <div class="dropdown-container dropdown-position-bottomright">
+	
+	              <div class="dropdown-toolbar">
+	                <div class="dropdown-toolbar-actions">
+	                  <a class="markAllAsRead" href="#">Mark all as read</a>
+	                </div>
+	                <h3 class="dropdown-toolbar-title">Notifications (<span th:text="${notifications.size()}"></span>)</h3>
+	              </div><!-- /dropdown-toolbar -->
+	
+	              <ul class="dropdown-menu notifications">						
+	              </ul>
+	            </div><!-- /dropdown-container -->
+	          </li>
+          </ul>
+          
+        </div><!--/.nav-collapse -->
+        
+        
+        
+      </div>
+	</nav>
+	<nav th:fragment="navbar_login" class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" th:text="#{site.title}" href="#">MixedNutz</a>
+        </div>
+      </div>
+	</nav>
+	<script th:fragment="navbar_js" th:inline="javascript">
+	/*<![CDATA[*/
+	var notificationHostName = /*[[@{|/|}]]*/ "/";
+	var notifications= /*[[${notifications}]]*/ null;
+	var markAllNotificationAsReadUrl = /*[[@{|/api/notification/markAllAsRead|}]]*/ "/api/notification/markAllAsRead";
+	var markNotificationAsReadUrl = /*[[@{|/api/notification/markAsRead|}]]*/ "/api/notification/markAsRead";
+	
+	for (i in notifications) {
+  		buildNotificationItem(notifications[i])
+			.appendTo($('ul.notifications'));
+	}
+	
+	$('.dropdown-toolbar-actions .markAllAsRead').on('click', function (e){
+		e.preventDefault();
+		
+		$.ajax({
+			type: 'POST', 
+			url: markAllNotificationAsReadUrl,
+			contentType: "application/json",
+			dataType: 'json',
+			success: function(data){
+				console.log(data);
+			}
+		});	
+		
+		$('.notifications').empty();
+		$('.notification-icon').removeClass('notification-icon').addClass('no-notification');
+	});
+	
+	function getRelativePath(uri) {
+  		if (notificationHostName=='/') {
+  			/*relative urls cant start with a double slash*/
+  			return uri;
+  		} 
+  		return notificationHostName+uri;
+  	}
+	
+	function buildNotificationItem(notification) {
+		var item = $('<li class="notification"></li>');
+		var link = $('<a class="media" href="'+getRelativePath(notification.uri)+'" data-ids='+JSON.stringify(notification.notificationIds)+'>');
+		item.append(link);
+		
+		link.append('<div class="media-left"><div class="media-object"></div></div>');
+		link.append('<div class="media-body"></div>');
+		
+		//TODO.. notification icon has to have the full path in it
+		link.find(".media-object").append('<img src="'+(notification.iconUrl.href)+'" width="50" class="img-circle" alt="Name">');
+		link.find(".media-body")
+			.append('<p class="notification-title">'+notification.htmlMessage+'</p>')
+			.append('<div class="notification-meta"></div>');
+		//TODO date timeSince
+		link.find(".notification-meta").append('<small class="timestamp" title="'+new Date(notification.dateNotified)+'">'+formatTimeSince(new Date(notification.dateNotified).getTime())+'</small>');
+		link.on('click', function (e) {
+			console.log(notification.notificationIds);
+			
+			//url:/api/notification/markAsRead
+			$.ajax({
+ 				type: 'POST', 
+ 				url: markNotificationAsReadUrl,
+ 				contentType: "application/json",
+ 				dataType: 'json',
+ 				data: JSON.stringify(notification.notificationIds),
+ 				success: function(data){
+ 					console.log(data);
+ 				}
+ 			});	
+		});
+		return item;
+	}
+	
+	function formatTimeSince(timestamp) { 
+		var now = Date.now();
+		var diff = now - timestamp;
+		var secs = diff / 1000;
+		if (secs < 60) {
+			return Math.floor(secs)+"s";
+		}
+		var mins = secs / 60;
+		if (mins < (60*1.5)) {
+			var secsRemaining = secs % 60;
+			return Math.floor(mins)+"m "+Math.floor(secsRemaining)+"s";
+		}
+		if (mins < (60*2)) {
+			return Math.floor(mins.toString())+"m";
+		}
+		var hours = mins / 60;
+		if (hours < (24*1.5)) {
+			var minsRemaining = mins % 60;
+			return Math.floor(hours)+"h "+Math.floor(minsRemaining)+"m";
+		}
+		if (hours < (24*2)) {
+			return Math.floor(hours)+"h";
+		}
+		var days = hours / 24;
+		if (days < (365*1.5)) {
+			var hoursRemaining = hours % 24;
+			return Math.floor(days)+"d "+Math.floor(hoursRemaining)+"h";
+		}
+		if (days < (365*2)) {
+			return Math.floor(days)+"d";
+		}
+		var years = days / 365;
+		return Math.floor(years)+"y";
+	}
+	
+	$(function() {
+		function stripTrailingSlash(str) {
+			if (str.substr(-1) == '/') {
+				return str.substr(0, str.length - 1);
+			}
+			return str;
+		}
+		var url = window.location.pathname;
+		var activePage = stripTrailingSlash(url);
+		$('.nav li a').each(
+			function() {
+				if ($(this).attr('href') != null) {
+					var currentPage = stripTrailingSlash($(this)
+							.attr('href'));
+					if (activePage == currentPage) {
+						$(this).parent().addClass('active');
+					}
+				}
+			});
+	});
+	/*]]>*/
+	</script>
+      
+  </body>
+  
+ </html>

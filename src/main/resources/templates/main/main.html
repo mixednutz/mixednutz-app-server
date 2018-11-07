@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Language" content="en" />
+	<title th:text="|#{timeline.window-title} - #{site.title}|">My Timeline - MixedNutz.net</title>
+	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
+	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
+	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
+	<link th:href="@{|/css/mixednutz_timeline.css|}" href="../css/mixednutz_timeline.css" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/css/mixednutz_template1.css|}" href="../css/mixednutz.css" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/webjars/fontawesome/css/font-awesome.min.css|}" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/webjars/snackbarjs/dist/snackbar.min.css|}" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/webjars/snackbarjs/themes-css/material.css|}" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/webjars/github-com-skywalkapps-bootstrap-notifications/1.0.3/dist/stylesheets/bootstrap-notifications.min.css|}" rel="stylesheet" type="text/css" />
+		
+	<meta name="description" th:content="#{timeline.description}" content="Welcome to your MixedNutz home.  Check out what your network is up to." />
+	<meta rel="icon" th:sizes="#{pwa.icon.sizes}" th:href="@{|#{pwa.icon.href}|}" href="/img/icon-192x192.png" />
+	<meta name="theme-color" th:content="#{pwa.theme-color}"/>
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body>
+
+	<!-- Banner -->
+	<div th:replace="header :: navbar">navbar</div>
+	
+	<div class="container">
+		
+      <div th:replace="main/fragments_main :: timeline">timeline</div>
+
+    </div>
+
+
+	
+	<!-- Placed at the end of the document so the pages load faster -->	
+	
+	<!-- JQuery 
+	================================================== -->
+	<script th:src="@{|/webjars/jquery/jquery.min.js|}"></script>
+	
+	<!-- SnackbarJS 
+	================================================== -->
+	<script th:src="@{|/webjars/snackbarjs/dist/snackbar.min.js|}"></script>
+	
+	<!-- JQuery HotKeys
+	================================================== -->
+	<script th:src="@{|/webjars/jQuery.Hotkeys/jquery.hotkeys.js|}"></script>
+	
+	<!-- Bootstrap WYSIWYG
+	================================================== -->
+	<script th:src="@{|/webjars/bootstrap-wysiwyg-steveathon/js/bootstrap-wysiwyg.min.js|}"></script>
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
+            
+    <!-- Bootstrap Modal JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modalmanager.js|}"></script>
+    <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modal.js|}"></script>
+    
+    <!-- IDB-Keyval -->
+    <script th:src="@{|/webjars/idb-keyval/dist/idb-keyval-iife.js|}"></script>
+        
+    <!-- My JavaScript 
+ 	================================================== -->
+    
+    <!-- Google Analytics JavaScript 
+ 	================================================== -->
+    <script th:include="google_analytics :: tracking"></script>
+</body>
+</html>

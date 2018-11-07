@@ -1,4 +1,4 @@
-package net.mixednutz.app.server.controller;
+package net.mixednutz.app.server.controller.api;
 
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
 import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;

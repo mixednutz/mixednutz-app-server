@@ -4,15 +4,10 @@ mixednutz:
       base-url: https://mixednutz.net
       client-id: mixednutzjavaapi
       client-secret: mySecret
-      
+
 spring:
   
   profiles.active: jpa-dev
-
-  #hsqldb should be properly configured out the box.  remove this
-  #datasource:
-    #url=jdbc:hsqldb:file:/home/kleber/.webapp/testedb
-    #username: sa
 
 ---
 spring:

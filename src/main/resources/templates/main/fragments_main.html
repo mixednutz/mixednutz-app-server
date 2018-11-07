@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+  <body>
+  
+  	<div th:fragment="timeline" class="timeline">
+  	  	
+  		<div replace="modules_main_new :: timeline_tabs">tabs</div>
+	    
+	    <div replace="modules_main_new :: timeline_input">input</div>
+	    
+	    	  			
+  		<div id="elements"></div>
+  		
+  		<!-- Templates -->
+  		<div replace="common/modules_common :: timeline_templates">templates</div>
+  		  		
+  	</div>
+  
+  
+  </body>
+  
+ </html>

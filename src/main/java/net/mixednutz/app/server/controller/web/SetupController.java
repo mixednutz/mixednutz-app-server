@@ -1,4 +1,4 @@
-package net.mixednutz.app.server.controller;
+package net.mixednutz.app.server.controller.web;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
