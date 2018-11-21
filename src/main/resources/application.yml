@@ -7,8 +7,18 @@ mixednutz:
 
 spring:
   
-  profiles.active: jpa-dev
+  profiles.active: jpa-dev, twitter
 
+---
+spring:
+  profiles: twitter
+  
+mixednutz:
+  social: 
+    twitter:
+      consumer-key: ${TWITTER_CONSUMER_KEY}
+      consumer-secret: ${TWITTER_CONSUMER_SECRET}
+      
 ---
 spring:
   profiles: ssl
