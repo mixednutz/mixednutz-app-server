@@ -1,15 +1,18 @@
-package net.mixednutz.app.server.domain;
+package net.mixednutz.app.server.entity;
 
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -18,28 +21,25 @@ import javax.persistence.TableGenerator;
 import org.springframework.social.connect.ConnectionData;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import net.mixednutz.api.provider.IOauth1Credentials;
+import net.mixednutz.api.provider.IOauth2Credentials;
 
 public class ExternalCredentials {
 	
 	@Entity
 	@Table(name = "credentials")
 	@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-	@JsonTypeInfo(property = "providerId", use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME, include = As.PROPERTY)
-	@JsonSubTypes({
-		@Type(TwitterCredentials.class),
-		@Type(MixednutzCredentials.class)})
-	public static class ExternalAccountCredentials extends AbstractCredentials {
+	@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+	public abstract static class ExternalAccountCredentials extends AbstractCredentials {
 
 		private Integer id;
+		private String type;
 		private ZonedDateTime dateCreated;
 		private ZonedDateTime dateModified;
 
-//		private Account account;
+		private User user;
 
 		public ExternalAccountCredentials() {
 			super();
@@ -47,7 +47,7 @@ public class ExternalCredentials {
 
 		public ExternalAccountCredentials(String type) {
 			this();
-			super.setProviderId(type);
+			this.type = type;
 		}
 
 		@Id
@@ -66,13 +66,22 @@ public class ExternalCredentials {
 		public void setId(Integer id) {
 			this.id = id;
 		}
+		
+		@Column(name="type",insertable=false, updatable=false)
+		public String getType() {
+			return type;
+		}
 
-//		@JsonIgnore
-//		@ManyToOne()
-//		@JoinColumn(name = "account_id")
-//		public Account getAccount() {
-//			return account;
-//		}
+		public void setType(String type) {
+			this.type = type;
+		}
+
+		@JsonIgnore
+		@ManyToOne()
+		@JoinColumn(name = "user_id")
+		public User getUser() {
+			return user;
+		}
 
 		@Column
 		public ZonedDateTime getDateModified() {
@@ -84,16 +93,8 @@ public class ExternalCredentials {
 			return dateCreated;
 		}
 
-		public String getType() {
-			return getProviderId();
-		}
-
-//		public void setAccount(Account account) {
-//			this.account = account;
-//		}
-
-		public void setType(String type) {
-			this.setProviderId(type);
+		public void setUser(User user) {
+			this.user = user;
 		}
 
 		public void setDateModified(ZonedDateTime dateModified) {
@@ -114,24 +115,21 @@ public class ExternalCredentials {
 			setDateModified(ZonedDateTime.now());
 		}
 
-		public ConnectionData createConnectionData() {
-			throw new UnsupportedOperationException("Not implemented yet!");
-		}
-
 	}
 	
-	@MappedSuperclass
-	public abstract static class AbstractOauth1Credentials extends ExternalAccountCredentials 
-		implements Oauth1Credentials {
+	@Entity
+	@Table(name = "credentials_oauth1")
+	@JsonTypeName(Oauth1Credentials.TYPE)
+	public abstract static class Oauth1Credentials extends ExternalAccountCredentials 
+		implements IOauth1Credentials {
+		
+		public static final String TYPE = "oauth1";
 		
 		private String accessToken;
 		private String secret;
 		
-		public AbstractOauth1Credentials() {
-			super();
-		}		
-		public AbstractOauth1Credentials(String type) {
-			super(type);
+		public Oauth1Credentials() {
+			super(TYPE);
 		}
 
 		public String getAccessToken() {
@@ -147,23 +145,23 @@ public class ExternalCredentials {
 			this.secret = secret;
 		}
 		
-		
 	}
 	
-	@MappedSuperclass
-	public abstract static class AbstractOauth2Credentials extends ExternalAccountCredentials 
-		implements Oauth2Credentials {
+	@Entity
+	@Table(name = "credentials_oauth2")
+	@JsonTypeName(Oauth2Credentials.TYPE)
+	public abstract static class Oauth2Credentials extends ExternalAccountCredentials 
+		implements IOauth2Credentials {
 			
+		public static final String TYPE = "oauth2";
+		
 		private String authCode;
 		private String refreshToken;
 		private Long expireTime;
 		
 		
-		public AbstractOauth2Credentials() {
-			super();
-		}
-		public AbstractOauth2Credentials(String type) {
-			super(type);
+		public Oauth2Credentials() {
+			super(TYPE);
 		}
 
 		public String getAuthCode() {
@@ -194,30 +192,4 @@ public class ExternalCredentials {
 		
 	}
 	
-	@Entity
-	@Table(name = "credentials_twitter")
-	@JsonTypeName(TwitterCredentials.PROVIDER_ID)
-	public static class TwitterCredentials extends AbstractOauth1Credentials {
-
-		public static final String PROVIDER_ID = "twitter";
-				
-		public TwitterCredentials() {
-			super(PROVIDER_ID);
-		}
-
-	}
-	
-	@Entity
-	@Table(name = "credentials_mixednutz")
-	@JsonTypeName(MixednutzCredentials.PROVIDER_ID)
-	public static class MixednutzCredentials extends AbstractOauth2Credentials {
-		
-		public static final String PROVIDER_ID = "mixednutz";
-
-		public MixednutzCredentials() {
-			super(PROVIDER_ID);
-		}
-
-	}
-
 }

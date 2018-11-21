@@ -24,6 +24,7 @@
 		<java.version>1.8</java.version>
 		
 		<mixednutz-java-api-core.version>2.0.0-SNAPSHOT</mixednutz-java-api-core.version>
+		<mixednutz-java-api-twitter.version>2.0.0-SNAPSHOT</mixednutz-java-api-twitter.version>
 	
 		<version.webjars-locator>0.30</version.webjars-locator>
 		<version.bootstrap>3.3.7-1</version.bootstrap>
@@ -46,6 +47,11 @@
 			<groupId>net.mixednutz</groupId>
 			<artifactId>mixednutz-java-api-core</artifactId>
 			<version>${mixednutz-java-api-core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.mixednutz</groupId>
+			<artifactId>mixednutz-java-api-twitter</artifactId>
+			<version>${mixednutz-java-api-twitter.version}</version>
 		</dependency>
 	
 		<!--  Spring -->
