@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.mixednutz.api.core.model.Image;
 import net.mixednutz.api.model.IAction;
-import net.mixednutz.api.model.IImage;
 import net.mixednutz.api.model.IUser;
 
 @Entity
@@ -64,6 +63,7 @@ public class User extends BaseUserDetails implements IUser {
 		return super.getUsername();
 	}
 	@Override
+	@JsonIgnore
 	@Column(name="password_enc",
 			columnDefinition="CHAR(60)",
 			length=60,
@@ -107,7 +107,7 @@ public class User extends BaseUserDetails implements IUser {
 	}
 	@Transient
 	@Override
-	public IImage getAvatar() {
+	public Image getAvatar() {
 		return new Image(this.avatarSrc, this.getUsername()+"'s avatar");
 	}
 	@Transient

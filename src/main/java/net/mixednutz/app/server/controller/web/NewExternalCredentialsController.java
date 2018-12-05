@@ -91,6 +91,7 @@ public class NewExternalCredentialsController {
 			UserProfile userProfile = connection.fetchUserProfile();
 
 			Oauth1AuthenticatedFeed feed = new Oauth1AuthenticatedFeed();
+			feed.setProviderId(creds.getProviderId());
 			feed.setUser(creds.getUser());
 			feed.setCredentials((Oauth1Credentials) creds);
 			feed.setImageUrl(connection.getImageUrl());

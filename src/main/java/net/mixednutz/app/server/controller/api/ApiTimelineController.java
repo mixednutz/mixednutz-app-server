@@ -2,6 +2,7 @@ package net.mixednutz.app.server.controller.api;
 
 import java.util.TreeMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.mixednutz.api.core.model.ApiList;
+import net.mixednutz.api.model.IUserSmall;
+import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.entity.User;
 
 
@@ -16,18 +19,20 @@ import net.mixednutz.app.server.entity.User;
 @RequestMapping("/api")
 public class ApiTimelineController {
 	
-	@RequestMapping(value="/api/timeline/bundle", method = RequestMethod.GET)
+	@Autowired
+	private ExternalFeedApiController externalFeedApi;
+		
+	@RequestMapping(value="/timeline/bundle", method = RequestMethod.GET)
 	public @ResponseBody TimelineBundle apiGetTimelineBundle(Authentication auth) {
 		User user = (User) auth.getPrincipal();
 
-//		return new TimelineBundle()
+		return new TimelineBundle()
 //				.addFollowingList(friendsApi.apiGetFollowing(user))
-//				.addExternalFeedsList(externalFeedApi.externalFeeds(user))
+				.addExternalFeedsList(externalFeedApi.externalFeeds(user))
 //				.addFriendgroups(friendsApi.apiGetCategories(user))
-//				.addUser(userApi.loggedInUser(user))
+				.addUser(user);
 //				.addProfile(profileApi.getProfile(user))
 //				.addSettings(settingsApi.getPushSettings("", user));
-		return null;
 	}
 	
 	public static class TimelineBundle extends TreeMap<String, Object> {
@@ -48,16 +53,16 @@ public class ApiTimelineController {
 //		TimelineBundle addFollowingList(FollowingList following) {
 //			return addBundle(following);
 //		}
-//		TimelineBundle addExternalFeedsList(ExternalFeedsList feeds) {
-//			return addBundle(feeds);
-//		}
+		TimelineBundle addExternalFeedsList(ExternalFeedsList feeds) {
+			return addBundle(feeds);
+		}
 //		TimelineBundle addFriendgroups(FriendGroupList fgroups) {
 //			return addBundle(fgroups);
 //		}
-//		TimelineBundle addUser(UserSmall user) {
-//			this.put("user", user);
-//			return this;
-//		}
+		TimelineBundle addUser(IUserSmall user) {
+			this.put("user", user);
+			return this;
+		}
 //		TimelineBundle addProfile(UserProfile profile) {
 //			this.put("profile", profile);
 //			return this;

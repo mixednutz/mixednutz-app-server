@@ -41,6 +41,7 @@
   			
   			var form = $(this).parents('form');
   			form.attr('action', baseConnectUrl+providerId);
+  			app.removeBundleFromStorage();
   			form.submit();
   		});
   	/*]]>*/

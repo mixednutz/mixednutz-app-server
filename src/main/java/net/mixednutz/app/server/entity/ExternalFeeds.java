@@ -23,7 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import net.mixednutz.api.model.INetworkInfoSmall;
+import net.mixednutz.api.core.model.Image;
 import net.mixednutz.api.provider.ICredentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials;
@@ -37,7 +37,7 @@ public class ExternalFeeds {
 	public static abstract class AbstractFeed {
 
 		private Long feedId;
-		private String feedInfoClassName;
+		private String providerId;
 		private User user;
 		private String name;
 		private String imageUrl;
@@ -75,27 +75,13 @@ public class ExternalFeeds {
 			this.type = type;
 		}
 
-		@Column(name="feed_info_class")
-		public String getFeedInfoClassName() {
-			return feedInfoClassName;
+		@Column(name="provider_id",nullable=false)
+		public String getProviderId() {
+			return providerId;
 		}
 
-		public void setFeedInfoClassName(String feedInfoClassName) {
-			this.feedInfoClassName = feedInfoClassName;
-		}
-		
-		@Transient
-		public Class<? extends INetworkInfoSmall> getFeedInfoClass() {
-			try {
-				return Class.forName(feedInfoClassName).asSubclass(INetworkInfoSmall.class);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-		
-		public void setFeedInfoClass(Class<? extends INetworkInfoSmall> feedInfoClass) {
-			this.feedInfoClassName = feedInfoClass.getName();
+		public void setProviderId(String providerId) {
+			this.providerId = providerId;
 		}
 
 		@Column(name="name")
@@ -108,12 +94,18 @@ public class ExternalFeeds {
 		}
 
 		@Column(name="image_url")
+		@JsonIgnore
 		public String getImageUrl() {
 			return imageUrl;
 		}
 
 		public void setImageUrl(String imageUrl) {
 			this.imageUrl = imageUrl;
+		}
+		
+		@Transient
+		public Image getImage() {
+			return new Image(this.imageUrl);
 		}
 
 		@ManyToOne()

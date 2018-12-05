@@ -41,6 +41,7 @@ public class ExternalFeedApiController {
 		
 	public class ExternalFeed {
 		
+		private String name;
 		private INetworkInfoSmall feedInfo;
 		private List<ExternalFeeds.AbstractFeed> accounts;
 		private Collection<String> compatibleMimeTypes;
@@ -48,9 +49,16 @@ public class ExternalFeedApiController {
 		public ExternalFeed(INetworkInfoSmall feedInfo, List<ExternalFeeds.AbstractFeed> accounts,
 				Collection<String> compatibleMimeTypes) {
 			super();
+			this.name = feedInfo.getId();
 			this.accounts = accounts;
 			this.feedInfo = feedInfo;
 			this.compatibleMimeTypes = compatibleMimeTypes;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
 		}
 		public List<ExternalFeeds.AbstractFeed> getAccounts() {
 			return accounts;

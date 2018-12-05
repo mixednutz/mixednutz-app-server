@@ -27,7 +27,7 @@ var app = {
 	
 	app.setup = function() {
 		app.updateExternalFeeds();
-		//app.updateTimelineInput();
+		app.updateTimelineInput();
 		//app.setupForms();
 	}
 	
@@ -42,8 +42,8 @@ var app = {
   			var feed = app.externalFeeds[i];  			
   			var template = $('#tabs_feed_template').clone();
   			template.attr("id","externalFeed_"+feed.name); 
-  			template.find(".iconName").addClass("fa-"+feed.iconName);
-  			template.find(".displayName").text(feed.displayName);
+  			template.find(".iconName").addClass("fa-"+feed.feedInfo.fontAwesomeIconName);
+  			template.find(".displayName").text(feed.feedInfo.displayName);
   			for (var ii=0; ii<feed.accounts.length; ii++) {
   				var account = feed.accounts[ii];
   				var item = $("<li><a></a></li>");
@@ -51,15 +51,15 @@ var app = {
   					.attr("id", "externalFeedAccount_"+account.id)
   					.attr("data-feed-id", account.id)
   					.attr("data-feed-type", feed.name)
-  					.attr("data-image-url", account.image.href)
+  					.attr("data-image-url", account.image.src)
   					.text(account.name)
-  					.attr("href", "#"+account.id);
-//  					.on('click', {
-//  						feedId: account.id, feedType: feed.name, name: account.name, imageUrl: account.image.href
-//  					}, function (event) {
-//  						showFeedInput(event.data.feedId, event.data.feedType, event.data.name, event.data.imageUrl); 
-//  						loadFeedTimeline(event.data.feedId);
-//  					});
+  					.attr("href", "#"+account.id)
+  					.on('click', {
+  						feedId: account.id, feedType: feed.name, name: account.name, imageUrl: account.image.src
+  					}, function (event) {
+  						showFeedInput(event.data.feedId, event.data.feedType, event.data.name, event.data.imageUrl); 
+  						loadFeedTimeline(event.data.feedId);
+  					});
   				template.find(".dropdown-menu")
   					.append(item);
   				  				
@@ -108,6 +108,17 @@ var app = {
   		$("#timeline_tabs").removeClass("hidden");
   		
   	};	
+  	
+  	app.updateTimelineInput = function() {
+  		var template = app.homeTimelineTemplate.clone();
+	  	template.attr("id","homeTimeline"+app.user.username); 
+	  	if (app.user.imageUrl) {
+  			template.find(".defaultPicture").attr("src", app.user.imageUrl.href);	
+  		}
+	  	$("#timeline_inputs").append(template).removeClass("hidden");
+	  	
+  		app.reloadTimeline();
+  	}
 	
   	/*****
 	 * Data Methods
@@ -121,6 +132,7 @@ var app = {
   				dataType: "json",
   				success: function(data){
   					console.log("loadBundle");
+  					console.log(data);
   					app.bundle = data;
   					app.externalFeeds = data.externalFeeds;
   					app.user = data.user;
@@ -166,10 +178,14 @@ var app = {
   			return false;
   		});
   	}
-  	
+  	 
   	app.saveBundle = function() {
   		console.log("saveBundle");
   		idbKeyval.set('bundle', app.bundle);
+  	}
+  	
+  	app.removeBundleFromStorage = function() {
+  		idbKeyval.del('bundle');
   	}
   	
   	/**

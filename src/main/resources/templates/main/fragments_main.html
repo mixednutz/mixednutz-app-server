@@ -10,7 +10,7 @@
   	  	
   		<div th:replace="main/fragments_main :: timeline_tabs">tabs</div>
 	    
-	    <div replace="modules_main_new :: timeline_input">input</div>
+	    <div th:replace="main/fragments_main :: timeline_input">input</div>
 	    
 	    	  			
   		<div id="elements"></div>
@@ -43,6 +43,49 @@
 		  <li role="presentation"><a data-toggle="modal" data-target="#newFeedModal" href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="hidden-xs"> New Feed</span></a></li>
 		</ul>
   	</div>
+  	
+  	<div th:fragment="timeline_input">
+  		
+  		<div id="timeline_input_templates" class="hidden">
+  		
+  			<div id="home_input_template">
+  				<!-- Home Timeline Input -->
+  				<div class="timeline_input input-group">
+  					<span class="avatar input-group-addon">
+  						<img class="defaultPicture" height="46" />
+  					</span>
+  					<button class="form-control start-discussion-btn" data-toggle="modal" data-target="#newMsgModal">Start a discussion, or share a link...</button>
+  					<div class="input-group-btn">
+		  				<button data-toggle="modal" data-target="#newJournalModal" class="btn btn-default hidden-sm hidden-xs" type="button" ><i class="glyphicon glyphicon-pencil"></i>&nbsp;Post Blog</button>
+		  				<button data-toggle="modal" data-target="#newPhotosFormModal" class="btn btn-default hidden-sm hidden-xs"><i class="glyphicon glyphicon-picture" type="button" ></i>&nbsp;Post Photo(s)</button>
+		  				<button data-toggle="modal" data-target="#newPollModal" class="btn btn-default hidden-sm hidden-xs"><i class="glyphicon glyphicon-stats" type="button"></i>&nbsp;Post Poll</button>
+		  				<!-- <button class="btn btn-default hidden-sm hidden-xs"><i class="glyphicon glyphicon-calendar" type="button" ></i>&nbsp;Post Event</button> -->
+		  				
+		  				<button class="btn btn-default dropdown-toggle hidden-md hidden-lg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						    More... <span class="caret"></span>
+						  </button>
+		  				<ul class="dropdown-menu dropdown-menu-right">
+						    <li><a data-toggle="modal" data-target="#newJournalModal" href="#"><i class="glyphicon glyphicon-pencil"></i>&nbsp;Post Blog</a></li>
+						    <li><a data-toggle="modal" data-target="#newPhotosFormModal" href="#"><i class="glyphicon glyphicon-picture" type="button" ></i>&nbsp;Post Photo(s)</a></li>
+						    <li><a data-toggle="modal" data-target="#newPollModal" href="#"><i class="glyphicon glyphicon-stats" type="button" ></i>&nbsp;Post Poll</a></li>
+						    <!-- <li><a href="#"><i class="glyphicon glyphicon-calendar" type="button" ></i>&nbsp;Post Event</a></li>-->
+						  </ul>
+		  			</div>
+  				</div>
+  				
+ 				<!-- Feed Timeline Input -->
+ 				<div class="feed_input input-group" style="display:none;">
+		  			<span class="avatar input-group-addon"><img height="46"/></span>
+		  			<button class="form-control start-btn" data-toggle="modal" data-target="#twitterCompose">Start...</button>
+		  		</div>
+  			</div>
+  			  			
+  		</div>
+  		
+  		<div id="timeline_inputs" class="hidden"></div>
+  		
+  	</div>
+  	  	
   
   
   </body>
