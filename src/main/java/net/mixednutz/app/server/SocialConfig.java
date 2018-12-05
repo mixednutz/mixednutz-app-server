@@ -21,6 +21,9 @@ import org.springframework.social.mixednutz.v1_9.connect.MixednutzConnectionFact
 
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
 import net.mixednutz.api.provider.ApiProvider;
+import net.mixednutz.app.server.controller.web.NewExternalCredentialsController;
+import net.mixednutz.app.server.repository.ExternalCredentialsRepository;
+import net.mixednutz.app.server.repository.ExternalFeedRepository;
 
 @Configuration
 @ConfigurationProperties(prefix="mixednutz.social")
@@ -30,6 +33,18 @@ public class SocialConfig {
 	private MixednutzConnectionProperties mixednutz = new MixednutzConnectionProperties();
 		
 	private ConnectionFactoryRegistry registry;
+	
+	@Autowired
+	@Bean
+	public NewExternalCredentialsController.NewExternalCredentialsCallback externalCredentialsCallback(
+			ExternalCredentialsRepository credentialsRepository,
+			ApiProviderRegistry apiProviderRegistry, 
+			ExternalFeedRepository externalFeedRepository) {
+		return new NewExternalCredentialsController.NewExternalCredentialsCallback(
+				credentialsRepository,
+				apiProviderRegistry,
+				externalFeedRepository);
+	}
 	
 	@Bean
 	public MixednutzConnectionFactory mixednutzConnectionFactory() {

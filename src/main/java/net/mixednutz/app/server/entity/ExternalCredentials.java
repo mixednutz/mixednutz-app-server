@@ -32,7 +32,7 @@ public class ExternalCredentials {
 	@Table(name = "credentials")
 	@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 	@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
-	public abstract static class ExternalAccountCredentials extends AbstractCredentials {
+	public static class ExternalAccountCredentials extends AbstractCredentials {
 
 		private Integer id;
 		private String type;
@@ -120,7 +120,7 @@ public class ExternalCredentials {
 	@Entity
 	@Table(name = "credentials_oauth1")
 	@JsonTypeName(Oauth1Credentials.TYPE)
-	public abstract static class Oauth1Credentials extends ExternalAccountCredentials 
+	public static class Oauth1Credentials extends ExternalAccountCredentials 
 		implements IOauth1Credentials {
 		
 		public static final String TYPE = "oauth1";
@@ -150,7 +150,7 @@ public class ExternalCredentials {
 	@Entity
 	@Table(name = "credentials_oauth2")
 	@JsonTypeName(Oauth2Credentials.TYPE)
-	public abstract static class Oauth2Credentials extends ExternalAccountCredentials 
+	public static class Oauth2Credentials extends ExternalAccountCredentials 
 		implements IOauth2Credentials {
 			
 		public static final String TYPE = "oauth2";

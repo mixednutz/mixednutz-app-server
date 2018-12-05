@@ -26,6 +26,8 @@
 		<mixednutz-java-api-core.version>2.0.0-SNAPSHOT</mixednutz-java-api-core.version>
 		<mixednutz-java-api-twitter.version>2.0.0-SNAPSHOT</mixednutz-java-api-twitter.version>
 	
+		<version.spring-social>1.1.6.RELEASE</version.spring-social>
+	
 		<version.webjars-locator>0.30</version.webjars-locator>
 		<version.bootstrap>3.3.7-1</version.bootstrap>
 		<version.bootstrap-modal>2.2.5</version.bootstrap-modal>
@@ -89,7 +91,13 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!--  Thymeleaf -->
+		<!-- Spring Social -->
+		<dependency>
+	        <groupId>org.springframework.social</groupId>
+	        <artifactId>spring-social-web</artifactId>
+	        <version>${version.spring-social}</version>
+	    </dependency>
+		<!-- Thymeleaf -->
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity4</artifactId>	

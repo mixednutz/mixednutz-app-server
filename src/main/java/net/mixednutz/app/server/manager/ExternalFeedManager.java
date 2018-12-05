@@ -10,6 +10,8 @@ import net.mixednutz.app.server.entity.User;
 
 public interface ExternalFeedManager {
 	
+	public Map<String, INetworkInfoSmall> getProviders();
+	
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user);
 	
 	public Map<INetworkInfoSmall, Collection<String>> getCompatibleFeedsForCrossposting();

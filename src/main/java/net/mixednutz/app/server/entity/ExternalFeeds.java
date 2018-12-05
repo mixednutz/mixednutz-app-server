@@ -174,7 +174,7 @@ public class ExternalFeeds {
 	
 	@Entity
 	@DiscriminatorValue(Oauth1AuthenticatedFeed.TYPE)
-	protected static class Oauth1AuthenticatedFeed extends AbstractAuthenticatedFeed<Oauth1Credentials> {
+	public static class Oauth1AuthenticatedFeed extends AbstractAuthenticatedFeed<Oauth1Credentials> {
 
 		public static final String TYPE = "oauth1";
 		
@@ -193,7 +193,7 @@ public class ExternalFeeds {
 	
 	@Entity
 	@DiscriminatorValue(Oauth2AuthenticatedFeed.TYPE)
-	protected static class Oauth2AuthenticatedFeed extends AbstractAuthenticatedFeed<Oauth2Credentials> {
+	public static class Oauth2AuthenticatedFeed extends AbstractAuthenticatedFeed<Oauth2Credentials> {
 
 		public static final String TYPE = "oauth2";
 		

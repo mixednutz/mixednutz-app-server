@@ -78,4 +78,12 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		}
 		return mimeTypes;
 	}
+	
+	public Map<String, INetworkInfoSmall> getProviders() {
+		final Map<String, INetworkInfoSmall> map = new LinkedHashMap<>();
+		for (ApiProvider<?,?> provider: registry.getProviders()) {
+			map.put(provider.getProviderId(), provider.getNetworkInfo());
+		}
+		return map;
+	}
 }
