@@ -15,6 +15,8 @@ import org.springframework.social.connect.web.ConnectInterceptor;
 import org.springframework.social.connect.web.CredentialsCallback;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.view.RedirectView;
 
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
 import net.mixednutz.api.model.INetworkInfoSmall;
@@ -27,6 +29,7 @@ import net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractAuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
+import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.repository.ExternalCredentialsRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
@@ -82,7 +85,11 @@ public class NewExternalCredentialsController {
 
 		@Override
 		public void save(IOauth2Credentials creds, Connection<?> connection) {
-			// TODO Auto-generated method stub
+			Oauth2Credentials oauth = (Oauth2Credentials) creds;
+			oauth = credentialsRepository.save(oauth);
+			
+			AbstractAuthenticatedFeed<?> feed = createExternalFeed(connection, oauth);
+			externalFeedRepository.save(feed);
 		}
 
 		AbstractAuthenticatedFeed<?> createExternalFeed(Connection<?> connection, Oauth1Credentials creds) {
@@ -94,6 +101,19 @@ public class NewExternalCredentialsController {
 			feed.setProviderId(creds.getProviderId());
 			feed.setUser(creds.getUser());
 			feed.setCredentials((Oauth1Credentials) creds);
+			feed.setImageUrl(connection.getImageUrl());
+			feed.setName(networkInfo.getDisplayName() + " - " + userProfile.getUsername());
+			return feed;
+		}
+		AbstractAuthenticatedFeed<?> createExternalFeed(Connection<?> connection, Oauth2Credentials creds) {
+			INetworkInfoSmall networkInfo = apiProviderRegistry.getSocialNetworkClient(creds.getProviderId())
+					.getNetworkInfo();
+			UserProfile userProfile = connection.fetchUserProfile();
+
+			Oauth2AuthenticatedFeed feed = new Oauth2AuthenticatedFeed();
+			feed.setProviderId(creds.getProviderId());
+			feed.setUser(creds.getUser());
+			feed.setCredentials((Oauth2Credentials) creds);
 			feed.setImageUrl(connection.getImageUrl());
 			feed.setName(networkInfo.getDisplayName() + " - " + userProfile.getUsername());
 			return feed;
@@ -117,6 +137,11 @@ public class NewExternalCredentialsController {
 		@Override
 		protected String connectedView(String providerId) {
 			return "redirect:/main";
+		}
+
+		@Override
+		protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
+			return new RedirectView("/main", true);
 		}
 
 		@PostConstruct

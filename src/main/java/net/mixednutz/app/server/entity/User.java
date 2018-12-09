@@ -55,6 +55,12 @@ public class User extends BaseUserDetails implements IUser {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+	@Transient
+	@JsonIgnore
+	@Override
+	public String getId() {
+		return userId!=null?userId.toString():null;
+	}
 	@Override
 	@Column(name="username",
 		length=50,

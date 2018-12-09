@@ -27,6 +27,7 @@
 		<mixednutz-java-api-twitter.version>2.0.0-SNAPSHOT</mixednutz-java-api-twitter.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
+		<version.commons-codec>1.4</version.commons-codec>
 	
 		<version.webjars-locator>0.30</version.webjars-locator>
 		<version.bootstrap>3.3.7-1</version.bootstrap>
@@ -102,6 +103,11 @@
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity4</artifactId>	
   		</dependency>
+  		<!-- Commons Codec for the Base64 authorization -->
+  		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
 				
 		<!-- WebJars -->
 		<dependency>

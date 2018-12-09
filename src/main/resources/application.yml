@@ -1,15 +1,23 @@
+spring: 
+  
+  profiles.active: jpa-dev, mixednutz_base, twitter
+
+---
+# Optionally link up with other Mixednutz instance
+spring:
+  profiles: mixednutz_base
+  
+  
 mixednutz:
-  social:
+  social: 
     mixednutz:
       base-url: https://mixednutz.net
       client-id: mixednutzjavaapi
       client-secret: mySecret
-
-spring:
-  
-  profiles.active: jpa-dev, twitter
+      scope: timeline
 
 ---
+# Optionally link up with Twitter
 spring:
   profiles: twitter
   

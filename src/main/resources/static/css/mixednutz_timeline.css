@@ -1,0 +1,416 @@
+@media all and (min-width: 768px) {
+	.profile {
+	  padding: 20px 15px;
+	}
+}
+@media all and (max-width: 767px) {
+	.profile { 
+	  padding: 15px 0px;
+	}
+}
+.profile .avatar {
+	margin-top: 5px;
+	text-align: center;
+}
+.profile h1 {
+	text-align: center;
+}
+.profile .username {
+	text-align: center;
+	font-size: 1.5em;
+	display: block;
+}
+.userpath, .location, .socialmedia {
+	text-align:center; 
+}
+.profile .followers {
+	text-align:center; 
+}
+.profile .lastlogin, .profile .membersince {
+	text-align:center; 
+}
+
+#viewusermenu {
+	text-align:center;
+}
+
+.timeline .start-discussion-btn {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+@media all and (min-width: 768px) {
+	.timeline {
+	  padding: 20px 15px;
+	}
+}
+@media all and (max-width: 767px) {
+	.timeline {
+	  padding: 15px 0px;
+	}
+}
+.timeline .loading {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	min-height: 68px;
+	width: 100%;
+	text-align: center;
+	color: #1e90ff;
+}
+.prerender {
+	display: none;
+}
+.timeline .element {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+	border: 1px solid #CCC;
+	padding: 10px;
+	min-height: 68px;
+	background-color: #FFF;
+}
+.timeline .element .avatar {
+	float: left;
+	margin-right: 10px;
+}
+.timeline .element .subject {
+	font-weight: bold;
+}
+.timeline .element .stats .replies {
+	display: inline;
+}
+.timeline .element .stats .views {
+	display: inline;
+}
+.timeline .preview {
+	clear: both;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.timeline .form-control {
+	height: 60px;
+	text-align: left;
+	cursor: text;
+	line-height: 50px;
+	vertical-align: middle;
+}
+.timeline .timeline_input .btn {
+	height: 60px;
+	line-height: 50px;
+	vertical-align: middle;
+}
+
+
+/* PREVIEW */
+
+.timeline .preview {
+	overflow: hidden;
+}
+.timeline a.pane {
+	display: block;
+	color: #444;;
+}
+.timeline .preview .sharedContent {
+	width:100%;
+	position: relative;
+	min-height: 140px;
+}
+.timeline .preview ul {
+	padding:0;
+	margin-top: 15px;
+}
+.timeline .preview li.sharedContent {
+	list-style-type: none;
+}
+.timeline .preview li.poll {
+	list-style-type: none;
+}
+.timeline .preview li.pollOption {
+	list-style-type: none;
+}
+.timeline .preview .sharedContent .sharedBy {
+	font-size: 0.9em;
+}
+
+@media all and (min-width: 768px) {
+	.timeline .preview .sharedContent .url .title {
+		font-family: times, Times New Roman, times-roman, georgia, serif;
+		font-size: 3em;
+	    line-height: 40px;
+	    letter-spacing: -1px;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+	    font-weight: 100;
+		position: absolute;
+		top: 30px;
+		max-height: 130px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	.timeline .preview .poll .title {
+		font-size: 1.5em;
+	    line-height: 40px;
+	    letter-spacing: -1px;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+	    font-weight: bold;
+		top: 30px;
+		max-height: 130px;
+		padding-right: 10px;
+	}
+}
+@media all and (max-width: 767px) {
+	.timeline .preview .sharedContent .url .title {
+		font-family: times, Times New Roman, times-roman, georgia, serif;
+		font-size: 2.5em;
+	    line-height: 35px;
+	    letter-spacing: -1px;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+	    font-weight: 100;
+		position: absolute;
+		max-height: 152px;
+		padding-top: 10px;
+		padding-left: 10px;
+		padding-right: 10px;
+		overflow: hidden;
+	}
+	.timeline .preview .poll .title {
+		font-size: 1.5em;
+	    line-height: 35px;
+	    letter-spacing: -1px;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+	    font-weight: bold;
+		max-height: 152px;
+		padding-top: 10px;
+		padding-right: 10px;
+		overflow: hidden;
+	}
+}
+.timeline .preview .sharedContent .url .withImage .title {
+	color: #FFF;
+	z-index: 1;
+}
+.timeline .preview .sharedContent .url .noImage .title {
+	color: #444;
+}
+@media all and (min-width: 768px) {
+	.timeline .preview .sharedContent .url .description {
+		position: absolute;
+		bottom: 10px;
+		height: 60px;
+		overflow: hidden;
+		padding-left: 10px;
+		padding-right: 10px;
+		font-family: times, Times New Roman, times-roman, georgia, serif;
+		font-size: 1.75em;
+		line-height: 30px;
+		letter-spacing: -1px;
+	}
+}
+@media all and (max-width: 767px) {
+	.timeline .preview .sharedContent .url .description {
+		display:none !important;
+	}
+}
+.timeline .preview .sharedContent .url .withImage .description {
+	color: #FFF;
+	z-index: 1;
+}
+.timeline .preview .sharedContent .url .noImage .description {
+	color: #444;
+}
+.timeline .preview .sharedContent .url .withImage .image {
+	max-height: 200px;
+	overflow: hidden;
+	background: black;
+	z-index: 0;
+}
+.timeline .preview .sharedContent .url .withImage .image img {
+	width:100%;
+	vertical-align:middle;
+	opacity: 0.6;
+}
+.timeline .Journal .preview {
+	padding: 10px;
+}
+.timeline .Album .preview {
+	padding: 10px;
+}
+.timeline .Album .preview .thumbnail-pane {
+	height: 200px;
+	overflow:scroll;
+	overflow-y:hidden;
+	white-space: nowrap;
+}
+.timeline .Album .preview .thumbnail-pane li {
+	display: inline;
+}
+.timeline .Album .preview .thumbnail-pane img {
+	height: 200px;
+	padding-right: 10px;
+}
+
+.timeline .Photo .preview {
+	padding: 10px;
+	text-align:center;
+}
+.timeline .Photo .preview .thumbnail-pane {
+	max-width:640px;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.timeline .Photo .preview .thumbnail-pane a {
+	
+}
+.timeline .Poll .preview {
+	padding: 10px;
+}
+
+.timeline .resharedBy {
+	color: #888;
+}
+.timeline .resharedComment {
+	margin-left: 15px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 5px;
+	display: block;
+}
+
+.timeline .action-group a {
+	text-decoration:none;
+}
+.timeline .action-group .btn {
+	height: 60px;
+	line-height: 50px;
+	vertical-align: middle;
+}
+
+.timeline .TwitterPost .stats .fa,
+.timeline .InstagramPost .stats .fa {
+	color: #AAB8C2;
+}
+.timeline .TwitterPost .body,
+.timeline .InstagramPost .body {
+	margin-top: 10px;
+}
+.timeline .TwitterPost .footer,
+.timeline .InstagramPost .footer {
+	margin-top: 10px;
+}
+.timeline .TwitterPost .image,
+.timeline .InstagramPost .image {
+	width:100%;
+	max-height: 480px;
+	overflow: hidden;
+	text-align:center;
+}
+.timeline .TwitterPost .image img {
+	width:100%;
+	max-width: 640px;
+	vertical-align:middle;
+}
+.timeline .TwitterPost .retweetedBy,
+.timeline .InstagramPost .retweetedBy {
+	color: #888;
+}
+.timeline .TwitterPost .retweetedBy .fa-retweet {
+	width: 48px;
+	text-align: right;
+	margin-right: 10px;
+}
+.timeline .TwitterPost .action-group .fa-retweet {
+	color: #FFFFFF;
+}
+.timeline .TwitterPost .retweet_background {
+	color: #AAB8C2;
+}
+.timeline .TwitterPost .retweet_background .on, .timeline .TwitterPost a:hover .retweet_background {
+	color: #19CF86;
+}
+.timeline .TwitterPost .action-group .fa-heart {
+	color: #FFFFFF;
+}
+.timeline .TwitterPost .heart_background {
+	color: #AAB8C2;
+}
+.timeline .TwitterPost .heart_background .on, .timeline .TwitterPost a:hover .heart_background {
+	color: #E81C4F;
+}
+.timeline .TwitterPost .action-group .fa-share-alt,
+.timeline .InstagramPost .action-group .fa-share-alt {
+	color: #FFFFFF;
+}
+.timeline .TwitterPost .action-group .fa-reply {
+	color: #FFFFFF;
+}
+.timeline .TwitterPost .action-group .fa-quote-left {
+	color: #FFFFFF;
+}
+.timeline .TwitterPost .action-group .fa-lock {
+	color: #AAB8C2;
+}
+.timeline .TwitterPost .share_background,
+.timeline .InstagramPost .share_background {
+	color: #AAB8C2;
+}
+
+.timeline .InstagramPost .image img {
+	width:100%;
+	vertical-align:middle;
+}
+
+.timeline .MsgThread .glyphicon-tag,
+.timeline .Journal .glyphicon-tag,
+.timeline .Album .glyphicon-tag,
+.timeline .Photo .glyphicon-tag,
+.timeline .Poll .glyphicon-tag {
+	color: #AAB8C2;
+}
+
+.timeline .MsgThread .fa-smile-o,
+.timeline .Journal .fa-smile-o,
+.timeline .Album .fa-smile-o,
+.timeline .Photo .fa-smile-o {
+	color: #AAB8C2;
+}
+
+.timeline .MsgThread .action-group .fa-share-alt, 
+.timeline .Journal .action-group .fa-share-alt, 
+.timeline .Album .action-group .fa-share-alt, 
+.timeline .Photo .action-group .fa-share-alt {
+	color: #FFFFFF;
+}
+.timeline .MsgThread .action-group .fa-smile-o, 
+.timeline .Journal .action-group .fa-smile-o, 
+.timeline .Album .action-group .fa-smile-o, 
+.timeline .Photo .action-group .fa-smile-o,
+.timeline .SharedContent .action-group .fa-smile-o,
+.timeline .Poll .action-group .fa-smile-o {
+	color: #FFFFFF;
+}
+.timeline .MsgThread .share_background, 
+.timeline .Journal .share_background, 
+.timeline .Album .share_background,
+.timeline .Photo .share_background,
+.timeline .SharedContent .share_background,
+.timeline .Poll .share_background {
+	color: #AAB8C2;
+}
+
+.timeline .MsgThread .action-group .fa-lock, 
+.timeline .Journal .action-group .fa-lock, 
+.timeline .Album .action-group .fa-lock, 
+.timeline .Photo .action-group .fa-lock {
+	color: #AAB8C2;
+}
+
+
+.snackbar.notificationbar {
+	border-radius: 200px;
+	background-color: #008800;
+  	color: #FFFFFF;
+}

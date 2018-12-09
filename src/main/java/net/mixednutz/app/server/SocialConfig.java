@@ -17,7 +17,6 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
-import org.springframework.social.mixednutz.v1_9.connect.MixednutzConnectionFactory;
 
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
 import net.mixednutz.api.provider.ApiProvider;
@@ -30,8 +29,6 @@ import net.mixednutz.app.server.repository.ExternalFeedRepository;
 @ComponentScan(basePackages={"net.mixednutz.api"})
 public class SocialConfig {
 
-	private MixednutzConnectionProperties mixednutz = new MixednutzConnectionProperties();
-		
 	private ConnectionFactoryRegistry registry;
 	
 	@Autowired
@@ -44,13 +41,6 @@ public class SocialConfig {
 				credentialsRepository,
 				apiProviderRegistry,
 				externalFeedRepository);
-	}
-	
-	@Bean
-	public MixednutzConnectionFactory mixednutzConnectionFactory() {
-		MixednutzConnectionFactory mcf = new MixednutzConnectionFactory(
-				mixednutz.baseUrl, mixednutz.clientId, mixednutz.clientSecret);
-		return mcf;
 	}
 	
 	/**
@@ -95,39 +85,5 @@ public class SocialConfig {
         }
         return usersConnectionRepository().createConnectionRepository(authentication.getName());
     }
-	
-	public MixednutzConnectionProperties getMixednutz() {
-		return mixednutz;
-	}
-
-	public void setMixednutz(MixednutzConnectionProperties mixednutz) {
-		this.mixednutz = mixednutz;
-	}
-
-	public static class MixednutzConnectionProperties {
-		private String baseUrl;
-		private String clientId;
-		private String clientSecret;
 		
-		public String getBaseUrl() {
-			return baseUrl;
-		}
-		public void setBaseUrl(String baseUrl) {
-			this.baseUrl = baseUrl;
-		}
-		public String getClientId() {
-			return clientId;
-		}
-		public void setClientId(String clientId) {
-			this.clientId = clientId;
-		}
-		public String getClientSecret() {
-			return clientSecret;
-		}
-		public void setClientSecret(String clientSecret) {
-			this.clientSecret = clientSecret;
-		}
-		
-	}
-	
 }

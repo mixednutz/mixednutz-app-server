@@ -53,13 +53,13 @@ var app = {
   					.attr("data-feed-type", feed.name)
   					.attr("data-image-url", account.image.src)
   					.text(account.name)
-  					.attr("href", "#"+account.id)
-  					.on('click', {
-  						feedId: account.id, feedType: feed.name, name: account.name, imageUrl: account.image.src
-  					}, function (event) {
-  						showFeedInput(event.data.feedId, event.data.feedType, event.data.name, event.data.imageUrl); 
-  						loadFeedTimeline(event.data.feedId);
-  					});
+  					.attr("href", "#"+account.id);
+//  					.on('click', {
+//  						feedId: account.id, feedType: feed.name, name: account.name, imageUrl: account.image.src
+//  					}, function (event) {
+//  						showFeedInput(event.data.feedId, event.data.feedType, event.data.name, event.data.imageUrl); 
+//  						loadFeedTimeline(event.data.feedId);
+//  					});
   				template.find(".dropdown-menu")
   					.append(item);
   				  				
@@ -118,6 +118,24 @@ var app = {
 	  	$("#timeline_inputs").append(template).removeClass("hidden");
 	  	
   		app.reloadTimeline();
+  	}
+  	
+  	app.reloadTimeline = function() {
+  		if (app.hash){
+	  		var optionElement = $("#externalFeedAccount_"+app.hash);
+	        var feedId = optionElement.attr('data-feed-id');
+	        var feedType = optionElement.attr('data-feed-type');
+	        var imageUrl = optionElement.attr('data-image-url');
+	        var name = optionElement.text();
+	        
+	        //load feed
+	        showFeedInput(feedId, feedType, name, imageUrl); 
+			loadFeedTimeline(feedId);
+  		} else {
+  			//load timeline
+  			loadTimeline();
+  			showTimelineInput();
+  		}
   	}
 	
   	/*****
