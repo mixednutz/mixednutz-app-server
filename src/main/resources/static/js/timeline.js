@@ -213,3 +213,77 @@ function formatDateTimeTodayYesterday(date, dateCallback, timeCallback) {
 	}
 	return formatDateTodayYesterday(date, dateCallback) + " at " + time;
 }
+
+function buildTimelineElement(element, feedId) {
+	console.log(element);
+	var type = element.type.namespace+"_"+element.type.name;
+	var id = type+"_"+element.providerId;
+	if ($("#"+id).length>0) {
+		console.log(id+" already exists");
+		return null;
+	}
+	var template = $('#template_oembed').clone();
+	template.attr("id",id); 	
+	
+	var oembedHref = null;
+	if (element.alternateLinks!=null) {
+		for (altLinkIdx in element.alternateLinks) {
+			if (element.alternateLinks[altLinkIdx].type=="application/json+oembed") {
+				oembedHref = element.alternateLinks[altLinkIdx].href;
+			}
+		}	
+	}
+	//Default stuff (avatar/username/date)
+	template.find(".avatar img").attr({
+		'src':element.postedByUser.avatar.src,
+		'title':element.postedByUser.avatar.title});
+	template.find(".username .name").text(element.postedByUser.displayName);
+	template.find(".username a")
+		.attr('href',element.postedByUser.url)
+		.attr('target','_new');
+	template.find(".username .screenname").text(element.postedByUser.username);
+	template.find(".createdAt span").text(new Date(element.postedOnDate).toLocaleString());
+	//Preview
+	var preview = template.find(".preview");
+	//preview.css('display','none');
+	var paneBody = preview.find(".pane-body");
+	var oembedDiv = preview.find(".oembed");
+	paneBody.find(".title").html(element.title);
+ 	paneBody.find(".description").html(element.description);
+ 	preview.find("a.pane").attr({
+			"href":element.url});
+	if (oembedHref!=null) {
+		
+		preview.find('.oembedToggle button').on('click', function(){
+			if (oembedDiv.attr('hidden')) {
+				oembedDiv.removeAttr('hidden');	
+			} else {
+				oembedDiv.attr('hidden', true);
+			}
+  			
+  		});
+		
+  		$.ajax({
+			type: 'GET', 
+			url: oembedHref+"&amp;align=center",
+			dataType: "jsonp",
+			success: function(data){
+				if (data.type=="rich") {
+					oembedDiv.html(data.html);
+				} else if (data.type="photo") {
+					oembedDiv.remove();
+					paneBody.find(".image")
+						.attr('href', data.url);
+				}
+			},
+			error: function() {
+				console.log('[oembed] error:'+oembedHref);
+				preview.remove();
+			}
+		});
+	} else {
+		oembedDiv.remove();
+	}
+	
+	return template;
+}

@@ -28,7 +28,7 @@ var app = {
 	app.setup = function() {
 		app.updateExternalFeeds();
 		app.updateTimelineInput();
-		//app.setupForms();
+		app.setupForms();
 	}
 	
 	app.updateExternalFeeds = function() {
@@ -54,12 +54,6 @@ var app = {
   					.attr("data-image-url", account.image.src)
   					.text(account.name)
   					.attr("href", "#"+account.feedId);
-//  					.on('click', {
-//  						feedId: account.id, feedType: feed.name, name: account.name, imageUrl: account.image.src
-//  					}, function (event) {
-//  						showFeedInput(event.data.feedId, event.data.feedType, event.data.name, event.data.imageUrl); 
-//  						loadFeedTimeline(event.data.feedId);
-//  					});
   				template.find(".dropdown-menu")
   					.append(item);
   				  				
@@ -129,7 +123,7 @@ var app = {
 	        var name = optionElement.text();
 	        
 	        //load feed 
-	        //showFeedInput(feedId, feedType, name, imageUrl); 
+	        showFeedInput(feedId, feedType, name, imageUrl); 
 			loadFeedTimeline(feedId);
   		} else {
   			//load timeline
@@ -137,7 +131,21 @@ var app = {
   			showTimelineInput();
   		}
   	}
+  	
+  	$( window ).on( 'hashchange', function( e ) {
+  		var hash = window.location.hash;
+	    if(hash.length>1) {		
+	    	app.hash = hash.substring(1);
+	    } else {
+	    	app.hash = null;
+	    }
+	    app.reloadTimeline();
+  	});
 	
+  	app.setupForms = function() {
+  		
+  	}
+  	
   	/*****
 	 * Data Methods
 	 *****/

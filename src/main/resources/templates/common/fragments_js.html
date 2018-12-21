@@ -21,6 +21,30 @@
   	/*]]>*/
   	</script>
   	
+  	<script th:fragment="timeline" th:inline="javascript">
+  	/*<![CDATA[*/
+  	function loadTimelineSince(nextPage) {
+  		
+  	}
+  	function loadTimeline(nextPage) {
+  		//TEMP - remove this with real logic
+  		removePager();
+  		$('.timeline #elements').empty();
+  		///
+  	}
+  	function loadTimelineMore(nextPage) {
+  		
+  	}
+  	function renderItems(items, direction) {
+  		
+  	}
+  	function showTimelineInput() {
+  		$('.feed_input').css('display','none');
+  		$('.timeline_input').css('display','');
+  	}
+  	/*]]>*/
+  	</script>
+  	
   	<script th:fragment="feed_timeline" th:inline="javascript">
   	/*<![CDATA[*/
   	function loadFeedTimelineSince(feedId, nextPage, hashtag) {
@@ -94,103 +118,31 @@
   	function renderFeedItems(items, feedId, direction) {
   		/*direction is "prepend" or "append"*/
   		var loopFunction = function (index, element) {
-			var builtElement = null;
-			builtElement = buildTimelineElement(element, feedId);
-			//console.log('builtElement');
-			//console.log(builtElement[0].outerHTML);
-			if (builtElement!=null) {
-				//console.log('elements');
-				//console.log($('#elements'));
-				if (direction=='prepend') {
-					builtElement.prependTo("#elements");
-				} else {
-					builtElement.appendTo("#elements");
-					//$('#elements').append(builtElement);
-					//$('#elements').append("Test");
-					//console.log('append');
-				}
-			}	
-		};
-  		
-		if (direction=='prepend') {
-			$.each(items.reverse(), loopFunction);	
-		} else {
-			$.each(items, loopFunction);
-		}
-  	}
-  	function buildTimelineElement(element, feedId) {
-  		console.log(element);
-  		var type = element.type.namespace+"_"+element.type.name;
-  		var id = type+"_"+element.providerId;
-  		if ($("#"+id).length>0) {
-  			console.log(id+" already exists");
-  			return null;
-  		}
-  		var template = $('#template_oembed').clone();
-  		template.attr("id",id); 	
-  		
-  		var oembedHref = null;
-  		if (element.alternateLinks!=null) {
-  			for (altLinkIdx in element.alternateLinks) {
-  				if (element.alternateLinks[altLinkIdx].type=="application/json+oembed") {
-  					oembedHref = element.alternateLinks[altLinkIdx].href;
-  					//console.log(element.alternateLinks[altLinkIdx].href);
+  			var builtElement = null;
+  			builtElement = buildTimelineElement(element, feedId);
+  			if (builtElement!=null) {
+  				if (direction=='prepend') {
+  					builtElement.prependTo("#elements");
+  				} else {
+  					builtElement.appendTo("#elements");
   				}
   			}	
-  		}
-  		//Default stuff (avatar/username/date)
-  		template.find(".avatar img").attr({
-  			'src':element.postedByUser.avatar.src,
-  			'title':element.postedByUser.avatar.title});
-  		template.find(".username .name").text(element.postedByUser.displayName);
-  		template.find(".username a")
-			.attr('href',element.postedByUser.url)
-			.attr('target','_new');
-  		template.find(".username .screenname").text(element.postedByUser.username);
-  		template.find(".createdAt span").text(new Date(element.postedOnDate).toLocaleString());
-  		//Preview
-  		var preview = template.find(".preview");
-  		//preview.css('display','none');
-  		var paneBody = preview.find(".pane-body");
-  		var oembedDiv = preview.find(".oembed");
-  		paneBody.find(".title").html(element.title);
-  	 	paneBody.find(".description").html(element.description);
-  	 	preview.find("a.pane").attr({
-				"href":element.url});
-  		if (oembedHref!=null) {
-  			
-  			preview.find('.oembedToggle button').on('click', function(){
-  				if (oembedDiv.attr('hidden')) {
-  					oembedDiv.removeAttr('hidden');	
-  				} else {
-  					oembedDiv.attr('hidden', true);
-  				}
-  	  			
-  	  		});
-  			
-	  		$.ajax({
-				type: 'GET', 
-				url: oembedHref+"&amp;align=center",
-				dataType: "jsonp",
-				success: function(data){
-					if (data.type=="rich") {
-						oembedDiv.html(data.html);
-					} else if (data.type="photo") {
-						oembedDiv.remove();
-						paneBody.find(".image")
-							.attr('href', data.url);
-					}
-				},
-				error: function() {
-					console.log('[oembed] error:'+oembedHref);
-					preview.remove();
-				}
-			});
-  		} else {
-  			oembedDiv.remove();
-  		}
+  		};
   		
-  		return template;
+  		if (direction=='prepend') {
+  			$.each(items.reverse(), loopFunction);	
+  		} else {
+  			$.each(items, loopFunction);
+  		}
+  	}
+  	function showFeedInput(feedId, type, name, imageUrl) {
+  		var submitPath = /*[[@{|/api/feed/post|}]]*/ "/api/feed/post";
+  		var uploadPath = /*[[@{|/api/feed/upload|}]]*/ "/api/feed/upload";
+  		$('.timeline_input').css('display','none');
+  		$('.feed_input').css('display','');
+  		$('.feed_input .avatar img').attr({
+  			'src':imageUrl,
+  			'title':name});
   	}
   	/*]]>*/
   	</script>
