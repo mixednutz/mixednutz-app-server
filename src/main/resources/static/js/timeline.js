@@ -1,0 +1,215 @@
+var unreadContent=null;
+var refreshId;
+var snackbar;
+var defaultTitleBar = document.title;
+	
+
+function startTimeout(readCallback, nextPage) {
+	if (refreshId!=null) {
+		console.log('[startTimeout] clearing Timeout '+refreshId);
+  		clearTimeout(refreshId);	
+	}
+	refreshId = setTimeout(function(){
+		console.log('[Timeout:'+refreshId+'] Timeout '+nextPage.after);
+		refreshId = null;
+		readCallback(nextPage);
+	}, 30*1000);
+	console.log('[startTimeout] Timeout '+refreshId+' set for 30 seconds');
+}
+
+function readTimeline(url, data, elementsSelector, renderCallback, readMoreCallback, readSinceCallback) {
+	
+	removePager();
+	$(elementsSelector).empty();
+ 
+  	buildLoading().appendTo(".timeline");
+	
+  	console.log(url);  
+  	
+	$.ajax({
+		type: 'GET', 
+		url: url, 
+//		data: JSON.stringify(data),
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json',
+		success: function(page){
+			
+			//Render
+			renderCallback(page, 'append');
+			$(elementsSelector+' .prerender').removeClass('prerender');
+			  				
+			$('.timeline .loading').remove();
+			
+			if (readMoreCallback!=null) {
+				//Pager
+				buildPager(page, function(timeline){
+					readMoreCallback(timeline.nextPage);
+				}).appendTo(".timeline");
+			}
+			
+			if (readSinceCallback!=null) {
+				//Timeout
+				startTimeout(readSinceCallback, page.nextPage);
+			}
+		},
+		timeout: 120*1000,
+		error: function(jqXHR, textStatus, errorThrown) {
+			if (textStatus==='timeout') {
+				readTimeline(url, data, elementsSelector, renderCallback, readMoreCallback, readSinceCallback)
+			} else {
+				console.log('[readTimeline/error]: '+textStatus+' '+errorThrown);
+				console.log(jqXHR);
+			}
+		}
+	});
+}
+
+function readTimelineSince(url, data, elementsSelector, renderCallback, readSinceCallback) {
+	var startTime = new Date();  		
+	$.ajax({
+		type: 'POST', 
+		url: url, 
+		data: JSON.stringify(data),
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json',
+		success: function(page){
+			var endTime = new Date();
+			var timeDiff = (endTime-startTime)/1000;
+			console.log('[readTimelineSince] Latency: '+timeDiff+' secs');
+			if (page.items.length>0) {
+				if (unreadContent==null || page.items.length>unreadContent.items.length) {
+					console.log("Found feed items by looking for "+JSON.stringify(data));
+					
+					//Snackbar
+					onNewItemsNotification(page, elementsSelector, renderCallback, readSinceCallback);
+  				}
+			}
+			unreadContent = page;
+			
+			//Prerender content
+			renderCallback(unreadContent, 'prepend');
+			
+			if (page.items.length<=200) {
+  				//Repeat readSinceCallback with currentPage.
+  				//The readSinceCallback with nextPage happens on snackbar close.
+				startTimeout(readSinceCallback, page.currentPage);	
+			} else {
+				console.log("There's more than 200 unread items! Is there anyone there?  I'm going to sleep now.");
+			}
+		},
+		timeout: 120*1000,
+		error: function(jqXHR, textStatus, errorThrown) {
+			if (textStatus==='timeout') {
+				//Try again
+				readTimelineSince(url, data, renderCallback, readSinceCallback)
+			} else {
+				console.log('[readTimelineSince/error]: '+textStatus+' '+errorThrown);
+				console.log(jqXHR);
+			}
+		}
+	});
+}
+
+function readTimelineMore(url, data, elementsSelector, renderCallback, readMoreCallback) {
+
+	removePager();
+	
+	buildLoading().appendTo(".timeline");
+	
+	$.ajax({
+		type: 'POST', 
+		url: url, 
+		data: JSON.stringify(data),
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json',
+		success: function(page){
+			//Render
+			renderCallback(page, 'append');
+			$(elementsSelector+' .prerender').removeClass('prerender');
+			
+			$('.timeline .loading').remove();
+			
+			//Pager
+			buildPager(page, function(timeline){
+				readMoreCallback(timeline.nextPage);
+			}).appendTo(".timeline");
+							
+		},
+		timeout: 120*1000,
+		error: function(jqXHR, textStatus, errorThrown) {
+			console.log(jqXHR);
+			console.log('[readTimelineMore/error]: '+textStatus+' '+errorThrown);
+		}
+	});
+}
+
+function onNewItemsNotification(page, elementsSelector, renderCallback, readSinceCallback) {
+	if (snackbar!=null) {
+		snackbar.remove();
+	}
+	document.title = '('+page.items.length+') '+defaultTitleBar;
+	snackbar = $.snackbar({
+ 		content: '&#8593; You have '+page.items.length+' new items',
+ 		timeout: 0, 
+ 		style: "notificationbar",
+ 		onClose: function() {
+ 			document.title = defaultTitleBar;
+ 			
+ 			//Timeout
+ 			console.log("next page is "+page.nextPage.after+". is this right?")
+ 			startTimeout(readSinceCallback, page.nextPage);
+							
+ 			//Render
+ 			var numOfPrerenders = $(elementsSelector+' .prerender').length;
+ 			var scrollToElement = $(elementsSelector+' .prerender').eq(numOfPrerenders-1);
+ 			$(elementsSelector+' .prerender').removeClass('prerender');
+ 			console.log(scrollToElement);
+			$('html, body').animate({
+				//51 is the size of the menu bar 60 is the height of input box
+		        scrollTop: scrollToElement.offset().top - 51 - 60
+		    	}, 500); 	
+ 			
+ 			unreadContent = null;
+ 		}});
+}
+
+function buildLoading() {
+	return $('<div class="loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Loading...</span></div>');
+}
+function buildPager(timeline, loadTimelineFunction) {
+	var pager = $('<nav id="timeline_pager"><ul class="pager"></ul></nav>');
+	if (timeline.nextPage.before != null) {
+		$('<li class="pager-prev"><a>Load More</a></li>').appendTo(pager.find('ul'))
+	}
+	pager.find('.pager-prev a').click(function(e){
+		pager.remove();
+		loadTimelineFunction(timeline);
+	});
+	return pager;
+}
+function removePager() {
+	$('#timeline_pager').remove();
+}
+
+function formatDateTodayYesterday(date, callback) {
+	var now = new Date();
+	if (now.toDateString()==date.toDateString()) {
+		return "<span class=\"today\">Today</span>";
+	}
+	var yesterday = new Date(now-1);
+	if (yesterday.toDateString()==date.toDateString()) {
+		return "Yesterday";
+	}
+	if (callback!=null) {
+		return callback(date);
+	}
+	return date.toLocaleDateString();
+}
+
+function formatDateTimeTodayYesterday(date, dateCallback, timeCallback) {
+	var time = date.toLocaleTimeString();
+	if (timeCallback!=null) {
+		time = timeCallback(date);
+	}
+	return formatDateTodayYesterday(date, dateCallback) + " at " + time;
+}

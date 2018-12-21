@@ -48,12 +48,12 @@ var app = {
   				var account = feed.accounts[ii];
   				var item = $("<li><a></a></li>");
   				item.find("a")
-  					.attr("id", "externalFeedAccount_"+account.id)
-  					.attr("data-feed-id", account.id)
+  					.attr("id", "externalFeedAccount_"+account.feedId)
+  					.attr("data-feed-id", account.feedId)
   					.attr("data-feed-type", feed.name)
   					.attr("data-image-url", account.image.src)
   					.text(account.name)
-  					.attr("href", "#"+account.id);
+  					.attr("href", "#"+account.feedId);
 //  					.on('click', {
 //  						feedId: account.id, feedType: feed.name, name: account.name, imageUrl: account.image.src
 //  					}, function (event) {
@@ -128,8 +128,8 @@ var app = {
 	        var imageUrl = optionElement.attr('data-image-url');
 	        var name = optionElement.text();
 	        
-	        //load feed
-	        showFeedInput(feedId, feedType, name, imageUrl); 
+	        //load feed 
+	        //showFeedInput(feedId, feedType, name, imageUrl); 
 			loadFeedTimeline(feedId);
   		} else {
   			//load timeline

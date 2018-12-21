@@ -1,5 +1,8 @@
 package net.mixednutz.app.server.entity;
 
+import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials.OAUTH1;
+import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials.OAUTH2;
+
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
@@ -165,13 +168,11 @@ public class ExternalFeeds {
 	}
 	
 	@Entity
-	@DiscriminatorValue(Oauth1AuthenticatedFeed.TYPE)
+	@DiscriminatorValue(OAUTH1)
 	public static class Oauth1AuthenticatedFeed extends AbstractAuthenticatedFeed<Oauth1Credentials> {
 
-		public static final String TYPE = "oauth1";
-		
 		public Oauth1AuthenticatedFeed() {
-			super(TYPE);
+			super(OAUTH1);
 		}
 		
 		@ManyToOne
@@ -184,13 +185,11 @@ public class ExternalFeeds {
 	}
 	
 	@Entity
-	@DiscriminatorValue(Oauth2AuthenticatedFeed.TYPE)
+	@DiscriminatorValue(OAUTH2)
 	public static class Oauth2AuthenticatedFeed extends AbstractAuthenticatedFeed<Oauth2Credentials> {
 
-		public static final String TYPE = "oauth2";
-		
 		public Oauth2AuthenticatedFeed() {
-			super(TYPE);
+			super(OAUTH2);
 		}
 		
 		@ManyToOne

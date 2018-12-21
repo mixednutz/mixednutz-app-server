@@ -37,7 +37,7 @@ public class MainController {
 	@Autowired
 	ExternalFeedManager externalFeedManager;
 		
-	@RequestMapping("/")
+	@RequestMapping(value="/", method = RequestMethod.GET)
 	public String root(Model model) {
 		
 		if (setupController.isFirstTime()) {

@@ -1,31 +1,51 @@
 package net.mixednutz.app.server.controller.api;
 
+import static net.mixednutz.app.server.controller.api.PaginationSupport.checkValidPagination;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.mixednutz.api.core.model.ApiList;
+import net.mixednutz.api.core.model.PageRequest;
 import net.mixednutz.api.model.INetworkInfoSmall;
+import net.mixednutz.api.model.IPage;
+import net.mixednutz.api.model.ITimelineElement;
+import net.mixednutz.app.server.controller.exception.NotAuthorizedException;
+import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.entity.ExternalFeeds;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
+import net.mixednutz.app.server.repository.ExternalFeedRepository;
 
 
 @Controller
-@RequestMapping(value="/api")
+@RequestMapping(value="/internal")
 public class ExternalFeedApiController {
+	
+	public static final String PAGE_SIZE_STR = "20";
+	public static final int PAGE_SIZE = Integer.parseInt(PAGE_SIZE_STR);
 	
 	@Autowired
 	private ExternalFeedManager feedManager;
+	
+	@Autowired
+	private ExternalFeedRepository feedRepository;
+	
+
 	
 	@RequestMapping(value="/feeds", method = RequestMethod.GET)
 	public @ResponseBody ExternalFeedsList externalFeeds(@AuthenticationPrincipal User user) {
@@ -37,6 +57,44 @@ public class ExternalFeedApiController {
 			feeds.add(new ExternalFeed(entry.getKey(), entry.getValue(), feedManager.getCompatibleFeedsForCrossposting(entry.getKey())));
 		}
 		return feeds;
+	}
+	
+	@RequestMapping(value="/feeds/timeline", method = RequestMethod.GET)
+	public @ResponseBody IPage<? extends ITimelineElement,Object> apiExternalFeedTimeline(
+			@RequestParam("feedId") Long feedId, 
+			@RequestParam(value="hashtag", defaultValue="") String hashtag,
+			Authentication auth) {
+		User user = (User) auth.getPrincipal();
+		Optional<AbstractFeed> feed = feedRepository.findById(feedId);
+		if (!feed.isPresent()) {
+			throw new ResourceNotFoundException("Feed not found");
+		}
+		if (!feed.get().getUser().equals(user)) {
+			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
+		}
+		
+		return feedManager.getTimeline(feed.get(), 
+				hashtag.length()>0?hashtag:null, null);
+	}
+		
+	@RequestMapping(value="/feeds/timeline/nextpage", method = RequestMethod.POST)
+	public @ResponseBody IPage<? extends ITimelineElement,Object> apiExternalFeedTimeline(
+			@RequestParam("feedId") Long feedId, Authentication auth,
+			@RequestParam(value="hashtag", defaultValue="") String hashtag,
+			@RequestBody PageRequest<Object> prevPage, 
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
+		checkValidPagination(prevPage);
+		User user = (User) auth.getPrincipal();
+		Optional<AbstractFeed> feed = feedRepository.findById(feedId);
+		if (!feed.isPresent()) {
+			throw new ResourceNotFoundException("Feed not found");
+		}
+		if (!feed.get().getUser().equals(user)) {
+			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
+		}
+		
+		return feedManager.getTimeline(feed.get(), 
+				hashtag.length()>0?hashtag:null, prevPage);
 	}
 		
 	public class ExternalFeed {
@@ -93,5 +151,5 @@ public class ExternalFeedApiController {
 		}
 		
 	}
-
+	
 }

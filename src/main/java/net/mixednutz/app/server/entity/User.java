@@ -24,6 +24,7 @@ public class User extends BaseUserDetails implements IUser {
 	 * BECAUSE THIS CLASS IS PART OF THE TOKEN SERIALIZATION.
 	 */
 	private static final long serialVersionUID = -8968161792289432148L;
+	private int hashCode = Integer.MIN_VALUE;
 	
 	private Long userId;
 	private String displayName;
@@ -58,7 +59,7 @@ public class User extends BaseUserDetails implements IUser {
 	@Transient
 	@JsonIgnore
 	@Override
-	public String getId() {
+	public String getProviderId() {
 		return userId!=null?userId.toString():null;
 	}
 	@Override
@@ -144,6 +145,36 @@ public class User extends BaseUserDetails implements IUser {
 	}
 	public void setPasswordRaw(String passwordRaw) {
 		this.passwordRaw = passwordRaw;
+	}
+	
+	public int hashCode () {
+		if (Integer.MIN_VALUE == this.hashCode) {
+			if (null == this.getProviderId()) return super.hashCode();
+			
+				String hashStr = this.getClass().getName() + ":" + this.getProviderId().hashCode();
+				this.hashCode = hashStr.hashCode();
+			
+		}
+		return this.hashCode;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (obj==null || !(obj instanceof User)) {
+			return false;
+		}
+
+		User obj2 = (User) obj;
+		
+		if (this.getProviderId()==null && obj2.getProviderId()==null) {
+			return true;
+		} else if (this.getProviderId()==null ^ obj2.getProviderId()==null) {
+			return false;
+		}
+		return (this.getProviderId().equals(obj2.getProviderId()));
+		
 	}
 
 	

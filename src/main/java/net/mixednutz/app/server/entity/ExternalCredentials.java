@@ -29,7 +29,7 @@ import net.mixednutz.api.provider.IOauth2Credentials;
 public class ExternalCredentials {
 	
 	@Entity
-	@Table(name = "credentials")
+	@Table(name = "x_credentials")
 	@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 	@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 	public static class ExternalAccountCredentials extends AbstractCredentials {
@@ -118,18 +118,18 @@ public class ExternalCredentials {
 	}
 	
 	@Entity
-	@Table(name = "credentials_oauth1")
-	@JsonTypeName(Oauth1Credentials.TYPE)
+	@Table(name = "x_credentials_oauth1")
+	@JsonTypeName(Oauth1Credentials.OAUTH1)
 	public static class Oauth1Credentials extends ExternalAccountCredentials 
 		implements IOauth1Credentials {
 		
-		public static final String TYPE = "oauth1";
+		public static final String OAUTH1 = "oauth1";
 		
 		private String accessToken;
 		private String secret;
 		
 		public Oauth1Credentials() {
-			super(TYPE);
+			super(OAUTH1);
 		}
 
 		public String getAccessToken() {
@@ -148,12 +148,12 @@ public class ExternalCredentials {
 	}
 	
 	@Entity
-	@Table(name = "credentials_oauth2")
-	@JsonTypeName(Oauth2Credentials.TYPE)
+	@Table(name = "x_credentials_oauth2")
+	@JsonTypeName(Oauth2Credentials.OAUTH2)
 	public static class Oauth2Credentials extends ExternalAccountCredentials 
 		implements IOauth2Credentials {
 			
-		public static final String TYPE = "oauth2";
+		public static final String OAUTH2 = "oauth2";
 		
 		private String authCode;
 		private String refreshToken;
@@ -161,7 +161,7 @@ public class ExternalCredentials {
 		
 		
 		public Oauth2Credentials() {
-			super(TYPE);
+			super(OAUTH2);
 		}
 
 		public String getAuthCode() {

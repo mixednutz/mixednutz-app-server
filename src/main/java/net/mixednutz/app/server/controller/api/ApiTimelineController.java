@@ -1,5 +1,7 @@
 package net.mixednutz.app.server.controller.api;
 
+import static net.mixednutz.app.server.controller.api.PaginationSupport.checkValidPagination;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +22,6 @@ import net.mixednutz.api.core.model.PageRequest;
 import net.mixednutz.api.core.model.TimelineElement;
 import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
-import net.mixednutz.app.server.controller.exception.BadParametersException;
 import net.mixednutz.app.server.entity.User;
 
 
@@ -83,12 +84,6 @@ public class ApiTimelineController {
 		Page<TimelineElement, Date> stubData = new Page<>();
 		stubData.setItems(Collections.emptyList());
 		return stubData;
-	}
-	
-	private void checkValidPagination(PageRequest<?> prevPage) {
-		if (prevPage!=null && prevPage.getStart()==null && prevPage.getEnd()==null) {
-			throw new BadParametersException("Both start and end cannot be null");
-		}
 	}
 	
 	public static class TimelineBundle extends TreeMap<String, Object> {

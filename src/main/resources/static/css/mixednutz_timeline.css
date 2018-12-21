@@ -113,7 +113,6 @@
 .timeline .preview .sharedContent {
 	width:100%;
 	position: relative;
-	min-height: 140px;
 }
 .timeline .preview ul {
 	padding:0;
@@ -130,6 +129,10 @@
 }
 .timeline .preview .sharedContent .sharedBy {
 	font-size: 0.9em;
+}
+
+.timeline .preview .sharedContent .title {
+	font-size: 1.5em;
 }
 
 @media all and (min-width: 768px) {

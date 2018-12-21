@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+  <body>
+  
+  	
+	<div th:fragment="profile_timeline_templates">
+		<div id="templates" class="hidden">
+			<div include="common/fragments_timeline_templates :: native_templates"></div>
+		</div>
+	</div>
+
+	<div th:fragment="timeline_templates">
+		<div id="templates" class="hidden">
+			<div include="common/fragments_timeline_templates :: native_templates"></div>
+			<div th:include="common/fragments_timeline_templates :: feed_templates"></div>
+		</div>
+	</div>
+
+
+	<div th:fragment="native_templates">
+	</div>
+	
+	<div th:fragment="feed_templates">
+		<div id="template_oembed" class="element prerender">
+			<div class="oembedElement">
+				<div class="row">
+					<div class="col-sm-7">
+						<div class="avatar">
+							<img src="" width="48" />
+						</div>
+						<div class="username">
+							<a href="#"><span class="name">Username</span> <small
+								class="screenname">@username</small></a>
+						</div>
+						<div class="createdAt">
+							<span>11/11/2014</span>
+						</div>
+					</div>
+					<div class="stats col-sm-5 hidden-xs">
+					</div>
+				</div>		
+				<div class="preview">
+					<ul>
+						<li class="sharedContent">
+							<a class="pane" href="#" target="_blank">
+								<div class="pane-body">
+									<div class="title">Title</div>
+									<div class="description">Description</div>
+									<div class="image">
+										<img src="" />
+									</div>
+								</div>
+						</a>
+						<div class="oembedToggle"><button class="btn btn-link" type="button">Show Preview <span class="caret"></span></button></div>
+						<div class="oembed" hidden="hidden"></div>
+						</li>
+					</ul>
+				</div>
+				<div class="footer visible-xs-block">
+					<div class="stats">
+					</div>
+				</div>
+				
+				<div class="action-group" role="group">
+					<small class="id" style="display: none;"></small>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+  
+  </body>
+  
+ </html>
