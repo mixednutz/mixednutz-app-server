@@ -26,7 +26,7 @@ public class MainController {
 	private static final String ROOT_TEMPLATE = "root";
 	private static final String LOGIN_TEMPLATE = "login/login";
 	private static final String MAIN_TEMPLATE = "main/main";
-	private static final String PROFILE_TEMPLATE = "profile/profile_new";
+	private static final String PROFILE_TEMPLATE = "profile/profile";
 	
 	@Autowired
 	UserRepository userRespository;

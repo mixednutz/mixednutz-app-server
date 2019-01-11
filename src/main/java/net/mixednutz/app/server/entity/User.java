@@ -31,6 +31,7 @@ public class User extends BaseUserDetails implements IUser {
 	private String avatarSrc;
 	private String uri;
 	private String url;
+	private boolean _private;
 	
 	/*
 	 * password = encrypted password in database
@@ -83,7 +84,12 @@ public class User extends BaseUserDetails implements IUser {
 	public boolean isEnabled() {
 		return super.isEnabled();
 	}
-	
+	public boolean isPrivate() {
+		return _private;
+	}
+	public void setPrivate(boolean _private) {
+		this._private = _private;
+	}
 	@Transient
 	public String getDisplayName() {
 		return displayName;

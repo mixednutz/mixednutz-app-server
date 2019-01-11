@@ -31,12 +31,14 @@ import net.mixednutz.api.provider.IOauth2Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials;
+import net.mixednutz.app.server.entity.ExternalFeedTimelineElement;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
+import net.mixednutz.app.server.repository.ExternalFeedTimelineElementRepository;
 
 @Service
 @Transactional
@@ -46,6 +48,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 
 	@Autowired
 	private ExternalFeedRepository externalFeedRepository;
+	
+	@Autowired
+	private ExternalFeedTimelineElementRepository externalFeedTimelineElementRepository;
 	
 	@Autowired
 	private ApiProviderRegistry apiProviderRegistry;
@@ -80,13 +85,32 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	public IPage<? extends ITimelineElement,Object> getTimeline(AbstractFeed feed, 
 			String hashtag, IPageRequest<Object> paging) {
 					
+		//TODO Get and Save Live content will be moved to a poller
+		//Get Live Content
+		IPage<? extends ITimelineElement,Object> timeline;
 		if (OAUTH1.equals(feed.getType())) {
-			return getOauth1Timeline((Oauth1AuthenticatedFeed)feed, hashtag, paging);
+			timeline = getOauth1Timeline((Oauth1AuthenticatedFeed)feed, hashtag, paging);
 		} else if (OAUTH2.equals(feed.getType())) {
-			return getOauth2Timeline((Oauth2AuthenticatedFeed)feed, hashtag, paging);
+			timeline = getOauth2Timeline((Oauth2AuthenticatedFeed)feed, hashtag, paging);
 		} else {
 			throw new RuntimeException("Invalid feed type: "+feed.getType());
 		}
+		
+		//Save Live Content
+		for (ITimelineElement timelineElement: timeline.getItems()) {
+			externalFeedTimelineElementRepository.save(
+					new ExternalFeedTimelineElement(timelineElement));
+		}
+		
+		//Get Saved content
+		
+		/*
+		 * We're not going to merge here because the live polling and saving will 
+		 * happen somewhere else eventually.  this method will eventually
+		 * ONLY return saved content
+		 */
+				
+		return timeline;
 	}
 	
 	public static int getTimelineHash(AbstractFeed feed, String hashtag, IPageRequest<Object> paging) {

@@ -47,6 +47,7 @@ public class ExternalFeeds {
 		private String type;
 		private ZonedDateTime dateCreated;
 		private ZonedDateTime dateModified;
+		private ZonedDateTime lastCrawled;
 
 		public AbstractFeed() {
 			super();
@@ -136,6 +137,14 @@ public class ExternalFeeds {
 
 		public void setDateModified(ZonedDateTime dateUpdated) {
 			this.dateModified = dateUpdated;
+		}
+
+		public ZonedDateTime getLastCrawled() {
+			return lastCrawled;
+		}
+
+		public void setLastCrawled(ZonedDateTime lastCrawled) {
+			this.lastCrawled = lastCrawled;
 		}
 
 		@PrePersist
