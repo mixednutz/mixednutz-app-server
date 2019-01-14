@@ -122,9 +122,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        			"/event/**",
 	        			"/privacy/**").authenticated()
 //	        	.hasRole("MIXEDNUTZ")
-	        	.anyRequest().permitAll();
-//	        	.and()
-//	        .requiresChannel().anyRequest().requiresSecure();
+	        	.anyRequest().permitAll()
+	        	.and()
+	        .requiresChannel().anyRequest().requiresSecure();
     }
 
 }

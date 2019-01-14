@@ -1,7 +1,5 @@
 package net.mixednutz.app.server.controller.api;
 
-import static net.mixednutz.app.server.controller.api.PaginationSupport.checkValidPagination;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +18,7 @@ import net.mixednutz.api.core.model.ApiList;
 import net.mixednutz.api.core.model.Page;
 import net.mixednutz.api.core.model.PageRequest;
 import net.mixednutz.api.core.model.TimelineElement;
+import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.entity.User;
@@ -55,14 +54,12 @@ public class ApiTimelineController {
 	
 	@RequestMapping(value={HOME_TIMELINE_ENDPOINT}, 
 			method = RequestMethod.GET)
-	public @ResponseBody TimelinePage getHomeTimeline(Authentication auth) {
-//		User user = (User) auth.getPrincipal();
-		
-		TimelinePage page = new TimelinePage(
-				stubData());
-//				timelineManager.getNutsterzTimeline(account, PAGE_SIZE, null));
-		
-		return page;
+	public @ResponseBody TimelinePage getHomeTimeline(Authentication auth,
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
+
+		return getHomeTimeline(auth, 
+				PageRequest.first(pageSize, Direction.LESS_THAN, Date.class), 
+				pageSize);
 	}
 	
 	@RequestMapping(value={HOME_TIMELINE_NEXTPAGE_ENDPOINT}, 
@@ -70,9 +67,13 @@ public class ApiTimelineController {
 	public @ResponseBody TimelinePage getHomeTimeline(Authentication auth, 
 			@RequestBody PageRequest<Date> prevPage, 
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
-		checkValidPagination(prevPage);
 //		User user = (User) auth.getPrincipal();
 
+		//If pageSize is null, grab default
+		if (prevPage.getPageSize()==null) {
+			prevPage.setPageSize(pageSize);
+		}
+		
 		TimelinePage page = new TimelinePage(
 				stubData());
 //				timelineManager.getNutsterzTimeline(account, pageSize, prevPage));

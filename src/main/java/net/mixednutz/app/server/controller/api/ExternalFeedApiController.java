@@ -1,7 +1,5 @@
 package net.mixednutz.app.server.controller.api;
 
-import static net.mixednutz.app.server.controller.api.PaginationSupport.checkValidPagination;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +20,7 @@ import net.mixednutz.api.core.model.ApiList;
 import net.mixednutz.api.core.model.PageRequest;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.api.model.IPage;
+import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.controller.exception.NotAuthorizedException;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
@@ -61,29 +60,21 @@ public class ExternalFeedApiController {
 	
 	@RequestMapping(value="/feeds/timeline", method = RequestMethod.GET)
 	public @ResponseBody IPage<? extends ITimelineElement,Object> apiExternalFeedTimeline(
-			@RequestParam("feedId") Long feedId, 
+			@RequestParam("feedId") Long feedId, Authentication auth,
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
-			Authentication auth) {
-		User user = (User) auth.getPrincipal();
-		Optional<AbstractFeed> feed = feedRepository.findById(feedId);
-		if (!feed.isPresent()) {
-			throw new ResourceNotFoundException("Feed not found");
-		}
-		if (!feed.get().getUser().equals(user)) {
-			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
-		}
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
 		
-		return feedManager.getTimeline(feed.get(), 
-				hashtag.length()>0?hashtag:null, null);
+		return apiExternalFeedTimeline(feedId, auth,
+				hashtag, PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
+				pageSize);
 	}
 		
 	@RequestMapping(value="/feeds/timeline/nextpage", method = RequestMethod.POST)
 	public @ResponseBody IPage<? extends ITimelineElement,Object> apiExternalFeedTimeline(
 			@RequestParam("feedId") Long feedId, Authentication auth,
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
-			@RequestBody PageRequest<Object> prevPage, 
+			@RequestBody PageRequest<String> prevPage, 
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
-		checkValidPagination(prevPage);
 		User user = (User) auth.getPrincipal();
 		Optional<AbstractFeed> feed = feedRepository.findById(feedId);
 		if (!feed.isPresent()) {
@@ -91,6 +82,10 @@ public class ExternalFeedApiController {
 		}
 		if (!feed.get().getUser().equals(user)) {
 			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
+		}
+		//If pageSize is null, grab default
+		if (prevPage.getPageSize()==null) {
+			prevPage.setPageSize(pageSize);
 		}
 		
 		return feedManager.getTimeline(feed.get(), 

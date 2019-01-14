@@ -34,7 +34,7 @@ import net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials;
 public class ExternalFeeds {
 	
 	@Entity
-	@Table(name = "feed")
+	@Table(name = "x_feed")
 	@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 	@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 	public static abstract class AbstractFeed {

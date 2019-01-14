@@ -28,7 +28,7 @@ import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.api.model.IUserSmall;
 
 @Entity
-@Table(name = "feed_element")
+@Table(name = "x_content")
 public class ExternalFeedTimelineElement implements ITimelineElement {
 	
 	private static final ObjectMapper objectMapper = new ObjectMapper();

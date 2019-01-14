@@ -31,10 +31,16 @@ mixednutz:
 spring:
   profiles: ssl
   
-keystore:
-  file: ${KEYSTORE_FILE}
-  pass.file: ${KEYSTORE_PASS_FILE}
-  type: ${KEYSTORE_TYPE}
+server:
+  ssl:
+    key-store: ${KEYSTORE_FILE}
+    key-store-type: ${KEYSTORE_TYPE}
+    key-password: ${KEYSTORE_PASS} 
+  
+#keystore:
+#  file: ${KEYSTORE_FILE}
+#  pass.file: ${KEYSTORE_PASS_FILE}
+#  type: ${KEYSTORE_TYPE}
       
 ---
 spring:

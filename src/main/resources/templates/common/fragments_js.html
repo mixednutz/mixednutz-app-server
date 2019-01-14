@@ -10,6 +10,12 @@
   	/*<![CDATA[*/
   		var ctx = /*[[@{|/|}]]*/ "/";
   	
+  		var csrfToken = $("meta[name='_csrf']").attr("content");
+  	  	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+  	  	$(document).ajaxSend(function(e,xhr,options){
+  	  		xhr.setRequestHeader(csrfHeader, csrfToken);
+  	  	});
+  	
   		function getRelativePath(uri) {
 	  		if (ctx=='/') {
 	  			/*relative urls cant start with a double slash*/
@@ -54,8 +60,7 @@
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;
   		}
-  		var data = {};
-  		data["after"] = nextPage.after.toString();
+  		var data = nextPage;
   		
   		var renderCallback = function(page, direction) {
   			renderFeedItems(page.items, feedId, direction);
@@ -73,14 +78,10 @@
   		baseurl+="?feedId="+feedId;
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;
-  			
   		}
-  		console.log(baseurl);
   		var data = {};
   		
   		var renderCallback = function(page, direction) {
-  			console.log("return");
-  			console.log(page);
   			renderFeedItems(page.items, feedId, direction);
   		}
   		var readMoreCallback = function(nextPage) {
@@ -101,9 +102,8 @@
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;
   		}
-  		var data = {};
-  		data["before"] = decStrNum(nextPage.before.toString());
-  		
+  		var data = nextPage;
+  		  		
   		var renderCallback = function(page, direction) {
   			renderFeedItems(page.items, feedId, direction);
   		}

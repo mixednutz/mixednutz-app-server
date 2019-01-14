@@ -49,7 +49,7 @@ function readTimeline(url, data, elementsSelector, renderCallback, readMoreCallb
 			
 			if (readSinceCallback!=null) {
 				//Timeout
-				startTimeout(readSinceCallback, page.nextPage);
+				startTimeout(readSinceCallback, page.prevPage);
 			}
 		},
 		timeout: 120*1000,
@@ -156,8 +156,8 @@ function onNewItemsNotification(page, elementsSelector, renderCallback, readSinc
  			document.title = defaultTitleBar;
  			
  			//Timeout
- 			console.log("next page is "+page.nextPage.after+". is this right?")
- 			startTimeout(readSinceCallback, page.nextPage);
+ 			console.log("next page is "+page.prevPage+". is this right?")
+ 			startTimeout(readSinceCallback, page.prevPage);
 							
  			//Render
  			var numOfPrerenders = $(elementsSelector+' .prerender').length;
@@ -178,7 +178,7 @@ function buildLoading() {
 }
 function buildPager(timeline, loadTimelineFunction) {
 	var pager = $('<nav id="timeline_pager"><ul class="pager"></ul></nav>');
-	if (timeline.nextPage.before != null) {
+	if (timeline.hasNext) {
 		$('<li class="pager-prev"><a>Load More</a></li>').appendTo(pager.find('ul'))
 	}
 	pager.find('.pager-prev a').click(function(e){
@@ -215,7 +215,6 @@ function formatDateTimeTodayYesterday(date, dateCallback, timeCallback) {
 }
 
 function buildTimelineElement(element, feedId) {
-	console.log(element);
 	var type = element.type.namespace+"_"+element.type.name;
 	var id = type+"_"+element.providerId;
 	if ($("#"+id).length>0) {

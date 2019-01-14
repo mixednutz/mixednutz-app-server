@@ -18,7 +18,7 @@ public interface ExternalFeedManager {
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user);
 	
 	public IPage<? extends ITimelineElement,Object> getTimeline(AbstractFeed feed, 
-			String hashtag, IPageRequest<Object> paging);
+			String hashtag, IPageRequest<String> paging);
 	
 	public Map<INetworkInfoSmall, Collection<String>> getCompatibleFeedsForCrossposting();
 	

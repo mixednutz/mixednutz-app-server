@@ -31,12 +31,14 @@ import net.mixednutz.api.provider.IOauth2Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials;
+import net.mixednutz.app.server.entity.ExternalFeedContent;
 import net.mixednutz.app.server.entity.ExternalFeedTimelineElement;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
+import net.mixednutz.app.server.repository.ExternalFeedContentRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.ExternalFeedTimelineElementRepository;
 
@@ -51,6 +53,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	
 	@Autowired
 	private ExternalFeedTimelineElementRepository externalFeedTimelineElementRepository;
+	
+	@Autowired
+	private ExternalFeedContentRepository externalFeedContentRepository;
 	
 	@Autowired
 	private ApiProviderRegistry apiProviderRegistry;
@@ -83,7 +88,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	@Cacheable(value="externalFeed", 
 			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feed, #hashtag, #paging)")
 	public IPage<? extends ITimelineElement,Object> getTimeline(AbstractFeed feed, 
-			String hashtag, IPageRequest<Object> paging) {
+			String hashtag, IPageRequest<String> paging) {
 					
 		//TODO Get and Save Live content will be moved to a poller
 		//Get Live Content
@@ -98,12 +103,17 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		
 		//Save Live Content
 		for (ITimelineElement timelineElement: timeline.getItems()) {
-			externalFeedTimelineElementRepository.save(
-					new ExternalFeedTimelineElement(timelineElement));
+			ExternalFeedContent content = new ExternalFeedContent(feed,
+					externalFeedTimelineElementRepository.save(
+							new ExternalFeedTimelineElement(timelineElement)));
+			externalFeedContentRepository.save(content);
 		}
 		
-		//Get Saved content
+		//TODO.. i need to convert tokens to page number?
 		
+		//Get Saved content
+//		externalFeedContentRepository.findByIdFeedId(feed.getFeedId(),
+//				PageRequest.of(0, paging.getPageSize()));
 		/*
 		 * We're not going to merge here because the live polling and saving will 
 		 * happen somewhere else eventually.  this method will eventually
@@ -137,7 +147,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	}
 	
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
-			Oauth1AuthenticatedFeed feed, String hashtag, IPageRequest<Object> prevPage) {
+			Oauth1AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage) {
 		Oauth1Credentials creds = feed.getCredentials();
 
 		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
@@ -150,9 +160,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		
 		IPage<? extends ITimelineElement, Object> page;
 		if (prevPage!=null) {
-			LOG.debug("Querying {}. Start:{} End:{}", new Object[]{
-					feed.getProviderId(), prevPage.getStart(), prevPage.getEnd()});
-			page = getTimelineClient(api, Object.class).getTimeline(prevPage);
+			LOG.debug("Querying {}. Start:{} PageSize:{}", new Object[]{
+					feed.getProviderId(), prevPage.getStart(), prevPage.getPageSize()});
+			page = getTimelineClient(api, Object.class).getTimelineStringToken(prevPage);
 		} else {
 			LOG.debug("Querying {}. No bounds", feed.getProviderId());
 			page = getTimelineClient(api, Object.class).getTimeline();
@@ -163,7 +173,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	
 
 	protected IPage<? extends ITimelineElement, Object> getOauth2Timeline(
-			Oauth2AuthenticatedFeed feed, String hashtag, IPageRequest<Object> prevPage) {
+			Oauth2AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage) {
 		Oauth2Credentials creds = feed.getCredentials();
 
 		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
@@ -176,9 +186,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		
 		IPage<? extends ITimelineElement, Object> page;
 		if (prevPage!=null) {
-			LOG.debug("Querying {}. Start:{} End:{}", new Object[]{
-					feed.getProviderId(), prevPage.getStart(), prevPage.getEnd()});
-			page = getTimelineClient(api, Object.class).getTimeline(prevPage);
+			LOG.debug("Querying {}. Start:{} PageSize:{}", new Object[]{
+					feed.getProviderId(), prevPage.getStart(), prevPage.getPageSize()});
+			page = getTimelineClient(api, Object.class).getTimelineStringToken(prevPage);
 		} else {
 			LOG.debug("Querying {}. No bounds", feed.getProviderId());
 			page = getTimelineClient(api, Object.class).getTimeline();
