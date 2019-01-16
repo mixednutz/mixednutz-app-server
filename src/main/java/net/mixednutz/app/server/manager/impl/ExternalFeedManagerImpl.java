@@ -3,6 +3,7 @@ package net.mixednutz.app.server.manager.impl;
 import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials.OAUTH1;
 import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials.OAUTH2;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,15 +16,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.mixednutz.api.client.MixednutzClient;
 import net.mixednutz.api.client.TimelineClient;
+import net.mixednutz.api.core.model.PageBuilder;
+import net.mixednutz.api.core.model.PageBuilder.GetTokenCallback;
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
+import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.api.provider.ApiProvider;
 import net.mixednutz.api.provider.IOauth1Credentials;
@@ -109,11 +114,11 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			externalFeedContentRepository.save(content);
 		}
 		
-		//TODO.. i need to convert tokens to page number?
-		
 		//Get Saved content
-//		externalFeedContentRepository.findByIdFeedId(feed.getFeedId(),
-//				PageRequest.of(0, paging.getPageSize()));
+		IPage<? extends ITimelineElement,Instant> savedTimeline = 
+				getSavedTimeline(feed, hashtag, paging);
+		
+
 		/*
 		 * We're not going to merge here because the live polling and saving will 
 		 * happen somewhere else eventually.  this method will eventually
@@ -144,6 +149,53 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	@SuppressWarnings("unchecked" )
 	private <Token> TimelineClient<Token> getTimelineClient(MixednutzClient api, Class<Token> tokenClass) {
 		return (TimelineClient<Token>) api.getTimelineClient();
+	}
+	
+	/**
+	 * Retrieves locally persisted timeline elements. Provides Pagination
+	 * controls around a DAO method.
+	 * 
+	 * @param feed
+	 * @param hashtag
+	 * @param paging
+	 * @return
+	 */
+	protected IPage<? extends ITimelineElement, Instant> getSavedTimeline(AbstractFeed feed, 
+			String hashtag, IPageRequest<String> paging) {
+		
+		List<ExternalFeedContent> contents = null;
+		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
+		if (paging.getStart()==null) {
+			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
+					paging.getPageSize(), paging.getDirection(), Instant.class);
+			contents = externalFeedContentRepository.findTimeline(feed.getFeedId(), 
+					PageRequest.of(0, paging.getPageSize()));
+		} else {
+			Instant start = Instant.parse(paging.getStart());
+			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
+					start, paging.getPageSize(), paging.getDirection());
+			if (paging.getDirection()==Direction.LESS_THAN) {
+				contents = externalFeedContentRepository.findTimelineMore(feed.getFeedId(), 
+						start, PageRequest.of(0, paging.getPageSize()));
+			} else {
+				contents = externalFeedContentRepository.findTimelineSince(feed.getFeedId(), 
+						start, PageRequest.of(0, paging.getPageSize()));
+			}
+		}
+		List<ExternalFeedTimelineElement> elements = new ArrayList<>();
+		for (ExternalFeedContent content: contents) {
+			elements.add(content.getElement());
+		}
+		
+		return new PageBuilder<ExternalFeedTimelineElement, Instant>()
+			.setItems(elements)
+			.setPageRequest(pageRequest)
+			.setTokenCallback(new GetTokenCallback<ExternalFeedTimelineElement, Instant>(){
+				@Override
+				public Instant getToken(ExternalFeedTimelineElement item) {
+					return item.getProviderPostedOnDate().toInstant();
+				}})
+			.build();
 	}
 	
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
