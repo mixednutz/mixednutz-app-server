@@ -21,6 +21,7 @@ import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
 import net.mixednutz.api.provider.ApiProvider;
 import net.mixednutz.app.server.controller.web.NewExternalCredentialsController;
+import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalCredentialsRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 
@@ -36,11 +37,13 @@ public class SocialConfig {
 	public NewExternalCredentialsController.NewExternalCredentialsCallback externalCredentialsCallback(
 			ExternalCredentialsRepository credentialsRepository,
 			ApiProviderRegistry apiProviderRegistry, 
-			ExternalFeedRepository externalFeedRepository) {
+			ExternalFeedRepository externalFeedRepository,
+			ExternalFeedManager feedManager) {
 		return new NewExternalCredentialsController.NewExternalCredentialsCallback(
 				credentialsRepository,
 				apiProviderRegistry,
-				externalFeedRepository);
+				externalFeedRepository, 
+				feedManager);
 	}
 	
 	/**

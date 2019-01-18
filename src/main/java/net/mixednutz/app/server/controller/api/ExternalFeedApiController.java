@@ -1,5 +1,6 @@
 package net.mixednutz.app.server.controller.api;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class ExternalFeedApiController {
 	}
 	
 	@RequestMapping(value="/feeds/timeline", method = RequestMethod.GET)
-	public @ResponseBody IPage<? extends ITimelineElement,Object> apiExternalFeedTimeline(
+	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedTimeline(
 			@RequestParam("feedId") Long feedId, Authentication auth,
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
@@ -70,7 +71,7 @@ public class ExternalFeedApiController {
 	}
 		
 	@RequestMapping(value="/feeds/timeline/nextpage", method = RequestMethod.POST)
-	public @ResponseBody IPage<? extends ITimelineElement,Object> apiExternalFeedTimeline(
+	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedTimeline(
 			@RequestParam("feedId") Long feedId, Authentication auth,
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
 			@RequestBody PageRequest<String> prevPage, 

@@ -4,6 +4,7 @@ import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credenti
 import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials.OAUTH2;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -92,40 +93,42 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	
 	@Cacheable(value="externalFeed", 
 			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feed, #hashtag, #paging)")
-	public IPage<? extends ITimelineElement,Object> getTimeline(AbstractFeed feed, 
+	public IPage<? extends ITimelineElement,Instant> getTimeline(AbstractFeed feed, 
 			String hashtag, IPageRequest<String> paging) {
-					
-		//TODO Get and Save Live content will be moved to a poller
-		//Get Live Content
-		IPage<? extends ITimelineElement,Object> timeline;
-		if (OAUTH1.equals(feed.getType())) {
-			timeline = getOauth1Timeline((Oauth1AuthenticatedFeed)feed, hashtag, paging);
-		} else if (OAUTH2.equals(feed.getType())) {
-			timeline = getOauth2Timeline((Oauth2AuthenticatedFeed)feed, hashtag, paging);
+			
+		List<ExternalFeedContent> contents = null;
+		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
+		if (paging.getStart()==null) {
+			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
+					paging.getPageSize(), paging.getDirection(), Instant.class);
+			contents = externalFeedContentRepository.findTimeline(feed.getFeedId(), 
+					PageRequest.of(0, paging.getPageSize()));
 		} else {
-			throw new RuntimeException("Invalid feed type: "+feed.getType());
+			ZonedDateTime start = ZonedDateTime.parse(paging.getStart());
+			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
+					start.toInstant(), paging.getPageSize(), paging.getDirection());
+			if (paging.getDirection()==Direction.LESS_THAN) {
+				contents = externalFeedContentRepository.findTimelineMore(feed.getFeedId(), 
+						start, PageRequest.of(0, paging.getPageSize()));
+			} else {
+				contents = externalFeedContentRepository.findTimelineSince(feed.getFeedId(), 
+						start, PageRequest.of(0, paging.getPageSize()));
+			}
+		}
+		List<ExternalFeedTimelineElement> elements = new ArrayList<>();
+		for (ExternalFeedContent content: contents) {
+			elements.add(content.getElement());
 		}
 		
-		//Save Live Content
-		for (ITimelineElement timelineElement: timeline.getItems()) {
-			ExternalFeedContent content = new ExternalFeedContent(feed,
-					externalFeedTimelineElementRepository.save(
-							new ExternalFeedTimelineElement(timelineElement)));
-			externalFeedContentRepository.save(content);
-		}
-		
-		//Get Saved content
-		IPage<? extends ITimelineElement,Instant> savedTimeline = 
-				getSavedTimeline(feed, hashtag, paging);
-		
-
-		/*
-		 * We're not going to merge here because the live polling and saving will 
-		 * happen somewhere else eventually.  this method will eventually
-		 * ONLY return saved content
-		 */
-				
-		return timeline;
+		return new PageBuilder<ExternalFeedTimelineElement, Instant>()
+			.setItems(elements)
+			.setPageRequest(pageRequest)
+			.setTokenCallback(new GetTokenCallback<ExternalFeedTimelineElement, Instant>(){
+				@Override
+				public Instant getToken(ExternalFeedTimelineElement item) {
+					return item.getProviderPostedOnDate().toInstant();
+				}})
+			.build();
 	}
 	
 	public static int getTimelineHash(AbstractFeed feed, String hashtag, IPageRequest<Object> paging) {
@@ -151,53 +154,53 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		return (TimelineClient<Token>) api.getTimelineClient();
 	}
 	
-	/**
-	 * Retrieves locally persisted timeline elements. Provides Pagination
-	 * controls around a DAO method.
-	 * 
-	 * @param feed
-	 * @param hashtag
-	 * @param paging
-	 * @return
-	 */
-	protected IPage<? extends ITimelineElement, Instant> getSavedTimeline(AbstractFeed feed, 
+	protected IPage<? extends ITimelineElement,Object> loadLiveTimeline(AbstractFeed feed, 
 			String hashtag, IPageRequest<String> paging) {
-		
-		List<ExternalFeedContent> contents = null;
-		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
-		if (paging.getStart()==null) {
-			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
-					paging.getPageSize(), paging.getDirection(), Instant.class);
-			contents = externalFeedContentRepository.findTimeline(feed.getFeedId(), 
-					PageRequest.of(0, paging.getPageSize()));
+		if (OAUTH1.equals(feed.getType())) {
+			return getOauth1Timeline((Oauth1AuthenticatedFeed)feed, hashtag, paging);
+		} else if (OAUTH2.equals(feed.getType())) {
+			return getOauth2Timeline((Oauth2AuthenticatedFeed)feed, hashtag, paging);
 		} else {
-			Instant start = Instant.parse(paging.getStart());
-			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
-					start, paging.getPageSize(), paging.getDirection());
-			if (paging.getDirection()==Direction.LESS_THAN) {
-				contents = externalFeedContentRepository.findTimelineMore(feed.getFeedId(), 
-						start, PageRequest.of(0, paging.getPageSize()));
-			} else {
-				contents = externalFeedContentRepository.findTimelineSince(feed.getFeedId(), 
-						start, PageRequest.of(0, paging.getPageSize()));
-			}
+			throw new RuntimeException("Invalid feed type: "+feed.getType());
 		}
-		List<ExternalFeedTimelineElement> elements = new ArrayList<>();
-		for (ExternalFeedContent content: contents) {
-			elements.add(content.getElement());
-		}
-		
-		return new PageBuilder<ExternalFeedTimelineElement, Instant>()
-			.setItems(elements)
-			.setPageRequest(pageRequest)
-			.setTokenCallback(new GetTokenCallback<ExternalFeedTimelineElement, Instant>(){
-				@Override
-				public Instant getToken(ExternalFeedTimelineElement item) {
-					return item.getProviderPostedOnDate().toInstant();
-				}})
-			.build();
 	}
 	
+	protected IPage<? extends ITimelineElement,Object> pollLiveTimeline(AbstractFeed feed) {
+		if (OAUTH1.equals(feed.getType())) {
+			return pollOauth1Timeline((Oauth1AuthenticatedFeed)feed);
+		} else if (OAUTH2.equals(feed.getType())) {
+			return pollOauth2Timeline((Oauth2AuthenticatedFeed)feed);
+		} else {
+			throw new RuntimeException("Invalid feed type: "+feed.getType());
+		}
+	}
+	
+	protected void saveTimeline(AbstractFeed feed,
+			IPage<? extends ITimelineElement,Object> timeline) {
+		for (ITimelineElement timelineElement: timeline.getItems()) {
+			ExternalFeedContent content = new ExternalFeedContent(feed,
+					externalFeedTimelineElementRepository.save(
+							new ExternalFeedTimelineElement(timelineElement)));
+			externalFeedContentRepository.save(content);
+		}
+	}
+	
+	public IPage<? extends ITimelineElement,Object> pollTimeline(AbstractFeed feed) {
+		//Get Live Content
+		ZonedDateTime crawledTime = ZonedDateTime.now();
+		
+		IPage<? extends ITimelineElement,Object> timeline =
+				pollLiveTimeline(feed);
+		
+		//Save Live Content
+		saveTimeline(feed, timeline);
+		
+		feed.setLastCrawled(crawledTime);
+		feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
+		
+		return timeline;
+	}
+		
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
 			Oauth1AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage) {
 		Oauth1Credentials creds = feed.getCredentials();
@@ -241,6 +244,59 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			LOG.debug("Querying {}. Start:{} PageSize:{}", new Object[]{
 					feed.getProviderId(), prevPage.getStart(), prevPage.getPageSize()});
 			page = getTimelineClient(api, Object.class).getTimelineStringToken(prevPage);
+		} else {
+			LOG.debug("Querying {}. No bounds", feed.getProviderId());
+			page = getTimelineClient(api, Object.class).getTimeline();
+		}
+		
+		return page;
+	}
+	
+	protected IPage<? extends ITimelineElement, Object> pollOauth1Timeline(
+			Oauth1AuthenticatedFeed feed) {
+		Oauth1Credentials creds = feed.getCredentials();
+
+		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
+				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
+		
+		MixednutzClient api = provider.getApi(creds);
+		
+		IPageRequest<String> pagination = 
+				getTimelineClient(api, Object.class).getTimelinePollRequest(
+						feed.getLastCrawledKey());
+		
+		IPage<? extends ITimelineElement, Object> page;
+		if (pagination!=null) {
+			LOG.debug("Querying {}. Start:{} PageSize:{}", new Object[]{
+					feed.getProviderId(), pagination.getStart(), pagination.getPageSize()});
+			page = getTimelineClient(api, Object.class).getTimelineStringToken(pagination);
+		} else {
+			LOG.debug("Querying {}. No bounds", feed.getProviderId());
+			page = getTimelineClient(api, Object.class).getTimeline();
+		}
+		
+		return page;
+	}
+	
+
+	protected IPage<? extends ITimelineElement, Object> pollOauth2Timeline(
+			Oauth2AuthenticatedFeed feed) {
+		Oauth2Credentials creds = feed.getCredentials();
+
+		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
+				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);
+		
+		MixednutzClient api = provider.getApi(creds);
+		
+		IPageRequest<String> pagination = 
+				getTimelineClient(api, Object.class).getTimelinePollRequest(
+						feed.getLastCrawledKey());
+
+		IPage<? extends ITimelineElement, Object> page;
+		if (pagination!=null) {
+			LOG.debug("Querying {}. Start:{} PageSize:{}", new Object[]{
+					feed.getProviderId(), pagination.getStart(), pagination.getPageSize()});
+			page = getTimelineClient(api, Object.class).getTimelineStringToken(pagination);
 		} else {
 			LOG.debug("Querying {}. No bounds", feed.getProviderId());
 			page = getTimelineClient(api, Object.class).getTimeline();

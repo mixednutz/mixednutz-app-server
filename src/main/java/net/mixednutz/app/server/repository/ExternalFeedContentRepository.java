@@ -1,6 +1,6 @@
 package net.mixednutz.app.server.repository;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -22,10 +22,10 @@ public interface ExternalFeedContentRepository
 	
 	@Query(value="select c from ExternalFeedContent c where c.id.feedId=:feedId and c.element.providerPostedOnDate < :date order by c.element.providerPostedOnDate desc")
 	public List<ExternalFeedContent> findTimelineMore(
-			@Param("feedId")Long feedId, @Param("date")Instant date, Pageable pageable);
+			@Param("feedId")Long feedId, @Param("date")ZonedDateTime date, Pageable pageable);
 	
 	@Query(value="select c from ExternalFeedContent c where c.id.feedId=:feedId and c.element.providerPostedOnDate > :date order by c.element.providerPostedOnDate desc")
 	public List<ExternalFeedContent> findTimelineSince(
-			@Param("feedId")Long feedId, @Param("date")Instant date, Pageable pageable);
+			@Param("feedId")Long feedId, @Param("date")ZonedDateTime date, Pageable pageable);
 	
 }

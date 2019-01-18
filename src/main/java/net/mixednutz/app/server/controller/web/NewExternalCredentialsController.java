@@ -31,6 +31,7 @@ import net.mixednutz.app.server.entity.ExternalFeeds.AbstractAuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalCredentialsRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 
@@ -38,20 +39,22 @@ import net.mixednutz.app.server.repository.ExternalFeedRepository;
 @Controller
 @SessionAttributes("credentials")
 public class NewExternalCredentialsController {
-		
-	
+			
 	public static class NewExternalCredentialsCallback implements CredentialsCallback {
 		
 		private ExternalCredentialsRepository credentialsRepository;
 		private ApiProviderRegistry apiProviderRegistry;
 		private ExternalFeedRepository externalFeedRepository;
+		private ExternalFeedManager feedManager;
 		
 		public NewExternalCredentialsCallback(ExternalCredentialsRepository credentialsRepository,
-				ApiProviderRegistry apiProviderRegistry, ExternalFeedRepository externalFeedRepository) {
+				ApiProviderRegistry apiProviderRegistry, ExternalFeedRepository externalFeedRepository,
+				ExternalFeedManager feedManager) {
 			super();
 			this.credentialsRepository = credentialsRepository;
 			this.apiProviderRegistry = apiProviderRegistry;
 			this.externalFeedRepository = externalFeedRepository;
+			this.feedManager = feedManager;
 		}
 
 		@Override
@@ -80,7 +83,9 @@ public class NewExternalCredentialsController {
 			oauth = credentialsRepository.save(oauth);
 
 			AbstractAuthenticatedFeed<?> feed = createExternalFeed(connection, oauth);
-			externalFeedRepository.save(feed);
+			feed = externalFeedRepository.save(feed);
+			
+			crawlNewFeed(feed);
 		}
 
 		@Override
@@ -89,7 +94,9 @@ public class NewExternalCredentialsController {
 			oauth = credentialsRepository.save(oauth);
 			
 			AbstractAuthenticatedFeed<?> feed = createExternalFeed(connection, oauth);
-			externalFeedRepository.save(feed);
+			feed = externalFeedRepository.save(feed);
+			
+			crawlNewFeed(feed);
 		}
 
 		AbstractAuthenticatedFeed<?> createExternalFeed(Connection<?> connection, Oauth1Credentials creds) {
@@ -117,6 +124,9 @@ public class NewExternalCredentialsController {
 			feed.setImageUrl(connection.getImageUrl());
 			feed.setName(networkInfo.getDisplayName() + " - " + userProfile.getUsername());
 			return feed;
+		}
+		void crawlNewFeed(AbstractAuthenticatedFeed<?> feed) {
+			feedManager.pollTimeline(feed);
 		}
 	}
 	

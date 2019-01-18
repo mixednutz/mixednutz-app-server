@@ -14,9 +14,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import net.mixednutz.api.core.model.TimelineElement;
 import net.mixednutz.api.model.IAction;
 import net.mixednutz.api.model.IAlternateLink;
@@ -30,9 +27,7 @@ import net.mixednutz.api.model.IUserSmall;
 @Entity
 @Table(name = "x_content")
 public class ExternalFeedTimelineElement implements ITimelineElement {
-	
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-	
+		
 	//Deserialized Element
 	private ITimelineElement element;
 	
@@ -135,25 +130,11 @@ public class ExternalFeedTimelineElement implements ITimelineElement {
 	}
 	
 	private ITimelineElement fromJson() {
-		return fromJson(this.elementJson, this.elementClass);
-	}
-	
-	private static ITimelineElement fromJson(String elementJson, Class<? extends ITimelineElement> elementClass) {
-		try {
-			return objectMapper.readValue(elementJson, elementClass);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new TimelineElement();
-		} 
+		return JsonUtils.fromJson(this.elementJson, this.elementClass);
 	}
 	
 	private String toJson() {
-		try {
-			return objectMapper.writeValueAsString(this.element);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			return "{}";
-		}
+		return JsonUtils.toJson(this.element);
 	}
 	
 	private Class<? extends ITimelineElement> fromClassName() {

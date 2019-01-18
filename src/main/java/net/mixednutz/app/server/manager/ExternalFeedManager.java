@@ -1,5 +1,6 @@
 package net.mixednutz.app.server.manager;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +18,30 @@ public interface ExternalFeedManager {
 	
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user);
 	
-	public IPage<? extends ITimelineElement,Object> getTimeline(AbstractFeed feed, 
+	/**
+	 * Retrieves a user's feed timeline that has previously been polled.
+	 * 
+	 * @param feed
+	 * @param hashtag
+	 * @param paging
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Instant> getTimeline(AbstractFeed feed, 
 			String hashtag, IPageRequest<String> paging);
+	
+	/**
+	 * Polls a user's feed timeline and persists the results.
+	 * 
+	 * @param feed
+	 * @param hashtag
+	 * @param paging
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Object> pollTimeline(AbstractFeed feed);
 	
 	public Map<INetworkInfoSmall, Collection<String>> getCompatibleFeedsForCrossposting();
 	
 	public Collection<String> getCompatibleFeedsForCrossposting(INetworkInfoSmall networkInfo);
+	
 	
 }

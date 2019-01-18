@@ -48,6 +48,7 @@ public class ExternalFeeds {
 		private ZonedDateTime dateCreated;
 		private ZonedDateTime dateModified;
 		private ZonedDateTime lastCrawled;
+		private String lastCrawledKey; //used for seek pagination
 
 		public AbstractFeed() {
 			super();
@@ -145,6 +146,14 @@ public class ExternalFeeds {
 
 		public void setLastCrawled(ZonedDateTime lastCrawled) {
 			this.lastCrawled = lastCrawled;
+		}
+
+		public String getLastCrawledKey() {
+			return lastCrawledKey;
+		}
+
+		public void setLastCrawledKey(String lastCrawledKey) {
+			this.lastCrawledKey = lastCrawledKey;
 		}
 
 		@PrePersist
