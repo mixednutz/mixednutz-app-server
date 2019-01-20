@@ -1,9 +1,11 @@
 package net.mixednutz.app.server.entity;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -12,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,8 +25,10 @@ import net.mixednutz.api.core.model.Image;
 import net.mixednutz.api.core.model.Link;
 import net.mixednutz.api.core.model.TimelineElement;
 import net.mixednutz.api.core.model.UserSmall;
+import net.mixednutz.api.twitter.model.TweetElement;
 import net.mixednutz.app.server.IntegrationTest;
 import net.mixednutz.app.server.repository.ExternalFeedTimelineElementRepository;
+import twitter4j.Status;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("jpa-dev")
@@ -84,6 +89,45 @@ public class ExternalFeedTimelineElementTest {
 		//Test Load
 		Optional<ExternalFeedTimelineElement> entity2 = repository.findById(element.getUri());
 		assertTrue(entity2.isPresent());
+		
+	}
+
+	
+	@Test
+	public void testTwitterSerialization() {
+		twitter4j.User user = Mockito.mock(twitter4j.User.class);
+		Mockito.when(user.getScreenName()).thenReturn("postlocal");
+		Mockito.when(user.getName()).thenReturn("Post Local");
+		Mockito.when(user.getId()).thenReturn(14345759L);
+		Mockito.when(user.getURL()).thenReturn("http://t.co/CkmtO4bbR1");
+		Status status = Mockito.mock(Status.class);
+		Mockito.when(status.getUser()).thenReturn(user);
+		Mockito.when(status.getId()).thenReturn(1086342924055519232L);
+		Mockito.when(status.getCreatedAt()).thenReturn(new Date());
+		Mockito.when(status.getText()).thenReturn("Trump and Pence give surprise addresses at anti-abortion March for Life https://t.co/ncyYTFKftX");
+		Mockito.when(status.getRetweetCount()).thenReturn(0);
+		Mockito.when(status.getFavoriteCount()).thenReturn(2);
+		
+		TweetElement element = new TweetElement(status);
+				
+		ExternalFeedTimelineElement entity = new ExternalFeedTimelineElement(element);
+		
+		//Test Save
+		repository.save(entity);
+		em.flush();
+		em.clear();
+		
+		
+		//Test Load
+		Optional<ExternalFeedTimelineElement> entity2 = repository.findById(element.getUri());
+		assertTrue(entity2.isPresent());
+		
+		ExternalFeedTimelineElement element2 = entity2.get();
+		
+		element2.serializeElement();
+		System.out.println(element2.getElementJson());
+		
+		assertEquals(Long.toString(1086342924055519232L), element.getProviderId());
 	}
 
 }
