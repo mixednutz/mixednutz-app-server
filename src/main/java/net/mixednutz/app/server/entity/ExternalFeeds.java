@@ -166,6 +166,20 @@ public class ExternalFeeds {
 		 void updatedAt() {
 			 setDateModified(ZonedDateTime.now());
 		 }
+
+		@Override
+		public int hashCode() {
+			return (feedId+"|"+providerId).hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof AbstractFeed) {
+				return providerId.equals(((AbstractFeed) obj).providerId) &&
+						feedId.equals(((AbstractFeed) obj).feedId);
+			}
+			return super.equals(obj);
+		}
 		 			
 	}
 	

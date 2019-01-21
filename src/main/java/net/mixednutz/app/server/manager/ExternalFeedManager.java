@@ -33,11 +33,19 @@ public interface ExternalFeedManager {
 	 * Polls a user's feed timeline and persists the results.
 	 * 
 	 * @param feed
-	 * @param hashtag
-	 * @param paging
 	 * @return
 	 */
 	public IPage<? extends ITimelineElement,Object> pollTimeline(AbstractFeed feed);
+	
+	/**
+	 * Polls a user's feed timeline and persists the results.  Pagination enabled.
+	 * 
+	 * @param feed
+	 * @param paging
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Object> pollTimeline(AbstractFeed feed, 
+			IPageRequest<String> paging);
 	
 	public Map<INetworkInfoSmall, Collection<String>> getCompatibleFeedsForCrossposting();
 	

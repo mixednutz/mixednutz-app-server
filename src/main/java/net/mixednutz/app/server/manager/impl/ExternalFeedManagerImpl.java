@@ -65,15 +65,12 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	
 	@Autowired
 	private ApiProviderRegistry apiProviderRegistry;
-	
-	@Autowired
-	private ApiProviderRegistry registry;
-	
+		
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user) {
 		final Map<String, List<AbstractFeed>> map = collate(externalFeedRepository.findByUser(user));
 		final Map<INetworkInfoSmall, List<AbstractFeed>> newMap = new LinkedHashMap<>();
 		for (Entry<String, List<AbstractFeed>> entry: map.entrySet()) {
-			ApiProvider<?, ?> provider = registry.getSocialNetworkClient(entry.getKey());
+			ApiProvider<?, ?> provider = apiProviderRegistry.getSocialNetworkClient(entry.getKey());
 			newMap.put(provider.getNetworkInfo(), entry.getValue());
 		}
 		return newMap;
@@ -200,6 +197,23 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		
 		return timeline;
 	}
+	
+	public IPage<? extends ITimelineElement,Object> pollTimeline(AbstractFeed feed, 
+			IPageRequest<String> paging) {
+		//Get Live Content
+		ZonedDateTime crawledTime = ZonedDateTime.now();
+		
+		IPage<? extends ITimelineElement,Object> timeline =
+				loadLiveTimeline(feed, null, paging);
+		
+		//Save Live Content
+		saveTimeline(feed, timeline);
+		
+		feed.setLastCrawled(crawledTime);
+		feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
+		
+		return timeline;
+	}
 		
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
 			Oauth1AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage) {
@@ -315,7 +329,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	@Override
 	public Map<INetworkInfoSmall, Collection<String>> getCompatibleFeedsForCrossposting() {
 		final Map<INetworkInfoSmall, Collection<String>> mimeTypes = new LinkedHashMap<>();
-		for (ApiProvider<?,?> provider: registry.getProviders()) {
+		for (ApiProvider<?,?> provider: apiProviderRegistry.getProviders()) {
 			INetworkInfoSmall key = provider.getNetworkInfo();
 			mimeTypes.put(key, this.getCompatibleFeedsForCrossposting(key));
 		}
@@ -324,7 +338,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	
 	public Map<String, INetworkInfoSmall> getProviders() {
 		final Map<String, INetworkInfoSmall> map = new LinkedHashMap<>();
-		for (ApiProvider<?,?> provider: registry.getProviders()) {
+		for (ApiProvider<?,?> provider: apiProviderRegistry.getProviders()) {
 			map.put(provider.getProviderId(), provider.getNetworkInfo());
 		}
 		return map;
