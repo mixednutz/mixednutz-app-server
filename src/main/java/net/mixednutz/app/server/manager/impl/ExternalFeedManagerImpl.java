@@ -43,6 +43,7 @@ import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.manager.ExternalAccountCredentialsManager;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedContentRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
@@ -65,6 +66,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	
 	@Autowired
 	private ApiProviderRegistry apiProviderRegistry;
+	
+	@Autowired
+	private ExternalAccountCredentialsManager externalAccountCredentialsManager;
 		
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user) {
 		final Map<String, List<AbstractFeed>> map = collate(externalFeedRepository.findByUser(user));
@@ -193,7 +197,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		saveTimeline(feed, timeline);
 		
 		feed.setLastCrawled(crawledTime);
-		feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
+		if (!timeline.getItems().isEmpty()) {
+			feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
+		}
 		
 		return timeline;
 	}
@@ -210,14 +216,19 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		saveTimeline(feed, timeline);
 		
 		feed.setLastCrawled(crawledTime);
-		feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
-		
+		if (!timeline.getItems().isEmpty()) {
+			feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
+		}
+				
 		return timeline;
 	}
 		
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
 			Oauth1AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage) {
 		Oauth1Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
 
 		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
@@ -244,6 +255,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	protected IPage<? extends ITimelineElement, Object> getOauth2Timeline(
 			Oauth2AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage) {
 		Oauth2Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
 
 		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);
@@ -269,6 +283,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	protected IPage<? extends ITimelineElement, Object> pollOauth1Timeline(
 			Oauth1AuthenticatedFeed feed) {
 		Oauth1Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
 
 		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
@@ -296,6 +313,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	protected IPage<? extends ITimelineElement, Object> pollOauth2Timeline(
 			Oauth2AuthenticatedFeed feed) {
 		Oauth2Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
 
 		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);

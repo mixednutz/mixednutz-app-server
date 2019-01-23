@@ -6,7 +6,7 @@ import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCreden
 
 public interface ExternalAccountCredentialsManager {
 	
-	public ExternalAccountCredentials refresh(ExternalAccountCredentials creds);
+	public <C extends ExternalAccountCredentials> C refresh(C creds);
 	
 	public Connection<?> connectAndRefresh(ExternalAccountCredentials creds);
 

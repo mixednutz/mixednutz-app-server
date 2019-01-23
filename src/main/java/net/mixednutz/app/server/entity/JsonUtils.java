@@ -22,7 +22,6 @@ public class JsonUtils {
 	
 	public static <T> ITimelineElement fromJson(String elementJson, Class<? extends ITimelineElement> elementClass) {
 		try {
-			System.out.println(elementClass+"\n"+elementJson);
 			return objectMapper.readValue(elementJson, elementClass);
 		} catch (Exception e) {
 			e.printStackTrace();

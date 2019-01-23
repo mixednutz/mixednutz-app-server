@@ -10,7 +10,7 @@ function startTimeout(readCallback, nextPage) {
   		clearTimeout(refreshId);	
 	}
 	refreshId = setTimeout(function(){
-		console.log('[Timeout:'+refreshId+'] Timeout '+nextPage.after);
+		console.log('[Timeout:'+refreshId+'] Timeout '+JSON.stringify(nextPage));
 		refreshId = null;
 		readCallback(nextPage);
 	}, 30*1000);
@@ -92,7 +92,7 @@ function readTimelineSince(url, data, elementsSelector, renderCallback, readSinc
 			if (page.items.length<=200) {
   				//Repeat readSinceCallback with currentPage.
   				//The readSinceCallback with nextPage happens on snackbar close.
-				startTimeout(readSinceCallback, page.currentPage);	
+				startTimeout(readSinceCallback, page.pageRequest);	
 			} else {
 				console.log("There's more than 200 unread items! Is there anyone there?  I'm going to sleep now.");
 			}
@@ -156,8 +156,9 @@ function onNewItemsNotification(page, elementsSelector, renderCallback, readSinc
  			document.title = defaultTitleBar;
  			
  			//Timeout
- 			console.log("next page is "+page.prevPage+". is this right?")
- 			startTimeout(readSinceCallback, page.prevPage);
+ 			//Initiating this direction was prevPage, but continuing it is nextPage
+ 			console.log("next page is "+JSON.stringify(page.nextPage)+". is this right?")
+ 			startTimeout(readSinceCallback, page.nextPage);
 							
  			//Render
  			var numOfPrerenders = $(elementsSelector+' .prerender').length;

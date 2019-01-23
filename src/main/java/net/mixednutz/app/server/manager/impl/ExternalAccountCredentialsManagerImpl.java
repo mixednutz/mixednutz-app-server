@@ -16,6 +16,12 @@ public class ExternalAccountCredentialsManagerImpl extends AbstractCredentialsMa
 	implements ExternalAccountCredentialsManager {
 	
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <C extends ExternalAccountCredentials> C refresh(C creds) {
+		return (C) super.refresh(creds);
+	}
+
 	@Autowired
 	public void setDao(ExternalCredentialsRepository repository) {
 		super.setAbstractCredentialsRepository(repository);
