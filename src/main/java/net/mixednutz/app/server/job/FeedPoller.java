@@ -52,9 +52,9 @@ public class FeedPoller {
 					LOG.info("Polling Feed:{}", feed.getFeedId());
 					IPage<?,Object> page = externalFeedManager.pollTimeline(feed);
 					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
-					LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getPrevPage());
+					LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
 					LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
-					nextPages.put(feed, page.getPrevPage());
+					nextPages.put(feed, page.getReversePage());
 				} else {
 					IPageRequest<Object> nextPage = nextPages.get(feed);
 					IPageRequest<String> nextPageStr;
@@ -69,9 +69,9 @@ public class FeedPoller {
 					IPage<?,Object> page = externalFeedManager.pollTimeline(feed, nextPageStr);
 					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
 					if (!page.getItems().isEmpty()) {
-						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getPrevPage());
+						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
 						LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
-						nextPages.put(feed, page.getPrevPage());	
+						nextPages.put(feed, page.getReversePage());	
 					}
 				}
 			} catch (Exception e) {

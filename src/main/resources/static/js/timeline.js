@@ -49,7 +49,7 @@ function readTimeline(url, data, elementsSelector, renderCallback, readMoreCallb
 			
 			if (readSinceCallback!=null) {
 				//Timeout
-				startTimeout(readSinceCallback, page.prevPage);
+				startTimeout(readSinceCallback, page.reversePage);
 			}
 		},
 		timeout: 120*1000,

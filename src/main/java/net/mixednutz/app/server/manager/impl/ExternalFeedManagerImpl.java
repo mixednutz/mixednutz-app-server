@@ -198,7 +198,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		
 		feed.setLastCrawled(crawledTime);
 		if (!timeline.getItems().isEmpty()) {
-			feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
+			feed.setLastCrawledKey(timeline.getReversePage().getStart().toString());
 		}
 		
 		return timeline;
@@ -217,7 +217,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		
 		feed.setLastCrawled(crawledTime);
 		if (!timeline.getItems().isEmpty()) {
-			feed.setLastCrawledKey(timeline.getPrevPage().getStart().toString());
+			feed.setLastCrawledKey(timeline.getReversePage().getStart().toString());
 		}
 				
 		return timeline;
