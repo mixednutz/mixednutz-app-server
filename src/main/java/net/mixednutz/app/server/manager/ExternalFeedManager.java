@@ -31,6 +31,8 @@ public interface ExternalFeedManager {
 	
 	/**
 	 * Polls a user's feed timeline and persists the results.
+	 * Poll Request go in reverse to a normal timeline request.  This request goes
+	 * forward in time and returns newer items.
 	 * 
 	 * @param feed
 	 * @return
