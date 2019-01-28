@@ -216,7 +216,7 @@ function formatDateTimeTodayYesterday(date, dateCallback, timeCallback) {
 }
 
 function buildTimelineElement(element, feedId) {
-	var type = element.type.namespace+"_"+element.type.name;
+	var type = element.type.id;
 	var id = type+"_"+element.providerId;
 	if ($("#"+id).length>0) {
 		console.log(id+" already exists");

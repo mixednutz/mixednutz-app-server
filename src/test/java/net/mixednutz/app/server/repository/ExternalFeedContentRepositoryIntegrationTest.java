@@ -79,7 +79,7 @@ public class ExternalFeedContentRepositoryIntegrationTest {
 			reaction.setFontAwesomeIconName("smile-o");
 			element.getActions().add(reaction);
 		}
-		element.setType(new TimelineElement.Type("Photo", "mixednutz.net"));
+		element.setType(new TimelineElement.Type("Photo", "mixednutz.net", "mixednutz_Photo"));
 		{
 			UserSmall postedByUser = new UserSmall();
 			postedByUser.setProviderId("1059");
