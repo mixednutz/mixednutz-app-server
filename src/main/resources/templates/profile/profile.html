@@ -8,9 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Language" content="en" />
-	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.id}==${account.id}">My Profile - MixedNutz.net</title>
-	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.id}!=${account.id}" th:text="@{|${account.username}'s Profile - MixedNutz.net|}">My Profile - MixedNutz.net</title>
-	<title sec:authorize="!isAuthenticated()" th:text="@{|${account.username}'s Profile - MixedNutz.net|}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${profileUser.userId}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}!=${profileUser.userId}" th:text="@{|${profileUser.username}'s Profile - MixedNutz.net|}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="!isAuthenticated()" th:text="@{|${profileUser.username}'s Profile - MixedNutz.net|}">My Profile - MixedNutz.net</title>
 	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
@@ -36,12 +36,12 @@
 			
         <div class="row">
 	  		<div class="col-lg-3"> 
-	  			<div replace="profile/fragments_profile_new :: viewuser_picture">viewuser_picture</div>
-	  			<div replace="profile/modules_profile_new :: viewuser_path">viewuser_picture</div>
+	  			<div th:replace="profile/fragments_profile :: viewuser_picture">viewuser_picture</div>
+	  			<div replace="profile/modules_profile_new :: viewuser_path">viewuser_path</div>
 	  			<div if="${myprofile!=null}"><div replace="profile/modules_profile_new :: viewuser_profile">viewuser_profile</div></div>
 	  		</div>
 	  		<div class="col-lg-9">
-      			<div replace="profile/modules_profile_new :: timeline">timeline</div>
+      			<div th:replace="profile/fragments_profile :: timeline">timeline</div>
 	  		</div>
 	  	</div>
 
@@ -85,7 +85,6 @@
  	<script th:replace="common/fragments_js :: common"></script>
  	<script th:replace="common/fragments_js :: feed_timeline"></script>
  	<script th:replace="common/fragments_js :: timeline"></script>
- 	<script th:replace="feeds/fragments_feed :: newAccountForm_JS"></script>
  	<script type="text/javascript" th:src="@{|/js/pwa.js|}" src="../js/pwa.js"></script>
     
     <!-- Google Analytics JavaScript 

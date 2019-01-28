@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,6 +91,43 @@ public class ExternalFeedApiController {
 		}
 		
 		return feedManager.getTimeline(feed.get(), 
+				hashtag.length()>0?hashtag:null, prevPage);
+	}
+	
+	@RequestMapping(value="/{username}/feeds/timeline", method = RequestMethod.GET)
+	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedUserTimeline(
+			@PathVariable String username,
+			@RequestParam("feedId") Long feedId, Authentication auth,
+			@RequestParam(value="hashtag", defaultValue="") String hashtag,
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
+		
+		return apiExternalFeedUserTimeline(username, feedId, auth,
+				hashtag, PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
+				pageSize);
+	}
+		
+	@RequestMapping(value="/{username}/feeds/timeline/nextpage", method = RequestMethod.POST)
+	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedUserTimeline(
+			@PathVariable String username,
+			@RequestParam("feedId") Long feedId, Authentication auth,
+			@RequestParam(value="hashtag", defaultValue="") String hashtag,
+			@RequestBody PageRequest<String> prevPage, 
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
+		User user = (User) auth.getPrincipal();
+		Optional<AbstractFeed> feed = feedRepository.findById(feedId);
+		if (!feed.isPresent()) {
+			throw new ResourceNotFoundException("Feed not found");
+		}
+		if (!feed.get().getUser().equals(user) || 
+				!feed.get().getUser().getUsername().equals(username)) {
+			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
+		}
+		//If pageSize is null, grab default
+		if (prevPage.getPageSize()==null) {
+			prevPage.setPageSize(pageSize);
+		}
+		
+		return feedManager.getUserTimeline(feed.get(), 
 				hashtag.length()>0?hashtag:null, prevPage);
 	}
 		

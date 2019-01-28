@@ -16,16 +16,16 @@ import net.mixednutz.app.server.entity.ExternalFeedContent.ExternalFeedContentPK
 public interface ExternalFeedContentRepository
 	extends CrudRepository<ExternalFeedContent, ExternalFeedContentPK> {
 
-	@Query(value="select c from ExternalFeedContent c where c.id.feedId=:feedId order by c.element.providerPostedOnDate desc")
+	@Query(value="select c from ExternalFeedContent c where c.type=:timelineType and c.id.feedId=:feedId order by c.element.providerPostedOnDate desc")
 	public List<ExternalFeedContent> findTimeline(
-			@Param("feedId")Long feedId, Pageable pageable);
+			@Param("feedId")Long feedId, @Param("timelineType")ExternalFeedContent.TimelineType timelineType, Pageable pageable);
 	
-	@Query(value="select c from ExternalFeedContent c where c.id.feedId=:feedId and c.element.providerPostedOnDate < :date order by c.element.providerPostedOnDate desc")
+	@Query(value="select c from ExternalFeedContent c where c.type=:timelineType and c.id.feedId=:feedId and c.element.providerPostedOnDate < :date order by c.element.providerPostedOnDate desc")
 	public List<ExternalFeedContent> findTimelineMore(
-			@Param("feedId")Long feedId, @Param("date")ZonedDateTime date, Pageable pageable);
+			@Param("feedId")Long feedId, @Param("timelineType")ExternalFeedContent.TimelineType timelineType, @Param("date")ZonedDateTime date, Pageable pageable);
 	
-	@Query(value="select c from ExternalFeedContent c where c.id.feedId=:feedId and c.element.providerPostedOnDate > :date order by c.element.providerPostedOnDate desc")
+	@Query(value="select c from ExternalFeedContent c where c.type=:timelineType and c.id.feedId=:feedId and c.element.providerPostedOnDate > :date order by c.element.providerPostedOnDate desc")
 	public List<ExternalFeedContent> findTimelineSince(
-			@Param("feedId")Long feedId, @Param("date")ZonedDateTime date, Pageable pageable);
+			@Param("feedId")Long feedId, @Param("timelineType")ExternalFeedContent.TimelineType timelineType, @Param("date")ZonedDateTime date, Pageable pageable);
 	
 }

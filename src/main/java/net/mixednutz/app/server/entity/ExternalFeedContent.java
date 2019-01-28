@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -26,6 +28,7 @@ public class ExternalFeedContent {
 	private ExternalFeedContentPK id;
 	private AbstractFeed feed;
 	private ExternalFeedTimelineElement element;
+	private TimelineType type;
 	
 	
 	public ExternalFeedContent() {
@@ -33,10 +36,12 @@ public class ExternalFeedContent {
 	public ExternalFeedContent(ExternalFeedContentPK id) {
 		this.id = id;
 	}
-	public ExternalFeedContent(AbstractFeed feed, ExternalFeedTimelineElement element) {
+	public ExternalFeedContent(AbstractFeed feed, 
+			ExternalFeedTimelineElement element, TimelineType type) {
 		this(new ExternalFeedContentPK(feed.getFeedId(), element.getUri()));
 		this.feed = feed;
 		this.element = element;
+		this.type = type;
 	}
 	@Id
 	public ExternalFeedContentPK getId() {
@@ -61,7 +66,19 @@ public class ExternalFeedContent {
 	public void setElement(ExternalFeedTimelineElement element) {
 		this.element = element;
 	}
+	@Enumerated(EnumType.STRING)
+	public TimelineType getType() {
+		return type;
+	}
+	public void setType(TimelineType type) {
+		this.type = type;
+	}
 	
+	public enum TimelineType {
+		HOME,
+		USER
+	}
+
 
 	@Embeddable
 	public static class ExternalFeedContentPK implements Serializable {

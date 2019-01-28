@@ -101,7 +101,8 @@ public class ExternalFeedContentRepositoryIntegrationTest {
 		
 		ExternalFeedContent content = new ExternalFeedContent(feed,
 				externalFeedTimelineElementRepository.save(
-						new ExternalFeedTimelineElement(createTimelineElement())));
+						new ExternalFeedTimelineElement(createTimelineElement())), 
+				ExternalFeedContent.TimelineType.HOME);
 		
 		repository.save(content);
 		
@@ -111,14 +112,17 @@ public class ExternalFeedContentRepositoryIntegrationTest {
 		List<ExternalFeedContent> results = null;
 		
 		//Find first 10
-		results = repository.findTimeline(feed.getFeedId(), PageRequest.of(0, 10));
+		results = repository.findTimeline(feed.getFeedId(), 
+				ExternalFeedContent.TimelineType.HOME, PageRequest.of(0, 10));
 		assertEquals(1, results.size());
 		
 		results = repository.findTimelineMore(feed.getFeedId(), 
+				ExternalFeedContent.TimelineType.HOME,
 				ZonedDateTime.now(), PageRequest.of(0, 10));
 		assertEquals(1, results.size());
 		
 		results = repository.findTimelineSince(feed.getFeedId(), 
+				ExternalFeedContent.TimelineType.HOME,
 				ZonedDateTime.now(), PageRequest.of(0, 10));
 		assertEquals(0, results.size());
 	}

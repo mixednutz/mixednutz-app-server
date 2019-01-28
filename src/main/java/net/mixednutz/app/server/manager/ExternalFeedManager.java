@@ -30,6 +30,17 @@ public interface ExternalFeedManager {
 			String hashtag, IPageRequest<String> paging);
 	
 	/**
+	 * Retrieves a user's feed timeline that has previously been polled.
+	 * 
+	 * @param feed
+	 * @param hashtag
+	 * @param paging
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Instant> getUserTimeline(AbstractFeed feed, 
+			String hashtag, IPageRequest<String> paging);
+	
+	/**
 	 * Polls a user's feed timeline and persists the results.
 	 * Poll Request go in reverse to a normal timeline request.  This request goes
 	 * forward in time and returns newer items.
@@ -47,6 +58,26 @@ public interface ExternalFeedManager {
 	 * @return
 	 */
 	public IPage<? extends ITimelineElement,Object> pollTimeline(AbstractFeed feed, 
+			IPageRequest<String> paging);
+	
+	/**
+	 * Polls a user's feed timeline and persists the results.
+	 * Poll Request go in reverse to a normal timeline request.  This request goes
+	 * forward in time and returns newer items.
+	 * 
+	 * @param feed
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Object> pollUserTimeline(AbstractFeed feed);
+	
+	/**
+	 * Polls a user's feed timeline and persists the results.  Pagination enabled.
+	 * 
+	 * @param feed
+	 * @param paging
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Object> pollUserTimeline(AbstractFeed feed, 
 			IPageRequest<String> paging);
 	
 	public Map<INetworkInfoSmall, Collection<String>> getCompatibleFeedsForCrossposting();

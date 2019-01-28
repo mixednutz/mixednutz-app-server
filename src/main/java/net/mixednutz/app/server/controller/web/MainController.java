@@ -2,6 +2,7 @@ package net.mixednutz.app.server.controller.web;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.mixednutz.api.model.INetworkInfoSmall;
+import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
@@ -29,7 +31,7 @@ public class MainController {
 	private static final String PROFILE_TEMPLATE = "profile/profile";
 	
 	@Autowired
-	UserRepository userRespository;
+	UserRepository userRepository;
 	
 	@Autowired
 	SetupController setupController;
@@ -85,7 +87,13 @@ public class MainController {
 	
 	@RequestMapping(value="/{username}", method = RequestMethod.GET)
 	public String profile(@PathVariable String username, 
-			@AuthenticationPrincipal User user, Model model) {
+			@AuthenticationPrincipal User authenticatedUser, Model model) {
+		// Load user
+		Optional<User> profileUser = userRepository.findByUsername(username);
+		if (!profileUser.isPresent()) {
+			throw new UserNotFoundException("User "+username+" not found");
+		}
+		model.addAttribute("profileUser", profileUser.get());
 		
 		/*
 		 * Progressive Web Application.

@@ -126,7 +126,12 @@ public class NewExternalCredentialsController {
 			return feed;
 		}
 		void crawlNewFeed(AbstractAuthenticatedFeed<?> feed) {
+			try {
 			feedManager.pollTimeline(feed);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
 		}
 	}
 	

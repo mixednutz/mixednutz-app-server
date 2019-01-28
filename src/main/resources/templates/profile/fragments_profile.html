@@ -6,7 +6,46 @@
 
   <body>
   
-  	
+  	<div th:fragment="timeline_input">
+		<div sec:authorize="isAuthenticated()" >
+		<div id="timeline_input_templates" hidden="hidden">
+
+			<div id="home_input_template">
+				<!-- Home Timeline Input -->
+				<div th:replace="common/fragments_timeline_templates :: home_timeline_input">templates</div>
+
+			</div>
+
+		</div>
+
+		<div id="timeline_inputs" class="hidden"></div>
+		</div>
+	</div>
+	
+  	<div th:fragment="timeline" class="timeline">
+
+		<div th:replace="profile/fragments_profile :: timeline_input">input</div>
+
+		<div id="elements"></div>
+
+		<!-- Templates -->
+		<div th:replace="common/fragments_timeline_templates :: timeline_templates">templates</div>
+
+	</div>
+  
+  	<div th:fragment="viewuser_picture" class="profile" hidden="hidden">
+  		<div class="avatar">
+			<a>
+				<img src="../img/nophoto.gif"/>
+			</a>
+ 		</div>
+  		<h1 class="displayName"></h1>
+  		<span class="username"></span>
+  		
+  		<div id="viewusermenu" hidden="hidden">
+ 			<a class="btn btn-primary" href="#">Edit Profile</a>
+ 		</div>
+  	</div>
   
   
   </body>
