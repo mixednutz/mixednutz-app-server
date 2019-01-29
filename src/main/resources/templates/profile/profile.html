@@ -8,9 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Language" content="en" />
-	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${profileUser.userId}">My Profile - MixedNutz.net</title>
-	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}!=${profileUser.userId}" th:text="@{|${profileUser.username}'s Profile - MixedNutz.net|}">My Profile - MixedNutz.net</title>
-	<title sec:authorize="!isAuthenticated()" th:text="@{|${profileUser.username}'s Profile - MixedNutz.net|}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${profileUser.userId}" th:text="|#{profile.window-title} - #{site.title}|">My Profile - MixedNutz.net</title>
+	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}!=${profileUser.userId}" th:text="@{|${profileUser.username}'s Profile - #{site.title}|}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="!isAuthenticated()" th:text="@{|${profileUser.username}'s Profile - #{site.title}|}">My Profile - MixedNutz.net</title>
 	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
@@ -21,7 +21,7 @@
 	<link th:href="@{|/webjars/snackbarjs/themes-css/material.css|}" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/webjars/github-com-skywalkapps-bootstrap-notifications/1.0.3/dist/stylesheets/bootstrap-notifications.min.css|}" rel="stylesheet" type="text/css" />
 		
-	<meta name="description" th:content="#{timeline.description}" content="Welcome to your MixedNutz home.  Check out what your network is up to." />
+	<meta name="description" th:content="#{profile.description}" content="Welcome to your MixedNutz home.  Check out what your network is up to." />
 	<meta rel="icon" th:sizes="#{pwa.icon.sizes}" th:href="@{|#{pwa.icon.href}|}" href="/img/icon-192x192.png" />
 	<meta name="theme-color" th:content="#{pwa.theme-color}"/>
 	<meta name="_csrf" th:content="${_csrf.token}"/>

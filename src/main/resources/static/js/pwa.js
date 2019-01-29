@@ -108,6 +108,8 @@ var app = {
 	  	template.attr("id","homeTimeline"+app.user.username); 
 	  	if (app.user.imageUrl) {
   			template.find(".defaultPicture").attr("src", app.user.imageUrl.href);	
+  		} else {
+  			template.find(".defaultPicture").attr("src", defaultPicture);
   		}
 	  	$("#timeline_inputs").append(template).removeClass("hidden");
 	  	

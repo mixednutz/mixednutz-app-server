@@ -36,7 +36,7 @@
   	<div th:fragment="viewuser_picture" class="profile" hidden="hidden">
   		<div class="avatar">
 			<a>
-				<img src="../img/nophoto.gif"/>
+				<img th:src="@{|#{defaultphoto.href}|}" src="../img/nophoto.gif"/>
 			</a>
  		</div>
   		<h1 class="displayName"></h1>
