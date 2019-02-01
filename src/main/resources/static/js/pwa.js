@@ -2,6 +2,7 @@ var app = {
   			externalFeeds: [],
   			user: {},
   			owner: {},
+  			ownerBundle: {}, //for user profile page only
   			friends: [],
   			fgroups: [],
   			settings: {},
@@ -104,15 +105,22 @@ var app = {
   	};	
   	
   	app.updateTimelineInput = function() {
-  		var template = app.homeTimelineTemplate.clone();
-	  	template.attr("id","homeTimeline"+app.user.username); 
-	  	if (app.user.imageUrl) {
-  			template.find(".defaultPicture").attr("src", app.user.imageUrl.href);	
-  		} else {
-  			template.find(".defaultPicture").attr("src", defaultPicture);
-  		}
-	  	$("#timeline_inputs").append(template).removeClass("hidden");
-	  	
+  		if (app.user!=null) {
+  			console.log(app.ownerBundle);
+  			console.log(Object.keys(app.ownerBundle));
+  			if (Object.keys(app.ownerBundle).length === 0 || app.owner.userId==app.user.userId ||
+  					app.ownerBundle.following) {
+  				//TODO we want to show this publicly if settings allow it
+	  			var template = app.homeTimelineTemplate.clone();
+		  		template.attr("id","homeTimeline"+app.user.username); 
+		  		if (app.user.imageUrl) {
+	  				template.find(".defaultPicture").attr("src", app.user.imageUrl.href);	
+	  			} else {
+	  				template.find(".defaultPicture").attr("src", defaultPicture);
+	  			}
+		  		$("#timeline_inputs").append(template).removeClass("hidden");
+  			}
+	  	}
   		app.reloadTimeline();
   	}
   	
@@ -151,6 +159,36 @@ var app = {
   	/*****
 	 * Data Methods
 	 *****/
+	
+	app.loadOwner = function() {
+  		return new Promise(function(resolve, reject){
+  			if (typeof loadOwnerUserName!=='undefined') { 
+  				$.ajax({
+  	  				type: 'GET', 
+  	  				url: getRelativePath('/internal/'+loadOwnerUserName+'/bundle'),
+  	  				dataType: "json",
+  	  				success: function(data){
+  	  					app.owner = data.user;
+  	  					app.ownerBundle = data;
+  	  					if (typeof profile!=='undefined') {
+  	  						profile.setupProfile();
+  	  					}
+  	  					resolve(app.owner);
+  	  				}
+  	  			});
+  			} else {
+  				$.ajax({
+  	  				type: 'GET', 
+  	  				url: getRelativePath('/internal/loggedin/user/'),
+  	  				dataType: "json",
+  	  				success: function(data){
+  	  					app.owner = data;
+  	  					resolve(app.owner);
+  	  				}
+  	  			});
+  			}
+  		});
+  	};
 	
 	app.loadBundle = function() {
   		return new Promise(function(resolve, reject){
@@ -220,16 +258,19 @@ var app = {
   	 *  Startup routine once we have the bundle loaded
   	 */
   	app.postLoad = function()  {
-		if (app.user!=null) {
-  			app.loadNotifications();
-  			
-  			if (app.settings.pushNotificationSettings.pushNotificationsEnabled) {
-				app.subscribeNotifications();
-			} else {
-				console.log("User does not want push notificatins from this device.")
-			}
-  		}
-		console.log(app.subscribePromise);
+  		if (typeof profile!=='undefined') {
+			profile.postLoad();
+		}
+//		if (app.user!=null) {
+//  			app.loadNotifications();
+//  			
+//  			if (app.settings.pushNotificationSettings.pushNotificationsEnabled) {
+//				app.subscribeNotifications();
+//			} else {
+//				console.log("User does not want push notificatins from this device.")
+//			}
+//  		}
+//		console.log(app.subscribePromise);
 	}
 	
 	//Start-up
@@ -239,17 +280,19 @@ var app = {
 	    	app.hash = hash.substring(1);
 	    }
     });
-  	app.loadBundleFromStorage().then(function(wasCached){
-  		if (!wasCached) {
-  			// First time
-  	  		app.loadBundle().then(function(){
-  	  			app.postLoad();
-  	  		});	
-  		} else {
-  			app.postLoad();
-  		}
+  	app.loadOwner().then(function(){
+  		app.loadBundleFromStorage().then(function(wasCached){
+  			if (!wasCached) {
+  				// First time
+  	  			app.loadBundle().then(function(){
+  	  				app.postLoad();
+  	  			});	
+  			} else {
+  				app.postLoad();
+  			}
   		
-  	});  
+  		});  
+  	});
   	
 	
 	//Service worker

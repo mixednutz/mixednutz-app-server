@@ -23,6 +23,8 @@
 	</div>
 	
   	<div th:fragment="timeline" class="timeline">
+  	
+  		<div sec:authorize="isAuthenticated()" th:replace="profile/fragments_profile :: timeline_tabs">tabs</div>
 
 		<div th:replace="profile/fragments_profile :: timeline_input">input</div>
 
@@ -32,6 +34,30 @@
 		<div th:replace="common/fragments_timeline_templates :: timeline_templates">templates</div>
 
 	</div>
+	
+	<div th:fragment="timeline_tabs" id="timeline_tabs" class="panel panel-default hidden">
+  		
+  		<div id="tabs_feed_templates" class="hidden">
+  			<ul>
+  				<li id="tabs_feed_template" role="presentation" class="dropdown">
+  					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" href="#" aria-expanded="false">
+				  		<i class="iconName fa" aria-hidden="true"></i>
+				  		<span class="hidden-xs displayName">type</span>
+				  		<span class="caret"></span>
+				  	</a>
+				  	<ul class="dropdown-menu">
+				    </ul>
+  				</li>
+  			</ul>
+  			
+  		</div>
+  		
+  		<ul class="nav nav-pills">
+		  <li id="home_tab" role="presentation" class="active"><a href="#"><span class="glyphicon glyphicon-home" aria-hidden="true"></span><span class="hidden-xs"> Home</span></a></li>
+
+		  <li role="presentation"><a data-toggle="modal" data-target="#newFeedModal" href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="hidden-xs"> New Feed</span></a></li>
+		</ul>
+  	</div>
   
   	<div th:fragment="viewuser_picture" class="profile" hidden="hidden">
   		<div class="avatar">
@@ -46,7 +72,8 @@
  			<a class="btn btn-primary" href="#">Edit Profile</a>
  		</div>
   	</div>
-  
+  	
+  	  
   
   </body>
   

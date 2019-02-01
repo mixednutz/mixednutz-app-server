@@ -52,11 +52,25 @@
   	/*]]>*/
   	</script>
   	
+  	
+  	<script th:fragment="feed_timeline_profile_vars" th:inline="javascript">
+  	/*<![CDATA[*/
+  	var timelineUrl = /*[[@{|/internal/${profileUser.username}/timeline|}]]*/ "/internal/username/timeline";
+  	var timelineNextPageUrl = /*[[@{|/internal/${profileUser.username}/timeline/nextpage|}]]*/ "/internal/username/timeline/nextpage";
+  	/*]]>*/
+  	</script>
+  	<script th:fragment="feed_timeline_home_vars" th:inline="javascript">
+  	/*<![CDATA[*/
+  	var timelineUrl = /*[[@{|/internal/feeds/timeline|}]]*/ "/internal/feeds/timeline";
+  	var timelineNextpageUrl = /*[[@{|/internal/feeds/timeline/nextpage|}]]*/ "/internal/feeds/timeline/nextpage";
+  	
+  	/*]]>*/
+  	</script>
   	<script th:fragment="feed_timeline" th:inline="javascript">
   	/*<![CDATA[*/
   	function loadFeedTimelineSince(feedId, nextPage, hashtag) {
   		
-  		var baseurl = /*[[@{|/internal/feeds/timeline/nextpage|}]]*/ "/internal/feeds/timeline/nextpage";
+  		var baseurl = timelineNextpageUrl;
   		baseurl+="?feedId="+feedId;
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;
@@ -75,7 +89,7 @@
   				readSinceCallback);
   	}
   	function loadFeedTimeline(feedId, hashtag) {
-  		var baseurl = /*[[@{|/internal/feeds/timeline|}]]*/ "/internal/feeds/timeline";
+  		var baseurl = timelineUrl;
   		baseurl+="?feedId="+feedId;
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;
@@ -98,7 +112,7 @@
   				readSinceCallback);
   	}
   	function loadFeedTimelineMore(feedId, nextPage, hashtag) {
-  		var baseurl = /*[[@{|/internal/feeds/timeline/nextpage|}]]*/ "/internal/feeds/timeline/nextpage";
+  		var baseurl = timelineNextpageUrl;
   		baseurl+="?feedId="+feedId;
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;

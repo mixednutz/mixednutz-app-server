@@ -65,59 +65,7 @@
 		</ul>
   	</div>
   	  	
-  	
-  	<script th:fragment="timeline_JS" th:inline="javascript">
-  	/*<![CDATA[*/
-  		
-  	function showFeedInput(feedId, type, name, imageUrl) {
-  		var submitPath = /*[[@{|/api/feed/post|}]]*/ "/api/feed/post";
-  		var uploadPath = /*[[@{|/api/feed/upload|}]]*/ "/api/feed/upload";
-  		$('.timeline_input').css('display','none');
-  		$('.feed_input').css('display','');
-  		$('.feed_input .avatar img').attr({
-  			'src':imageUrl,
-  			'title':name});
- /* 		if (type=='TWITTER') {
-  			$('.feed_input .start-btn').html('Post a tweet...');	
-  			$('.feed_input .start-btn').attr('data-target','#twitterCompose');
-  			$('#composeForm_externalFeedId').val(feedId);
-  			$('#composeForm_submitBtn').on('click', function () {
-  				
-  				if ($("[name='media']")[0].files.length>0) {
-  					var media = $("[name='media']")[0];
-  					var form = $('#twitterComposeForm')[0];
-  					var formData = new FormData(form);
-  					formData.append("media", media.files[0]);
-  					
-  					$.ajax({
-  		 				type: 'POST', 
-  		 				url: uploadPath,
-  		 				data: formData,
-  		 				processData: false,
-  		 				contentType: false,
-  		 				success: function(data){
-  		 					console.log(data);
-  		 				}
-  		 			});	
-  				} else {
-  					$.ajax({
-  		 				type: 'POST', 
-  		 				url: submitPath,
-  		 				data: $('#twitterComposeForm').serialize(),
-  		 				success: function(data){
-  		 					console.log(data);
-  		 				}
-  		 			});	
-  				}
-
-			});
-  		}*/
-  		
-  	}	
-  	
-  	/*]]>*/
-  	</script>
-  	  	
+  	 	  	
   
   
   </body>
