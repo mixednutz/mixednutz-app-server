@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.Visibility;
 import net.mixednutz.app.server.manager.ExternalAccountCredentialsManager;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedContentRepository;
@@ -75,6 +77,19 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user) {
 		final Map<String, List<AbstractFeed>> map = collate(externalFeedRepository.findByUser(user));
+		final Map<INetworkInfoSmall, List<AbstractFeed>> newMap = new LinkedHashMap<>();
+		for (Entry<String, List<AbstractFeed>> entry: map.entrySet()) {
+			ApiProvider<?, ?> provider = apiProviderRegistry.getSocialNetworkClient(entry.getKey());
+			newMap.put(provider.getNetworkInfo(), entry.getValue());
+		}
+		return newMap;
+	}
+
+	@Override
+	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUserVisibleToWorld(User user) {
+		final Map<String, List<AbstractFeed>> map = collate(
+				externalFeedRepository.findByUserAndVisibilityIn(user, 
+						Collections.singleton(Visibility.WORLD)));
 		final Map<INetworkInfoSmall, List<AbstractFeed>> newMap = new LinkedHashMap<>();
 		for (Entry<String, List<AbstractFeed>> entry: map.entrySet()) {
 			ApiProvider<?, ?> provider = apiProviderRegistry.getSocialNetworkClient(entry.getKey());
@@ -114,7 +129,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	protected IPage<? extends ITimelineElement,Instant> getTimelineInternal(AbstractFeed feed, 
 			String hashtag, ExternalFeedContent.TimelineType timelineType, IPageRequest<String> paging) {
 			
-		if (feed.isPrivate()) {
+		if (Visibility.PRIVATE.equals(feed.getVisibility())) {
 			//Return live feed instead
 			return new Page<ITimelineElement,Instant>();
 		}
@@ -261,7 +276,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			saveTimeline(feed, timeline, ExternalFeedContent.TimelineType.HOME);
 			
 			if (!timeline.getItems().isEmpty()) {
-				feed.setLastCrawledKey(timeline.getReversePage().getStart().toString());
+				feed.setLastCrawledHomeTimelineKey(timeline.getNextPage().getStart().toString());
 			}
 		}	
 		
@@ -283,7 +298,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			saveTimeline(feed, timeline, ExternalFeedContent.TimelineType.HOME);
 			
 			if (!timeline.getItems().isEmpty()) {
-				feed.setLastCrawledKey(timeline.getReversePage().getStart().toString());
+				feed.setLastCrawledHomeTimelineKey(timeline.getNextPage().getStart().toString());
 			}
 		}
 				
@@ -305,7 +320,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			saveTimeline(feed, timeline, ExternalFeedContent.TimelineType.USER);
 			
 			if (!timeline.getItems().isEmpty()) {
-				feed.setLastCrawledKey(timeline.getReversePage().getStart().toString());
+				feed.setLastCrawledUserTimelineKey(timeline.getNextPage().getStart().toString());
 			}
 			
 		}
@@ -328,7 +343,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			saveTimeline(feed, timeline, ExternalFeedContent.TimelineType.USER);
 			
 			if (!timeline.getItems().isEmpty()) {
-				feed.setLastCrawledKey(timeline.getReversePage().getStart().toString());
+				feed.setLastCrawledUserTimelineKey(timeline.getNextPage().getStart().toString());
 			}
 		}
 		
@@ -349,7 +364,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setPrivate(true);
+			feed.setVisibility(Visibility.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}
@@ -383,7 +398,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setPrivate(true);
+			feed.setVisibility(Visibility.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}
@@ -416,13 +431,13 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setPrivate(true);
+			feed.setVisibility(Visibility.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}
 		
 		IPageRequest<String> pagination = 
-				callback.getTimelinePollRequest(api, feed.getLastCrawledKey());
+				callback.getTimelinePollRequest(api, callback.getLastCrawledKey(feed));
 		
 		IPage<? extends ITimelineElement, Object> page;
 		if (pagination!=null) {
@@ -450,13 +465,13 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setPrivate(true);
+			feed.setVisibility(Visibility.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}
 		
 		IPageRequest<String> pagination = 
-				callback.getTimelinePollRequest(api,feed.getLastCrawledKey());
+				callback.getTimelinePollRequest(api, callback.getLastCrawledKey(feed));
 
 		IPage<? extends ITimelineElement, Object> page;
 		if (pagination!=null) {
@@ -503,6 +518,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	interface PollTimelineCallback extends GetTimelineCallback {
 		IPageRequest<String> getTimelinePollRequest(
 				MixednutzClient api, String start);
+		String getLastCrawledKey(AbstractFeed feed);
 	}	
 	
 	class GetLiveTimelineCallback implements GetTimelineCallback {
@@ -517,7 +533,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		public IPage<? extends ITimelineElement, Object> getTimeline(MixednutzClient api) {
 			return getTimelineClient(api, Object.class).getTimeline();
 		}
-		
+
 	}
 	
 	class PollLiveTimelineCallback extends GetLiveTimelineCallback implements PollTimelineCallback {
@@ -526,6 +542,11 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		public IPageRequest<String> getTimelinePollRequest(MixednutzClient api, String start) {
 			return getTimelineClient(api, Object.class)
 					.getTimelinePollRequest(start);
+		}
+		
+		@Override
+		public String getLastCrawledKey(AbstractFeed feed) {
+			return feed.getLastCrawledHomeTimelineKey();
 		}
 		
 	}
@@ -553,6 +574,10 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 					.getUserTimelinePollRequest(start);
 		}
 		
+		@Override
+		public String getLastCrawledKey(AbstractFeed feed) {
+			return feed.getLastCrawledUserTimelineKey();
+		}
 	}
 	
 }

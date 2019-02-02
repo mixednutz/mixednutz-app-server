@@ -1,20 +1,14 @@
 var page = {
-		externalFeeds: [],
-		owner: {},
-		ownerBundle: {},
 		homeTimelineTemplate: $('#home_input_template'),
-};
+  	};
 
 page.setup = function() {
-	page.loadOwner().then(function(){
-		page.updateExternalFeeds();
-		page.updateTimelineInput();
-		page.setupForms();
-		page.setupProfile();
-		page.postLoad();
-	});
+	page.updateExternalFeeds();
+	page.updateTimelineInput();
+	page.setupForms();
 };
 
+	
 page.updateExternalFeeds = function() {
 	var lastTab = '#home_tab';
 	$("#newpost_form .externalFeedId").empty();
@@ -22,8 +16,8 @@ page.updateExternalFeeds = function() {
 	$("#newphotos_form .externalFeedId").empty();
 	$("#newpoll_form .externalFeedId").empty();
 
-	for (var i=0; i< page.externalFeeds.length; i++) {
-		var feed = page.externalFeeds[i];  			
+	for (var i=0; i< app.externalFeeds.length; i++) {
+		var feed = app.externalFeeds[i];  			
 		var template = $('#tabs_feed_template').clone();
 		template.attr("id","externalFeed_"+feed.name); 
 		template.find(".iconName").addClass("fa-"+feed.feedInfo.fontAwesomeIconName);
@@ -126,116 +120,6 @@ page.setupForms = function() {
 		
 }
 
-page.setupProfile = function() {
-	if (page.owner.imageUrl!=null) {
-		$('.profile .avatar img')
-			.attr("src", page.owner.imageUrl.href);
-	}
-	$('.profile .displayName').text(page.owner.displayName);
-	$('.profile .username').text(page.owner.username);
-	if (page.ownerBundle.friendPath!=null) {
-		if (page.ownerBundle.friendPath.length==0) {
-			$('.userpath .path').html('You Are '+page.owner.displayName);
-		} else if (page.ownerBundle.friendPath.length==1) {
-			$('.userpath .path').html(page.owner.displayName+' is one of your Nutsterz');
-		} else if (page.ownerBundle.friendPath.length>1) {
-			var path = "";
-			for (var index in page.ownerBundle.friendPath) {
-				path += ' <a href="'+page.ownerBundle.friendPath[index].url+'">'+
-					page.ownerBundle.friendPath[index].username+'</a> <i class="fa fa-caret-right" aria-hidden="true"></i>';
-			}
-			path += ' <a href="'+page.owner.url+'">'+page.owner.displayName+'</a>'
-			$('.userpath .path').html(path);
-		}
-	} else {
-		$('.userpath .path').html('This person is not in your Nutster Network.');
-	}
-	
-	if (page.ownerBundle.friendPath!=null && page.ownerBundle.friendPath.length>1) {
-		if (page.ownerBundle.pending!=null) {
-			if (page.ownerBundle.pending) {
-				$('#requestFriend-status').html('Pending '+page.owner.displayName+'\'s approval');
-			}
-		} else {
-			$('#requestFriend-status').html('<a id="requestFriend-btn" href="#" class="btn btn-default">Add '+page.owner.displayName+' as a Nutster</a>');
-			$('#requestFriend-btn').on('click', requestFriendBtnClick);
-		}
-	}
-	if (page.ownerBundle.profile!=null) {
-		if (page.ownerBundle.page.aboutMe!=null) {
-			$('.profile .aboutme').html(page.ownerBundle.page.aboutMe);
-		} else {
-			$('.profile .aboutme').remove();
-		}
-		if (page.ownerBundle.page.location!=null) {
-			$('.profile .location').text(page.ownerBundle.page.location.city+", "+
-					page.ownerBundle.page.location.state+" "+page.ownerBundle.page.location.country);
-		} else {
-			$('.profile .location').remove();
-		}
-		if (page.ownerBundle.page.memberSince!=null) {
-			$('.profile .membersince time') 
-				.attr('datetime', page.ownerBundle.page.memberSince)
-				.text(new Date(page.ownerBundle.page.memberSince).toLocaleDateString());
-		} else {
-			$('.profile .membersince').remove();
-		}
-		if (page.ownerBundle.page.lastlogin!=null) {
-			$('.profile .lastlogin time') 
-				.attr('datetime', page.ownerBundle.page.lastlogin)
-				.text(new Date(page.ownerBundle.page.lastlogin).toLocaleDateString());
-		} else {
-			$('.profile .lastlogin').remove();
-		}
-		
-		$('.profile .followers .followingCount').text(page.ownerBundle.followingCount);
-		$('.profile .followers .followerCount').text(page.ownerBundle.followerCount);
-		$('.profile .followers').attr('href',page.owner.url+'/friends');
-		if (page.ownerBundle.page.twitterAccount!=null) {
-			$('.socmed-author-twitter a').attr('href',page.ownerBundle.page.twitterAccount.userProfileUrl.href);
-		} else {
-			$('.socmed-author-twitter').remove();
-		}
-		if (page.ownerBundle.page.instagramAccount!=null) {
-			$('.socmed-author-instagram a').attr('href',page.ownerBundle.page.instagramAccount.userProfileUrl.href);
-		} else {
-			$('.socmed-author-instagram').remove();
-		}
-	}
-	
-};
-page.postLoad = function() {
-	console.log('postLoad');
-	$('.profile').removeAttr("hidden");
-	$('.userpath').removeAttr("hidden");
-	$('.extended-profile').removeAttr("hidden");
-	$('#requestFriend-status').remove();
-	if (app.user!=null && app.user.id==page.owner.id) {
-		$('#viewusermenu a').attr('href',app.user.url+'/edit');
-		$('#viewusermenu a').removeAttr("hidden");
-	} else {
-		$('#viewusermenu a').remove();
-	}
-}
-
-page.loadOwner = function() {
-	return new Promise(function(resolve, reject){
-		
-		$.ajax({
-			type: 'GET', 
-			url: getRelativePath('/internal/'+loadOwnerUserName+'/bundle'),
-			dataType: "json",
-			success: function(data){
-				page.owner = data.user;
-				page.ownerBundle = data;
-				page.externalFeeds = data.externalFeeds;
-				resolve(page.owner);
-			}
-		});
-		
-	});
-};
-
 $( window ).on( 'hashchange', function( e ) {
 	var hash = window.location.hash;
 	if(hash.length>1) {		
@@ -246,3 +130,4 @@ $( window ).on( 'hashchange', function( e ) {
 	page.reloadTimeline();
 });
 
+	

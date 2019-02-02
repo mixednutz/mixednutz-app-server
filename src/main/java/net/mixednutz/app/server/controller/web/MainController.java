@@ -67,7 +67,7 @@ public class MainController {
 	private void addNewPostForms(Model model) {
 		//New External Feed
 		final ExternalAccountCredentials credentials = new ExternalAccountCredentials();
-		model.addAttribute("newaccount", credentials);
+		model.addAttribute(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME, credentials);
 	}
 	
 	@RequestMapping(value="/main", method = RequestMethod.GET)

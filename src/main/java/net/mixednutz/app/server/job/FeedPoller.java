@@ -17,6 +17,7 @@ import net.mixednutz.api.core.model.PageRequest;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
+import net.mixednutz.app.server.entity.Visibility;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 
@@ -47,15 +48,17 @@ public class FeedPoller {
 		 * 
 		 */
 		for (AbstractFeed feed: getActiveFeeds()) {
-			if (!feed.isPrivate()) {
+			if (!Visibility.PRIVATE.equals(feed.getVisibility())) {
 				try {
 					if (!nextPages.containsKey(feed)) {
 						LOG.info("Polling Feed:{}", feed.getFeedId());
 						IPage<?,Object> page = externalFeedManager.pollTimeline(feed);
 						LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
-						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
-						LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
-						nextPages.put(feed, page.getNextPage());
+						if (!page.getItems().isEmpty()) {
+							LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
+							LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
+							nextPages.put(feed, page.getNextPage());
+						}
 					} else {
 						IPageRequest<Object> nextPage = nextPages.get(feed);
 						IPageRequest<String> nextPageStr;
@@ -98,15 +101,17 @@ public class FeedPoller {
 		 * 
 		 */
 		for (AbstractFeed feed: getActiveFeeds()) {
-			if (!feed.isPrivate()) {
+			if (!Visibility.PRIVATE.equals(feed.getVisibility())) {
 				try {
 					if (!nextPages.containsKey(feed)) {
 						LOG.info("Polling Feed:{}", feed.getFeedId());
 						IPage<?,Object> page = externalFeedManager.pollUserTimeline(feed);
 						LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
-						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
-						LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
-						nextPages.put(feed, page.getNextPage());
+						if (!page.getItems().isEmpty()) {
+							LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
+							LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
+							nextPages.put(feed, page.getNextPage());
+						}
 					} else {
 						IPageRequest<Object> nextPage = nextPages.get(feed);
 						IPageRequest<String> nextPageStr;

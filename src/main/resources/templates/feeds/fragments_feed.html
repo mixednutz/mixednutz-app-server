@@ -16,12 +16,21 @@
 		<div class="modal-body">
 			
 			<div class="form-group">
-				<label for="providerId">Account Type</label>
+				<label for="providerId">Feed Type</label>
 				<select id="providerId" th:field="*{providerId}" th:errorclass="error">
 					<option 
 						th:each="opt:${accountTypes.entrySet()}"
 						th:value="${opt.key}" th:text="${opt.value}">Google</option>
 				</select>
+			</div>
+			
+			<div class="form-group">
+				<label for="visibility">Visibility</label>
+				<select id="visibility" th:field="*{visibility}" th:errorclass="error">
+					<option value="PRIVATE" selected="selected">Private to only you</option>
+					<option value="WORLD">World</option>
+				</select>
+				<small class="form-text text-muted">Will you let others see your posts from this feed?</small>
 			</div>
 				  		
 		</div>

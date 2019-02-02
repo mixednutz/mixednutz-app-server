@@ -10,6 +10,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -48,8 +49,9 @@ public class ExternalFeeds {
 		private ZonedDateTime dateCreated;
 		private ZonedDateTime dateModified;
 		private ZonedDateTime lastCrawled;
-		private String lastCrawledKey; //used for seek pagination
-		private boolean _private; //
+		private String lastCrawledHomeTimelineKey; //used for seek pagination
+		private String lastCrawledUserTimelineKey; //used for seek pagination
+		private Visibility visibility = Visibility.PRIVATE; //Default to private
 
 		public AbstractFeed() {
 			super();
@@ -149,20 +151,37 @@ public class ExternalFeeds {
 			this.lastCrawled = lastCrawled;
 		}
 
-		public String getLastCrawledKey() {
-			return lastCrawledKey;
+		public String getLastCrawledHomeTimelineKey() {
+			return lastCrawledHomeTimelineKey;
 		}
 
-		public void setLastCrawledKey(String lastCrawledKey) {
-			this.lastCrawledKey = lastCrawledKey;
+		public void setLastCrawledHomeTimelineKey(String lastCrawledKey) {
+			this.lastCrawledHomeTimelineKey = lastCrawledKey;
 		}
 
-		public boolean isPrivate() {
-			return _private;
+		public String getLastCrawledUserTimelineKey() {
+			return lastCrawledUserTimelineKey;
 		}
 
-		public void setPrivate(boolean _private) {
-			this._private = _private;
+		public void setLastCrawledUserTimelineKey(String lastCrawledUserTimelineKey) {
+			this.lastCrawledUserTimelineKey = lastCrawledUserTimelineKey;
+		}
+
+		/**
+		 * Visibility allows others to view your external posts. 
+		 * If the external service considers your feed private or protected
+		 * this flag will automatically be set to Visibility.PRIVATE.
+		 * 
+		 * PRIVATE feeds will also never be polled.
+		 * @return
+		 */
+		@Enumerated
+		public Visibility getVisibility() {
+			return visibility;
+		}
+
+		public void setVisibility(Visibility visibility) {
+			this.visibility = visibility;
 		}
 
 		@PrePersist

@@ -16,6 +16,7 @@ import org.springframework.social.connect.web.CredentialsCallback;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.view.RedirectView;
 
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
@@ -31,14 +32,17 @@ import net.mixednutz.app.server.entity.ExternalFeeds.AbstractAuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.Visibility;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalCredentialsRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 
 
 @Controller
-@SessionAttributes("credentials")
+@SessionAttributes(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME)
 public class NewExternalCredentialsController {
+	
+	public static final String CREDENTIALS_SESSION_NAME = "newaccount";
 			
 	public static class NewExternalCredentialsCallback implements CredentialsCallback {
 		
@@ -58,7 +62,7 @@ public class NewExternalCredentialsController {
 		}
 
 		@Override
-		public ICredentials instantiate(ConnectionFactory<?> connectionFactory) {
+		public ICredentials instantiate(ConnectionFactory<?> connectionFactory, WebRequest request) {
 			ExternalAccountCredentials creds = null;
 			
 			ApiProvider<?,?> provider = apiProviderRegistry.getSocialNetworkClient(connectionFactory.getProviderId());
@@ -72,6 +76,7 @@ public class NewExternalCredentialsController {
 			} else {
 				throw new RuntimeException("Credentials Type does not extend or implement either IOauth1Credentials or IOauth2Credentials: "+provider.getCredentialsInterface());
 			}
+			creds.setVisibility(Visibility.valueOf(request.getParameter("visibility")));
 			User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	    	creds.setUser(user);
 			return creds;
@@ -110,6 +115,7 @@ public class NewExternalCredentialsController {
 			feed.setCredentials((Oauth1Credentials) creds);
 			feed.setImageUrl(connection.getImageUrl());
 			feed.setName(networkInfo.getDisplayName() + " - " + userProfile.getUsername());
+			feed.setVisibility(creds.getVisibility());
 			return feed;
 		}
 		AbstractAuthenticatedFeed<?> createExternalFeed(Connection<?> connection, Oauth2Credentials creds) {
@@ -123,11 +129,13 @@ public class NewExternalCredentialsController {
 			feed.setCredentials((Oauth2Credentials) creds);
 			feed.setImageUrl(connection.getImageUrl());
 			feed.setName(networkInfo.getDisplayName() + " - " + userProfile.getUsername());
+			feed.setVisibility(creds.getVisibility());
 			return feed;
 		}
 		void crawlNewFeed(AbstractAuthenticatedFeed<?> feed) {
 			try {
-			feedManager.pollTimeline(feed);
+				feedManager.pollTimeline(feed);
+				feedManager.pollUserTimeline(feed);
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw e;

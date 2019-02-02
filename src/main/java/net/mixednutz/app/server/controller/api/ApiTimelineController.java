@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,7 @@ import net.mixednutz.api.core.model.TimelineElement;
 import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
+import net.mixednutz.app.server.controller.exception.NotAuthenticatedException;
 import net.mixednutz.app.server.entity.User;
 
 
@@ -40,8 +41,10 @@ public class ApiTimelineController {
 	private ExternalFeedApiController externalFeedApi;
 		
 	@RequestMapping(value="/timeline/bundle", method = RequestMethod.GET)
-	public @ResponseBody TimelineBundle apiGetTimelineBundle(Authentication auth) {
-		User user = (User) auth.getPrincipal();
+	public @ResponseBody TimelineBundle apiGetTimelineBundle(@AuthenticationPrincipal User user) {
+		if (user==null) {
+			throw new NotAuthenticatedException("Not logged in");
+		}
 
 		return new TimelineBundle()
 //				.addFollowingList(friendsApi.apiGetFollowing(user))
@@ -54,20 +57,22 @@ public class ApiTimelineController {
 	
 	@RequestMapping(value={HOME_TIMELINE_ENDPOINT}, 
 			method = RequestMethod.GET)
-	public @ResponseBody TimelinePage getHomeTimeline(Authentication auth,
+	public @ResponseBody TimelinePage getHomeTimeline(@AuthenticationPrincipal User user,
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
 
-		return getHomeTimeline(auth, 
+		return getHomeTimeline(user, 
 				PageRequest.first(pageSize, Direction.LESS_THAN, Date.class), 
 				pageSize);
 	}
 	
 	@RequestMapping(value={HOME_TIMELINE_NEXTPAGE_ENDPOINT}, 
 			method = RequestMethod.POST)
-	public @ResponseBody TimelinePage getHomeTimeline(Authentication auth, 
+	public @ResponseBody TimelinePage getHomeTimeline(@AuthenticationPrincipal User user, 
 			@RequestBody PageRequest<Date> prevPage, 
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
-//		User user = (User) auth.getPrincipal();
+		if (user==null) {
+			throw new NotAuthenticatedException("Not logged in");
+		}
 
 		//If pageSize is null, grab default
 		if (prevPage.getPageSize()==null) {

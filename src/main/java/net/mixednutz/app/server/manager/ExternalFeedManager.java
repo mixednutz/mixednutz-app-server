@@ -18,6 +18,8 @@ public interface ExternalFeedManager {
 	
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user);
 	
+	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUserVisibleToWorld(User user);
+	
 	/**
 	 * Retrieves a user's feed timeline that has previously been polled.
 	 * 

@@ -26,11 +26,14 @@ import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.controller.exception.NotAuthorizedException;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
+import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalFeeds;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.Visibility;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
+import net.mixednutz.app.server.repository.UserRepository;
 
 
 @Controller
@@ -46,12 +49,31 @@ public class ExternalFeedApiController {
 	@Autowired
 	private ExternalFeedRepository feedRepository;
 	
-
+	@Autowired
+	UserRepository userRepository;
 	
 	@RequestMapping(value="/feeds", method = RequestMethod.GET)
 	public @ResponseBody ExternalFeedsList externalFeeds(@AuthenticationPrincipal User user) {
 		final Map<INetworkInfoSmall, List<AbstractFeed>> externalFeeds = 
 				feedManager.feedsForUser(user);
+		
+		ExternalFeedsList feeds = new ExternalFeedsList();
+		for (Entry<INetworkInfoSmall, List<AbstractFeed>> entry: externalFeeds.entrySet()) {
+			feeds.add(new ExternalFeed(entry.getKey(), entry.getValue(), feedManager.getCompatibleFeedsForCrossposting(entry.getKey())));
+		}
+		return feeds;
+	}
+	
+	@RequestMapping(value="/{username}/feeds", method = RequestMethod.GET)
+	public @ResponseBody ExternalFeedsList externalFeeds(
+			@PathVariable String username) {
+		Optional<User> profileUser = userRepository.findByUsername(username);
+		if (!profileUser.isPresent()) {
+			throw new UserNotFoundException("User "+username+" not found");
+		}
+		
+		final Map<INetworkInfoSmall, List<AbstractFeed>> externalFeeds = 
+				feedManager.feedsForUserVisibleToWorld(profileUser.get());
 		
 		ExternalFeedsList feeds = new ExternalFeedsList();
 		for (Entry<INetworkInfoSmall, List<AbstractFeed>> entry: externalFeeds.entrySet()) {
@@ -97,11 +119,11 @@ public class ExternalFeedApiController {
 	@RequestMapping(value="/{username}/feeds/timeline", method = RequestMethod.GET)
 	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedUserTimeline(
 			@PathVariable String username,
-			@RequestParam("feedId") Long feedId, Authentication auth,
+			@RequestParam("feedId") Long feedId, @AuthenticationPrincipal User user,
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
 		
-		return apiExternalFeedUserTimeline(username, feedId, auth,
+		return apiExternalFeedUserTimeline(username, feedId, user,
 				hashtag, PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
 				pageSize);
 	}
@@ -109,19 +131,22 @@ public class ExternalFeedApiController {
 	@RequestMapping(value="/{username}/feeds/timeline/nextpage", method = RequestMethod.POST)
 	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedUserTimeline(
 			@PathVariable String username,
-			@RequestParam("feedId") Long feedId, Authentication auth,
+			@RequestParam("feedId") Long feedId, @AuthenticationPrincipal User user,
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
 			@RequestBody PageRequest<String> prevPage, 
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
-		User user = (User) auth.getPrincipal();
+		
 		Optional<AbstractFeed> feed = feedRepository.findById(feedId);
 		if (!feed.isPresent()) {
 			throw new ResourceNotFoundException("Feed not found");
 		}
-		if (!feed.get().getUser().equals(user) || 
-				!feed.get().getUser().getUsername().equals(username)) {
+
+		if ((user==null && !Visibility.WORLD.equals(feed.get().getVisibility())) ||
+				Visibility.PRIVATE.equals(feed.get().getVisibility()) && user!=null && 
+				!user.getUsername().equals(feed.get().getUser().getUsername())) {
 			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
 		}
+		
 		//If pageSize is null, grab default
 		if (prevPage.getPageSize()==null) {
 			prevPage.setPageSize(pageSize);

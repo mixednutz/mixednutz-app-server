@@ -17,6 +17,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 
 import org.springframework.social.connect.ConnectionData;
 
@@ -40,6 +41,8 @@ public class ExternalCredentials {
 		private ZonedDateTime dateModified;
 
 		private User user;
+		
+		private Visibility visibility;
 
 		public ExternalAccountCredentials() {
 			super();
@@ -104,6 +107,21 @@ public class ExternalCredentials {
 			this.dateCreated = dateCreated;
 		}
 		
+		/**
+		 * This is only used for passing newly conencted credentials to a feed.
+		 * This flag is not persisted.
+		 * 
+		 * @return
+		 */
+		@Transient
+		public Visibility getVisibility() {
+			return visibility;
+		}
+
+		public void setVisibility(Visibility visibility) {
+			this.visibility = visibility;
+		}
+
 		@PrePersist
 		void createdAt() {
 			setDateCreated(ZonedDateTime.now());

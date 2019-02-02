@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import net.mixednutz.api.core.model.ApiList;
 import net.mixednutz.api.model.IUserSmall;
+import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.repository.UserRepository;
@@ -26,8 +28,12 @@ public class ApiUserController {
 	@Autowired
 	UserRepository userRepository;
 	
+	@Autowired
+	ExternalFeedApiController externalFeedApi;
+	
 	@RequestMapping(value="/{username}/bundle", method = RequestMethod.GET)
-	public @ResponseBody UserProfileBundle getUserTimelineBundle(@PathVariable String username,
+	public @ResponseBody UserProfileBundle getUserTimelineBundle(
+			@PathVariable String username,
 			@AuthenticationPrincipal User user) {
 		
 		Optional<User> profileUser = userRepository.findByUsername(username);
@@ -36,7 +42,8 @@ public class ApiUserController {
 		}
 				
 		UserProfileBundle bundle = new UserProfileBundle()
-				.addUser(profileUser.get());
+				.addUser(profileUser.get())
+				.addExternalFeedsList(externalFeedApi.externalFeeds(username));
 //				.addFollowerCount(friendManager.countFollowers(account, false))
 //				.addFollowingCount(friendManager.countFollowing(account, false));
 				
@@ -72,15 +79,15 @@ public class ApiUserController {
 		 */
 		private static final long serialVersionUID = 4514253806502880482L;
 		
-//		private UserProfileBundle addBundle(ApiList<?> list) {
-//			for (java.util.Map.Entry<String, ?> e: list.entrySet()) {
-//				if (containsKey(e.getKey())) {
-//					throw new RuntimeException("Bundle already has key "+e.getKey());
-//				}
-//			}
-//			this.putAll(list);
-//			return this;
-//		}
+		private UserProfileBundle addBundle(ApiList<?> list) {
+			for (java.util.Map.Entry<String, ?> e: list.entrySet()) {
+				if (containsKey(e.getKey())) {
+					throw new RuntimeException("Bundle already has key "+e.getKey());
+				}
+			}
+			this.putAll(list);
+			return this;
+		}
 //		UserProfileBundle addFollowerCount(int followerCount) {
 //			this.put("followerCount", followerCount);
 //			return this;
@@ -92,6 +99,9 @@ public class ApiUserController {
 		UserProfileBundle addUser(IUserSmall user) {
 			this.put("user", user);
 			return this;
+		}
+		UserProfileBundle addExternalFeedsList(ExternalFeedsList feeds) {
+			return addBundle(feeds);
 		}
 //		UserProfileBundle addProfile(IUserProfile profile) {
 //			this.put("profile", profile);
