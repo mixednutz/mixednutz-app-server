@@ -7,16 +7,17 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import net.mixednutz.api.model.IUserProfile;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class UserProfile implements IUserProfile {
-
+public class UserSettings {
+	
 	private Long userId;
 	private User user;
 	
+	private boolean showCombinedExternalFeedsOnProfile;
+	private Page indexPage = Page.USER_PROFILE;
 	
-
 	@Id
 	@Column(name="user_id", nullable = false, updatable=false)
 	public Long getUserId() {
@@ -27,6 +28,7 @@ public class UserProfile implements IUserProfile {
 		this.userId = userId;
 	}
 
+	@JsonIgnore
 	@OneToOne(fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn(name="user_id")
 	public User getUser() {
@@ -35,6 +37,27 @@ public class UserProfile implements IUserProfile {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public boolean isShowCombinedExternalFeedsOnProfile() {
+		return showCombinedExternalFeedsOnProfile;
+	}
+
+	public void setShowCombinedExternalFeedsOnProfile(boolean showCombinedExternalFeedsOnProfile) {
+		this.showCombinedExternalFeedsOnProfile = showCombinedExternalFeedsOnProfile;
+	}
+	
+	public Page getIndexPage() {
+		return indexPage;
+	}
+
+	public void setIndexPage(Page indexPage) {
+		this.indexPage = indexPage;
+	}
+
+	public enum Page {
+		SPLASH,
+		USER_PROFILE
 	}
 
 }

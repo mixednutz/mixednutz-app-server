@@ -54,6 +54,7 @@
           	<li class="hidden"><a href="#page-top"></a></li>
             <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/main|}" href="/main/new">My Timeline</a></li>
             <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/${#authentication.principal.username}|}" href="/username">My Profile</a></li>
+            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/settings|}" href="/settings">Settings</a></li>
             <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/logout|}" href="/logout">Log Out</a></li>
           	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/login|}" href="/login">Log in</a></li>
           	<li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" class="hidden-xs dropdown dropdown-notifications">

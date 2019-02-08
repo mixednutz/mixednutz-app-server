@@ -23,6 +23,8 @@ import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.controller.exception.NotAuthenticatedException;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.UserSettings;
+import net.mixednutz.app.server.repository.UserSettingsRepository;
 
 
 @Controller
@@ -39,20 +41,24 @@ public class ApiTimelineController {
 	
 	@Autowired
 	private ExternalFeedApiController externalFeedApi;
+	
+	@Autowired
+	private UserSettingsRepository settingsRepository;
 		
 	@RequestMapping(value="/timeline/bundle", method = RequestMethod.GET)
 	public @ResponseBody TimelineBundle apiGetTimelineBundle(@AuthenticationPrincipal User user) {
 		if (user==null) {
 			throw new NotAuthenticatedException("Not logged in");
 		}
-
+		
 		return new TimelineBundle()
 //				.addFollowingList(friendsApi.apiGetFollowing(user))
 				.addExternalFeedsList(externalFeedApi.externalFeeds(user))
 //				.addFriendgroups(friendsApi.apiGetCategories(user))
-				.addUser(user);
+				.addUser(user)
 //				.addProfile(profileApi.getProfile(user))
-//				.addSettings(settingsApi.getPushSettings("", user));
+				.addSettings(settingsRepository.findById(user.getUserId()).
+						orElse(new UserSettings()));
 	}
 	
 	@RequestMapping(value={HOME_TIMELINE_ENDPOINT}, 
@@ -124,10 +130,10 @@ public class ApiTimelineController {
 //			this.put("profile", profile);
 //			return this;
 //		}
-//		TimelineBundle addSettings(UserSettings settings) {
-//			this.put("settings", settings);
-//			return this;
-//		}
+		TimelineBundle addSettings(UserSettings settings) {
+			this.put("settings", settings);
+			return this;
+		}
 	}
 	
 	public static class TimelinePage extends Page<TimelineElement, Date> {
