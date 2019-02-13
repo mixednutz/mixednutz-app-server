@@ -3,6 +3,7 @@ package net.mixednutz.app.server.controller.api;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.controller.exception.NotAuthenticatedException;
+import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserSettings;
 import net.mixednutz.app.server.repository.UserRepository;
@@ -121,8 +123,19 @@ public class ApiTimelineController {
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
 			@AuthenticationPrincipal User user) {
 		
-		return externalFeedApi.apiCombinedExternalFeedsUserTimeline(username, hashtag, pageSize, 
-				prevPage, user);
+		Optional<User> profileUser = userRepository.findByUsername(username);
+		if (!profileUser.isPresent()) {
+			throw new UserNotFoundException("User "+username+" not found");
+		}
+		
+		UserSettings settings = settingsRepository.findById(profileUser.get().getUserId())
+				.orElse(new UserSettings());
+		if (settings.isShowCombinedExternalFeedsOnProfile()) {
+			//TODO combine this with local content
+			return externalFeedApi.apiCombinedExternalFeedsUserTimeline(username, hashtag, pageSize, 
+					prevPage, user);
+		} 
+		return stubData();
 	}
 	
 	private static IPage<? extends ITimelineElement,Instant> stubData() {
