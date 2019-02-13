@@ -2,6 +2,7 @@ package net.mixednutz.app.server.controller.api;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -119,23 +120,29 @@ public class ExternalFeedApiController {
 	@RequestMapping(value="/{username}/feeds/timeline", method = RequestMethod.GET)
 	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedUserTimeline(
 			@PathVariable String username,
-			@RequestParam("feedId") Long feedId, @AuthenticationPrincipal User user,
+			@RequestParam("feedId") Long feedId, 
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
-			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
+			@AuthenticationPrincipal User user) {
 		
-		return apiExternalFeedUserTimeline(username, feedId, user,
-				hashtag, PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
-				pageSize);
+		return apiExternalFeedUserTimeline(username, feedId, hashtag, pageSize, 
+				PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
+				user);
 	}
 		
 	@RequestMapping(value="/{username}/feeds/timeline/nextpage", method = RequestMethod.POST)
 	public @ResponseBody IPage<? extends ITimelineElement,Instant> apiExternalFeedUserTimeline(
 			@PathVariable String username,
-			@RequestParam("feedId") Long feedId, @AuthenticationPrincipal User user,
+			@RequestParam("feedId") Long feedId, 
 			@RequestParam(value="hashtag", defaultValue="") String hashtag,
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
 			@RequestBody PageRequest<String> prevPage, 
-			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
+			@AuthenticationPrincipal User user) {
 		
+		Optional<User> profileUser = userRepository.findByUsername(username);
+		if (!profileUser.isPresent()) {
+			throw new UserNotFoundException("User "+username+" not found");
+		}
 		Optional<AbstractFeed> feed = feedRepository.findById(feedId);
 		if (!feed.isPresent()) {
 			throw new ResourceNotFoundException("Feed not found");
@@ -153,6 +160,42 @@ public class ExternalFeedApiController {
 		}
 		
 		return feedManager.getUserTimeline(feed.get(), 
+				hashtag.length()>0?hashtag:null, prevPage);
+	}
+	
+	@ResponseBody IPage<? extends ITimelineElement,Instant> apiCombinedExternalFeedsUserTimeline(
+			@PathVariable String username,
+			@RequestParam(value="hashtag", defaultValue="") String hashtag,
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
+			@AuthenticationPrincipal User user) {
+		
+		return apiCombinedExternalFeedsUserTimeline(username, hashtag, pageSize, 
+				PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
+				user);
+	}
+	
+	@ResponseBody IPage<? extends ITimelineElement,Instant> apiCombinedExternalFeedsUserTimeline(
+			@PathVariable String username,
+			@RequestParam(value="hashtag", defaultValue="") String hashtag,
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
+			@RequestBody PageRequest<String> prevPage, 
+			@AuthenticationPrincipal User user) {
+		
+		Optional<User> profileUser = userRepository.findByUsername(username);
+		if (!profileUser.isPresent()) {
+			throw new UserNotFoundException("User "+username+" not found");
+		}
+		
+		//Only get feeds visible to the WORLD:
+		List<AbstractFeed> feeds = feedRepository.findByUserAndVisibilityIn(user, 
+				Collections.singleton(Visibility.WORLD));
+
+		//If pageSize is null, grab default
+		if (prevPage.getPageSize()==null) {
+			prevPage.setPageSize(pageSize);
+		}
+		
+		return feedManager.getUserTimeline(feeds, 
 				hashtag.length()>0?hashtag:null, prevPage);
 	}
 		

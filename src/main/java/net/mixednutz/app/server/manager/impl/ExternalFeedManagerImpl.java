@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,6 +127,14 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 				ExternalFeedContent.TimelineType.USER, paging);
 	}
 
+	@Cacheable(value="externalUserFeeds", 
+			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feeds, #hashtag, #paging)")
+	public IPage<? extends ITimelineElement, Instant> getUserTimeline(Iterable<AbstractFeed> feeds, String hashtag,
+			IPageRequest<String> paging) {
+		return this.getTimelineInternal(feeds, hashtag, 
+				ExternalFeedContent.TimelineType.USER, paging);
+	}
+
 	protected IPage<? extends ITimelineElement,Instant> getTimelineInternal(AbstractFeed feed, 
 			String hashtag, ExternalFeedContent.TimelineType timelineType, IPageRequest<String> paging) {
 			
@@ -169,9 +178,74 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			.build();
 	}
 	
+	protected IPage<? extends ITimelineElement,Instant> getTimelineInternal(Iterable<AbstractFeed> feeds, 
+			String hashtag, ExternalFeedContent.TimelineType timelineType, IPageRequest<String> paging) {
+			
+		final List<Long> feedIdList = new ArrayList<Long>();
+		for (AbstractFeed feed: feeds) {
+			if (!Visibility.PRIVATE.equals(feed.getVisibility())) {
+				feedIdList.add(feed.getFeedId());
+			}
+		}
+		final Long[] feedIdArray = new Long[feedIdList.size()];
+		feedIdList.toArray(feedIdArray);
+				
+		List<ExternalFeedContent> contents = null;
+		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
+		if (paging.getStart()==null) {
+			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
+					paging.getPageSize(), paging.getDirection(), Instant.class);
+			contents = externalFeedContentRepository.findTimeline(feedIdArray, 
+					timelineType, PageRequest.of(0, paging.getPageSize()));
+		} else {
+			ZonedDateTime start = ZonedDateTime.parse(paging.getStart());
+			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
+					start.toInstant(), paging.getPageSize(), paging.getDirection());
+			if (paging.getDirection()==Direction.LESS_THAN) {
+				contents = externalFeedContentRepository.findTimelineMore(feedIdArray, 
+						timelineType, start, PageRequest.of(0, paging.getPageSize()));
+			} else {
+				contents = externalFeedContentRepository.findTimelineSince(feedIdArray, 
+						timelineType, start, PageRequest.of(0, paging.getPageSize()));
+			}
+		}
+		List<ExternalFeedTimelineElement> elements = new ArrayList<>();
+		for (ExternalFeedContent content: contents) {
+			elements.add(content.getElement());
+		}
+		
+		return new PageBuilder<ExternalFeedTimelineElement, Instant>()
+			.setItems(elements)
+			.setPageRequest(pageRequest)
+			.setTrimToPageSize(true)
+			.setReSortComparator(new Comparator<ExternalFeedTimelineElement>(){
+				@Override
+				public int compare(ExternalFeedTimelineElement o1, ExternalFeedTimelineElement o2) {
+					return -o1.getProviderPostedOnDate().compareTo(o2.getProviderPostedOnDate());
+				}})
+			.setTokenCallback(new GetTokenCallback<ExternalFeedTimelineElement, Instant>(){
+				@Override
+				public Instant getToken(ExternalFeedTimelineElement item) {
+					return item.getProviderPostedOnDate().toInstant();
+				}})
+			.build();
+	}
+
 	public static int getTimelineHash(AbstractFeed feed, String hashtag, IPageRequest<Object> paging,
 			ExternalFeedContent.TimelineType timelineType) {
 		int hash = feed.getFeedId().hashCode();
+		if (hashtag!=null) {
+			hash += hashtag.hashCode();
+		}
+		if (paging!=null) {
+			hash += paging.hashCode();
+		}
+		return hash;
+	}
+	
+	public static int getTimelineHash(Iterable<AbstractFeed> feeds, String hashtag, IPageRequest<Object> paging,
+			ExternalFeedContent.TimelineType timelineType) {
+		int hash = feeds.hashCode();
 		if (hashtag!=null) {
 			hash += hashtag.hashCode();
 		}

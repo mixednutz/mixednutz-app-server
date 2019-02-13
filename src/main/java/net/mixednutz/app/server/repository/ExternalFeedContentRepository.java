@@ -28,4 +28,17 @@ public interface ExternalFeedContentRepository
 	public List<ExternalFeedContent> findTimelineSince(
 			@Param("feedId")Long feedId, @Param("timelineType")ExternalFeedContent.TimelineType timelineType, @Param("date")ZonedDateTime date, Pageable pageable);
 	
+	
+	@Query(value="select c from ExternalFeedContent c where c.type=:timelineType and c.id.feedId in :feedIds order by c.element.providerPostedOnDate desc")
+	public List<ExternalFeedContent> findTimeline(
+			@Param("feedIds")Long[] feedIds, @Param("timelineType")ExternalFeedContent.TimelineType timelineType, Pageable pageable);
+	
+	@Query(value="select c from ExternalFeedContent c where c.type=:timelineType and c.id.feedId in :feedIds and c.element.providerPostedOnDate < :date order by c.element.providerPostedOnDate desc")
+	public List<ExternalFeedContent> findTimelineMore(
+			@Param("feedIds")Long[] feedIds, @Param("timelineType")ExternalFeedContent.TimelineType timelineType, @Param("date")ZonedDateTime date, Pageable pageable);
+	
+	@Query(value="select c from ExternalFeedContent c where c.type=:timelineType and c.id.feedId in :feedIds and c.element.providerPostedOnDate > :date order by c.element.providerPostedOnDate desc")
+	public List<ExternalFeedContent> findTimelineSince(
+			@Param("feedIds")Long[] feedIds, @Param("timelineType")ExternalFeedContent.TimelineType timelineType, @Param("date")ZonedDateTime date, Pageable pageable);
+	
 }

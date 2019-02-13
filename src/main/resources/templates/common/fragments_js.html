@@ -32,18 +32,74 @@
   	/*<![CDATA[*/
   	function loadTimelineSince(nextPage) {
   		
+  		var baseurl = timelineNextpageUrl;
+  		var data = nextPage;
+  		
+  		var renderCallback = function(page, direction) {
+  			renderItems(page.items, direction);
+  		}
+  		var readSinceCallback = function(nextPage) {
+  			loadTimelineSince(nextPage);
+  		}
+  		
+  		readTimelineSince(baseurl, data, '.timeline #elements',
+  				renderCallback, 
+  				readSinceCallback);
   	}
   	function loadTimeline(nextPage) {
-  		//TEMP - remove this with real logic
-  		removePager();
-  		$('.timeline #elements').empty();
-  		///
+  		console.log('loadTimeline');
+  		var baseurl = timelineUrl;
+  		var data = {};
+  		
+  		var renderCallback = function(page, direction) {
+  			renderItems(page.items, direction);
+  		}
+  		var readMoreCallback = function(nextPage) {
+  			loadTimelineMore(nextPage);
+  		}
+  		var readSinceCallback = function(nextPage) {
+  			loadTimelineSince(nextPage);
+  		}
+  		
+  		readTimeline(baseurl, data, '.timeline #elements',
+  				renderCallback, 
+  				readMoreCallback, 
+  				readSinceCallback);
   	}
   	function loadTimelineMore(nextPage) {
+  		var baseurl = timelineNextpageUrl;
+  		var data = nextPage;
   		
+  		var renderCallback = function(page, direction) {
+  			renderItems(page.items, direction);
+  		}
+  		var readMoreCallback = function(nextPage) {
+  			loadTimelineMore(nextPage);
+  		}
+  		  		
+  		readTimelineMore(baseurl, data, '.timeline #elements',
+  				renderCallback, 
+  				readMoreCallback);
   	}
   	function renderItems(items, direction) {
+  		/*direction is "prepend" or "append"*/
+  		var loopFunction = function (index, element) {
+  			var builtElement = null;
+  			builtElement = buildTimelineElement(element);
+  			if (builtElement!=null) {
+  				if (direction=='prepend') {
+  					builtElement.prependTo("#elements");
+  				} else {
+  					builtElement.appendTo("#elements");
+  				}
+  			}	
+  		};
   		
+  		if (direction=='prepend') {
+  			$.each(items.reverse(), loopFunction);	
+  		} else {
+  			$.each(items, loopFunction);
+  		}
   	}
   	function showTimelineInput() {
   		$('.feed_input').css('display','none');
@@ -57,7 +113,7 @@
   	/*<![CDATA[*/
   	function loadFeedTimelineSince(feedId, nextPage, hashtag) {
   		
-  		var baseurl = timelineNextpageUrl;
+  		var baseurl = feedTimelineNextpageUrl;
   		baseurl+="?feedId="+feedId;
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;
@@ -77,7 +133,7 @@
   	}
   	function loadFeedTimeline(feedId, hashtag) {
   		console.log('loadFeedTimeline');
-  		var baseurl = timelineUrl;
+  		var baseurl = feedTimelineUrl;
   		baseurl+="?feedId="+feedId;
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;
@@ -100,7 +156,7 @@
   				readSinceCallback);
   	}
   	function loadFeedTimelineMore(feedId, nextPage, hashtag) {
-  		var baseurl = timelineNextpageUrl;
+  		var baseurl = feedTimelineNextpageUrl;
   		baseurl+="?feedId="+feedId;
   		if (hashtag!=null) {
   			baseurl+="&hashtag="+hashtag;

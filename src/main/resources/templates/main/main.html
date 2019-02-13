@@ -80,8 +80,10 @@
  	================================================== -->
  	<script th:inline="javascript">
   	/*<![CDATA[*/
-  	  	var timelineUrl = /*[[@{|/internal/feeds/timeline|}]]*/ "/internal/feeds/timeline";
-  	var timelineNextpageUrl = /*[[@{|/internal/feeds/timeline/nextpage|}]]*/ "/internal/feeds/timeline/nextpage";
+  	var timelineUrl = /*[[@{|/internal/nutsterz/timeline|}]]*/ "/internal/feeds/timeline";
+  	var timelineNextpageUrl = /*[[@{|/internal/nutsterz/timeline/nextpage|}]]*/ "/internal/feeds/timeline/nextpage";
+  	var feedTimelineUrl = /*[[@{|/internal/feeds/timeline|}]]*/ "/internal/feeds/timeline";
+  	var feedTimelineNextpageUrl = /*[[@{|/internal/feeds/timeline/nextpage|}]]*/ "/internal/feeds/timeline/nextpage";
   	/*]]>*/
   	</script>
  	<script type="text/javascript" th:src="@{|/js/timeline.js|}" src="../js/timeline.js"></script>

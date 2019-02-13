@@ -84,8 +84,10 @@
  	<script th:inline="javascript">
   	/*<![CDATA[*/
   	var loadOwnerUserName = /*[[${profileUser.username}]]*/ null;
-  	var timelineUrl = /*[[@{|/internal/${profileUser.username}/feeds/timeline|}]]*/ "/internal/username/timeline";
-  	var timelineNextpageUrl = /*[[@{|/internal/${profileUser.username}/feeds/timeline/nextpage|}]]*/ "/internal/username/timeline/nextpage";
+  	var timelineUrl = /*[[@{|/internal/${profileUser.username}/timeline|}]]*/ "/internal/username/timeline";
+  	var timelineNextpageUrl = /*[[@{|/internal/${profileUser.username}/timeline/nextpage|}]]*/ "/internal/username/timeline/nextpage";
+  	var feedTimelineUrl = /*[[@{|/internal/${profileUser.username}/feeds/timeline|}]]*/ "/internal/username/timeline";
+  	var feedTimelineNextpageUrl = /*[[@{|/internal/${profileUser.username}/feeds/timeline/nextpage|}]]*/ "/internal/username/timeline/nextpage";
   	
   	/*]]>*/
  	</script>

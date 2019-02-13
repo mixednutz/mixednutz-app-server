@@ -43,6 +43,17 @@ public interface ExternalFeedManager {
 			String hashtag, IPageRequest<String> paging);
 	
 	/**
+	 * Retrieves a user's feed timeline that has previously been polled.
+	 * 
+	 * @param feed
+	 * @param hashtag
+	 * @param paging
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Instant> getUserTimeline(Iterable<AbstractFeed> feeds, 
+			String hashtag, IPageRequest<String> paging);
+	
+	/**
 	 * Polls a user's feed timeline and persists the results.
 	 * Poll Request go in reverse to a normal timeline request.  This request goes
 	 * forward in time and returns newer items.
