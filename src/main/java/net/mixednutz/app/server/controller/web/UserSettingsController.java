@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
-import net.mixednutz.app.server.entity.UserSettings.Page;
+import net.mixednutz.app.server.entity.SiteSettings;
+import net.mixednutz.app.server.entity.SiteSettings.Page;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserSettings;
 import net.mixednutz.app.server.entity.Visibility;
+import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.UserSettingsRepository;
 
@@ -30,8 +32,15 @@ public class UserSettingsController {
 	@Autowired
 	private ExternalFeedRepository externalFeedRepository;
 	
+	@Autowired
+	SiteSettingsManager siteSettingsManager;
+		
 	private String settingsForm(Model model) {
-		model.addAttribute("form", new SettingsForm());
+		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
+		
+		SettingsForm form = new SettingsForm();
+		form.setIndexPage(siteSettings.getIndexPage());
+		model.addAttribute("form", form);
 		
 		return "settings/settings";
 	}
@@ -51,10 +60,15 @@ public class UserSettingsController {
 			return settingsForm(model);
 		}
 		
+		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
+		if (user.equals(siteSettings.getAdminUser())) {
+			siteSettings.setIndexPage(form.getIndexPage());
+			siteSettingsManager.save(siteSettings);
+		}
+		
 		UserSettings settings = settingsRepository.findById(user.getUserId()).orElseGet(
 				new NewUserSettingsSupplier(user));
 		settings.setShowCombinedExternalFeedsOnProfile(form.isShowCombinedExternalFeedsOnProfile());
-		settings.setIndexPage(form.getIndexPage());
 		settingsRepository.save(settings);
 		
 		List<AbstractFeed> feeds = externalFeedRepository.findByUser(user);

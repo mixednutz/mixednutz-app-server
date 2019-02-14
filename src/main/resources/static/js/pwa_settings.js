@@ -9,8 +9,6 @@ page.setup = function() {
 
 page.updateForm = function() {
 	$('[name=showCombinedExternalFeedsOnProfile]').prop('checked',app.settings.showCombinedExternalFeedsOnProfile);
-	console.log(app.settings.indexPage);
-	$('[name=indexPage]').val(app.settings.indexPage);
 	page.updateExternalFeeds();
 }
 

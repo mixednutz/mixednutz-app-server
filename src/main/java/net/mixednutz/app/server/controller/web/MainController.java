@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
+import net.mixednutz.app.server.entity.SiteSettings;
+import net.mixednutz.app.server.entity.SiteSettings.Page;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
+import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
 
@@ -38,15 +41,25 @@ public class MainController {
 	
 	@Autowired
 	ExternalFeedManager externalFeedManager;
-		
+	
+	@Autowired
+	SiteSettingsManager siteSettingsManager;
+	
 	@RequestMapping(value="/", method = RequestMethod.GET)
-	public String root(Model model) {
+	public String root(@AuthenticationPrincipal User user, Model model) {
 		
 		if (setupController.isFirstTime()) {
 			return setupController.firstTime(model);
 		}
 		
-		//TODO Find configured landing page from configuration
+		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
+		if (Page.SPLASH.equals(siteSettings.getIndexPage())) {
+			return ROOT_TEMPLATE;
+		}
+		if (Page.USER_PROFILE.equals(siteSettings.getIndexPage())) {
+			return this.profile(siteSettings.getAdminUser().getUsername(), 
+					user, model);
+		}
 		
 		return ROOT_TEMPLATE;
 	}

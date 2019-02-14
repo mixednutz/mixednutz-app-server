@@ -187,7 +187,7 @@ public class ExternalFeedApiController {
 		}
 		
 		//Only get feeds visible to the WORLD:
-		List<AbstractFeed> feeds = feedRepository.findByUserAndVisibilityIn(user, 
+		List<AbstractFeed> feeds = feedRepository.findByUserAndVisibilityIn(profileUser.get(), 
 				Collections.singleton(Visibility.WORLD));
 
 		//If pageSize is null, grab default

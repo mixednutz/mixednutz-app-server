@@ -16,7 +16,6 @@ public class UserSettings {
 	private User user;
 	
 	private boolean showCombinedExternalFeedsOnProfile = false;
-	private Page indexPage = Page.SPLASH;
 	
 	@Id
 	@Column(name="user_id", nullable = false, updatable=false)
@@ -47,17 +46,4 @@ public class UserSettings {
 		this.showCombinedExternalFeedsOnProfile = showCombinedExternalFeedsOnProfile;
 	}
 	
-	public Page getIndexPage() {
-		return indexPage;
-	}
-
-	public void setIndexPage(Page indexPage) {
-		this.indexPage = indexPage;
-	}
-
-	public enum Page {
-		SPLASH,
-		USER_PROFILE
-	}
-
 }
