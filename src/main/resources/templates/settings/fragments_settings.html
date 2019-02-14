@@ -8,9 +8,23 @@
 
 	<div th:fragment="profile_settings">
 		
-		<h2>Profile Settings</h2>
-		
 		<form th:action="@{|/settings|}" th:object="${form}" method="post">
+		
+		<h2>Main Settings</h2>
+		
+			<div class="form-inline">
+				<div class="form-group">
+					<label>Main Page
+						<select th:field="*{indexPage}" class="form-control">
+							<option value="SPLASH">Splash Page</option>
+							<option value="USER_PROFILE">Your User Profile</option>
+						</select>
+					</label>
+					<small class="form-text text-muted">First page visiters will see</small>
+				</div>
+			</div>
+		
+		<h2>Profile Settings</h2>
 		
 			<div class="showCombinedExternalFeedsOnProfile form-check">
 				  <input class="form-check-input" type="checkbox" th:field="*{showCombinedExternalFeedsOnProfile}" id="showCombinedExternalFeedsOnProfile">

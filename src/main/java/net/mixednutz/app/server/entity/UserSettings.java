@@ -15,8 +15,8 @@ public class UserSettings {
 	private Long userId;
 	private User user;
 	
-	private boolean showCombinedExternalFeedsOnProfile;
-	private Page indexPage = Page.USER_PROFILE;
+	private boolean showCombinedExternalFeedsOnProfile = false;
+	private Page indexPage = Page.SPLASH;
 	
 	@Id
 	@Column(name="user_id", nullable = false, updatable=false)

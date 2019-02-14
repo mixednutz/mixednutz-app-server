@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
+import net.mixednutz.app.server.entity.UserSettings.Page;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserSettings;
 import net.mixednutz.app.server.entity.Visibility;
@@ -53,6 +54,7 @@ public class UserSettingsController {
 		UserSettings settings = settingsRepository.findById(user.getUserId()).orElseGet(
 				new NewUserSettingsSupplier(user));
 		settings.setShowCombinedExternalFeedsOnProfile(form.isShowCombinedExternalFeedsOnProfile());
+		settings.setIndexPage(form.getIndexPage());
 		settingsRepository.save(settings);
 		
 		List<AbstractFeed> feeds = externalFeedRepository.findByUser(user);
@@ -86,6 +88,7 @@ public class UserSettingsController {
 	
 	public static class SettingsForm {
 		boolean showCombinedExternalFeedsOnProfile;
+		Page indexPage;
 		Long[] feedId;
 		Visibility[] visibility;
 		
@@ -101,6 +104,12 @@ public class UserSettingsController {
 		}
 		public void setShowCombinedExternalFeedsOnProfile(boolean showCombinedExternalFeedsOnProfile) {
 			this.showCombinedExternalFeedsOnProfile = showCombinedExternalFeedsOnProfile;
+		}
+		public Page getIndexPage() {
+			return indexPage;
+		}
+		public void setIndexPage(Page indexPage) {
+			this.indexPage = indexPage;
 		}
 		public Long[] getFeedId() {
 			return feedId;
