@@ -53,6 +53,7 @@ public class MainController {
 		}
 		
 		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
+		model.addAttribute("isRoot", true);
 		if (Page.SPLASH.equals(siteSettings.getIndexPage())) {
 			return ROOT_TEMPLATE;
 		}

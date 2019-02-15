@@ -10,7 +10,8 @@
     <meta http-equiv="Content-Language" content="en" />
 	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${profileUser.userId}" th:text="|#{profile.window-title} - #{site.title}|">My Profile - MixedNutz.net</title>
 	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}!=${profileUser.userId}" th:text="@{|${profileUser.username}'s Profile - #{site.title}|}">My Profile - MixedNutz.net</title>
-	<title sec:authorize="!isAuthenticated()" th:text="@{|${profileUser.username}'s Profile - #{site.title}|}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="!isAuthenticated()" th:if="${isRoot==null}" th:text="@{|${profileUser.username}'s Profile - #{site.title}|}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="!isAuthenticated()" th:if="${isRoot!=null}" th:text="#{site.title}">MixedNutz.net</title>
 	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
