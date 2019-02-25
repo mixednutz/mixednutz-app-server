@@ -18,7 +18,7 @@ import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserSettings;
-import net.mixednutz.app.server.entity.Visibility;
+import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.UserSettingsRepository;
@@ -104,10 +104,10 @@ public class UserSettingsController {
 		boolean showCombinedExternalFeedsOnProfile;
 		Page indexPage;
 		Long[] feedId;
-		Visibility[] visibility;
+		VisibilityType[] visibility;
 		
-		public Map<Long, Visibility> visibilityMap() {
-			Map<Long, Visibility> map = new LinkedHashMap<>();
+		public Map<Long, VisibilityType> visibilityMap() {
+			Map<Long, VisibilityType> map = new LinkedHashMap<>();
 			for (int i=0; i<feedId.length; i++) {
 				map.put(feedId[i], visibility[i]);
 			}
@@ -131,10 +131,10 @@ public class UserSettingsController {
 		public void setFeedId(Long[] feedId) {
 			this.feedId = feedId;
 		}
-		public Visibility[] getVisibility() {
+		public VisibilityType[] getVisibility() {
 			return visibility;
 		}
-		public void setVisibility(Visibility[] visibility) {
+		public void setVisibility(VisibilityType[] visibility) {
 			this.visibility = visibility;
 		}
 	}

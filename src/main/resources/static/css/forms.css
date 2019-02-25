@@ -1,0 +1,10 @@
+/** WYSIWYG Editor **/
+#editor {
+	overflow-y:scroll; 
+	max-height:300px;
+	height:200px;
+}
+
+textarea.replyBody {
+	width: 100%;
+}

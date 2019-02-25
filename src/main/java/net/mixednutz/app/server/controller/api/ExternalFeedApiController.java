@@ -31,7 +31,7 @@ import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalFeeds;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.User;
-import net.mixednutz.app.server.entity.Visibility;
+import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.UserRepository;
@@ -148,8 +148,8 @@ public class ExternalFeedApiController {
 			throw new ResourceNotFoundException("Feed not found");
 		}
 
-		if ((user==null && !Visibility.WORLD.equals(feed.get().getVisibility())) ||
-				Visibility.PRIVATE.equals(feed.get().getVisibility()) && user!=null && 
+		if ((user==null && !VisibilityType.WORLD.equals(feed.get().getVisibility())) ||
+				VisibilityType.PRIVATE.equals(feed.get().getVisibility()) && user!=null && 
 				!user.getUsername().equals(feed.get().getUser().getUsername())) {
 			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
 		}
@@ -188,7 +188,7 @@ public class ExternalFeedApiController {
 		
 		//Only get feeds visible to the WORLD:
 		List<AbstractFeed> feeds = feedRepository.findByUserAndVisibilityIn(profileUser.get(), 
-				Collections.singleton(Visibility.WORLD));
+				Collections.singleton(VisibilityType.WORLD));
 
 		//If pageSize is null, grab default
 		if (prevPage.getPageSize()==null) {

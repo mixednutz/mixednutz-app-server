@@ -13,6 +13,7 @@
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
 	<link th:href="@{|/css/mixednutz_timeline.css|}" href="../css/mixednutz_timeline.css" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/css/forms.css|}" href="../css/forms.css" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/css/default_theme.css|}" href="../css/default_theme.css" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/webjars/fontawesome/css/font-awesome.min.css|}" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/webjars/snackbarjs/dist/snackbar.min.css|}" rel="stylesheet" type="text/css" />
@@ -36,6 +37,14 @@
 		<div id="newFeedModal" class="modal fade" tabindex="-1" role="dialog">
 			<div>
 				<div class="modal-content" th:include="feeds/fragments_feed :: newAccountForm_model">
+				</div>
+			</div>
+		</div>
+		
+		<!-- New Journal Form -->
+		<div id="newJournalModal" class="modal container fade" tabindex="-1" role="dialog">
+			<div>
+				<div class="modal-content" th:include="journal/fragments_journal :: newJournalForm_model">
 				</div>
 			</div>
 		</div>
@@ -91,6 +100,7 @@
  	<script th:replace="common/fragments_js :: feed_timeline"></script>
  	<script th:replace="common/fragments_js :: timeline"></script>
  	<script th:replace="feeds/fragments_feed :: newAccountForm_JS"></script>
+ 	<script th:include="journal/fragments_journal :: newJournalForm_JS"></script>
  	<script type="text/javascript" th:src="@{|/js/pwa.js|}" src="../js/pwa.js"></script>
  	<script type="text/javascript" th:src="@{|/js/pwa_main.js|}" src="../js/pwa_main.js"></script>
     

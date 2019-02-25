@@ -42,7 +42,7 @@ public class ExternalCredentials {
 
 		private User user;
 		
-		private Visibility visibility;
+		private VisibilityType visibility;
 
 		public ExternalAccountCredentials() {
 			super();
@@ -114,11 +114,11 @@ public class ExternalCredentials {
 		 * @return
 		 */
 		@Transient
-		public Visibility getVisibility() {
+		public VisibilityType getVisibility() {
 			return visibility;
 		}
 
-		public void setVisibility(Visibility visibility) {
+		public void setVisibility(VisibilityType visibility) {
 			this.visibility = visibility;
 		}
 

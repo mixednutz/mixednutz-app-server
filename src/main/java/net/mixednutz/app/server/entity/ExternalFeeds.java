@@ -51,7 +51,7 @@ public class ExternalFeeds {
 		private ZonedDateTime lastCrawled;
 		private String lastCrawledHomeTimelineKey; //used for seek pagination
 		private String lastCrawledUserTimelineKey; //used for seek pagination
-		private Visibility visibility = Visibility.PRIVATE; //Default to private
+		private VisibilityType visibility = VisibilityType.PRIVATE; //Default to private
 
 		public AbstractFeed() {
 			super();
@@ -176,11 +176,11 @@ public class ExternalFeeds {
 		 * @return
 		 */
 		@Enumerated
-		public Visibility getVisibility() {
+		public VisibilityType getVisibility() {
 			return visibility;
 		}
 
-		public void setVisibility(Visibility visibility) {
+		public void setVisibility(VisibilityType visibility) {
 			this.visibility = visibility;
 		}
 

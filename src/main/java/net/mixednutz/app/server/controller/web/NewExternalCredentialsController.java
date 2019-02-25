@@ -32,7 +32,7 @@ import net.mixednutz.app.server.entity.ExternalFeeds.AbstractAuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
-import net.mixednutz.app.server.entity.Visibility;
+import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalCredentialsRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
@@ -76,7 +76,7 @@ public class NewExternalCredentialsController {
 			} else {
 				throw new RuntimeException("Credentials Type does not extend or implement either IOauth1Credentials or IOauth2Credentials: "+provider.getCredentialsInterface());
 			}
-			creds.setVisibility(Visibility.valueOf(request.getParameter("visibility")));
+			creds.setVisibility(VisibilityType.valueOf(request.getParameter("visibility")));
 			User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	    	creds.setUser(user);
 			return creds;

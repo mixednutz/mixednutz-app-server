@@ -4,6 +4,15 @@ spring:
 
 site.settings.uniqueId: 1
 
+mixednutz:
+  network-info:
+    id: andrewfestadotcom
+    host-name: andrewfesta.com
+    display-name: AndrewFesta.com
+    base-url: https://${HOST_AND_PORT}
+    base-oembed-url: https://${HOST_AND_PORT}/oembed
+    
+
 ---
 # Optionally link up with other Mixednutz instance
 spring:

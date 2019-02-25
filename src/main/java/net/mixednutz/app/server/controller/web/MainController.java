@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
+import net.mixednutz.app.server.entity.Journal;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
 import net.mixednutz.app.server.entity.User;
@@ -79,6 +80,9 @@ public class MainController {
 	}
 	
 	private void addNewPostForms(Model model) {
+		//New Journal post
+		final Journal journal = new Journal();
+		model.addAttribute("newpost", journal);
 		//New External Feed
 		final ExternalAccountCredentials credentials = new ExternalAccountCredentials();
 		model.addAttribute(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME, credentials);

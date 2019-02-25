@@ -48,7 +48,7 @@ import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 import net.mixednutz.app.server.entity.User;
-import net.mixednutz.app.server.entity.Visibility;
+import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.manager.ExternalAccountCredentialsManager;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedContentRepository;
@@ -90,7 +90,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUserVisibleToWorld(User user) {
 		final Map<String, List<AbstractFeed>> map = collate(
 				externalFeedRepository.findByUserAndVisibilityIn(user, 
-						Collections.singleton(Visibility.WORLD)));
+						Collections.singleton(VisibilityType.WORLD)));
 		final Map<INetworkInfoSmall, List<AbstractFeed>> newMap = new LinkedHashMap<>();
 		for (Entry<String, List<AbstractFeed>> entry: map.entrySet()) {
 			ApiProvider<?, ?> provider = apiProviderRegistry.getSocialNetworkClient(entry.getKey());
@@ -138,7 +138,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	protected IPage<? extends ITimelineElement,Instant> getTimelineInternal(AbstractFeed feed, 
 			String hashtag, ExternalFeedContent.TimelineType timelineType, IPageRequest<String> paging) {
 			
-		if (Visibility.PRIVATE.equals(feed.getVisibility())) {
+		if (VisibilityType.PRIVATE.equals(feed.getVisibility())) {
 			//Return live feed instead
 			return new Page<ITimelineElement,Instant>();
 		}
@@ -183,7 +183,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			
 		final List<Long> feedIdList = new ArrayList<Long>();
 		for (AbstractFeed feed: feeds) {
-			if (!Visibility.PRIVATE.equals(feed.getVisibility())) {
+			if (!VisibilityType.PRIVATE.equals(feed.getVisibility())) {
 				feedIdList.add(feed.getFeedId());
 			}
 		}
@@ -438,7 +438,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setVisibility(Visibility.PRIVATE);
+			feed.setVisibility(VisibilityType.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}
@@ -472,7 +472,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setVisibility(Visibility.PRIVATE);
+			feed.setVisibility(VisibilityType.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}
@@ -505,7 +505,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setVisibility(Visibility.PRIVATE);
+			feed.setVisibility(VisibilityType.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}
@@ -539,7 +539,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
-			feed.setVisibility(Visibility.PRIVATE);
+			feed.setVisibility(VisibilityType.PRIVATE);
 			return null;
 			//TODO  If private maybe we should consider deleting everything we have saved
 		}

@@ -17,7 +17,7 @@ import net.mixednutz.api.core.model.PageRequest;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
-import net.mixednutz.app.server.entity.Visibility;
+import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 
@@ -48,7 +48,7 @@ public class FeedPoller {
 		 * 
 		 */
 		for (AbstractFeed feed: getActiveFeeds()) {
-			if (!Visibility.PRIVATE.equals(feed.getVisibility())) {
+			if (!VisibilityType.PRIVATE.equals(feed.getVisibility())) {
 				try {
 					if (!nextPages.containsKey(feed)) {
 						LOG.info("Polling Feed:{}", feed.getFeedId());
@@ -101,7 +101,7 @@ public class FeedPoller {
 		 * 
 		 */
 		for (AbstractFeed feed: getActiveFeeds()) {
-			if (!Visibility.PRIVATE.equals(feed.getVisibility())) {
+			if (!VisibilityType.PRIVATE.equals(feed.getVisibility())) {
 				try {
 					if (!nextPages.containsKey(feed)) {
 						LOG.info("Polling Feed:{}", feed.getFeedId());
