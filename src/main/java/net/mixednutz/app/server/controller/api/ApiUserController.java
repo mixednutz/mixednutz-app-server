@@ -1,7 +1,7 @@
 package net.mixednutz.app.server.controller.api;
 
-import java.util.Optional;
 import java.util.TreeMap;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,13 +36,15 @@ public class ApiUserController {
 			@PathVariable String username,
 			@AuthenticationPrincipal User user) {
 		
-		Optional<User> profileUser = userRepository.findByUsername(username);
-		if (!profileUser.isPresent()) {
-			throw new UserNotFoundException("User "+username+" not found");
-		}
+		User profileUser = userRepository.findByUsername(username)
+				.orElseThrow(new Supplier<UserNotFoundException>(){
+					@Override
+					public UserNotFoundException get() {
+						throw new UserNotFoundException("User "+username+" not found");
+					}});
 				
 		UserProfileBundle bundle = new UserProfileBundle()
-				.addUser(profileUser.get())
+				.addUser(profileUser)
 				.addExternalFeedsList(externalFeedApi.externalFeeds(username));
 //				.addFollowerCount(friendManager.countFollowers(account, false))
 //				.addFollowingCount(friendManager.countFollowing(account, false));

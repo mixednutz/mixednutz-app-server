@@ -1,6 +1,10 @@
 spring: 
   
   profiles.active: jpa-dev, mixednutz_base, twitter
+  
+  data:
+    rest:
+      basePath: /api
 
 site.settings.uniqueId: 1
 

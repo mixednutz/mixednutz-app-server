@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Language" content="en" />
+        
+	<title th:text="@{|${journal.subject} : #{site.title}|}">MixedNutz.net</title>
+	<meta property="og:title" th:content="@{|${journal.subject} : #{site.title}|}" content="MixedNutz.net"/>
+	<meta name="twitter:title" th:content="@{|${journal.subject} : #{site.title}|}" content="MixedNutz.net"/>
+	
+	<meta name="author" th:if="${journal.author!=null}" th:content="${journal.author.username}"/>
+	<!-- link rel="author" href="https://plus.google.com/[YOUR PERSONAL G+ PROFILE HERE]"/-->
+	<meta th:if="${profile!=null and profile.twitterAccount!=null}" property="twitter:creator" th:content="${profile.twitterAccount.twitterScreenname}" content="@username" />
+	
+	<meta name="description" th:content="${journal.description}"/>
+    <meta property="og:description" th:content="${journal.description}"/>
+    <meta name="twitter:description" th:content="${journal.description}"/>
+    
+    <meta property="og:type" content="blog"/>
+    
+    <meta property="og:url" th:content="@{|${formatter.formatAbsoluteUrl(journal.uri)}|}"/>
+    <meta name="twitter:url" th:content="@{|${formatter.formatAbsoluteUrl(journal.uri)}|}"/>
+    
+	<!-- Bootstrap Core CSS -->
+	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
+	
+	<!-- Bootstrap Modal CSS -->
+	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
+	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
+	
+	<link th:href="@{|/webjars/github-com-skywalkapps-bootstrap-notifications/1.0.3/dist/stylesheets/bootstrap-notifications.min.css|}" rel="stylesheet" type="text/css" />
+	
+	<!-- Mixednutz CSS -->
+	<link th:href="@{|/css/default_theme.css|}" href="../css/default_theme.css" rel="stylesheet" type="text/css" />
+	
+	<!-- Custom Fonts -->
+	<link th:href="@{|/webjars/fontawesome/css/font-awesome.min.css|}" rel="stylesheet" type="text/css" />
+	
+	<!-- oEmbed -->
+	<link rel="alternate" type="application/json+oembed" 
+		th:with="journalUrl=@{|${formatter.formatAbsoluteUrl(journal.uri)}|}"
+		th:href="|${formatter.formatAbsoluteUrl('/oembed?url=' + journalUrl)}|"
+  		th:title="@{|${journal.subject} : #{site.title}|}"/>
+</head>
+<body>
+
+	<!-- Banner -->
+	<div th:replace="header :: navbar">navbar</div>
+	
+	<div class="container">
+	
+		<!-- Edit Journal Form -->
+		<div id="editJournalModal" class="modal container fade" tabindex="-1" role="dialog">
+			<div>
+				<div class="modal-content" include="journal/modules_journal :: editJournalForm_model">
+				</div>
+			</div>
+		</div>
+		
+		<!-- Delete Journal Form -->
+		<div id="deleteJournalModal" class="modal fade" tabindex="-1" role="dialog" data-focus-on="input:first">
+			<div>
+				<div class="modal-content" include="journal/modules_journal :: deleteJournalForm_model">
+				</div>
+			</div>
+		</div>
+		
+		<!-- Add Tags Form -->
+		<div id="addTagsModal" class="modal fade" tabindex="-1" role="dialog" data-focus-on="input:first">
+			<div>
+				<div class="modal-content" include="common/modules_common :: addTags_modal">
+				</div>
+			</div>
+		</div>
+		
+		<!-- React Modal -->
+		<div id="reactModal" class="modal fade" tabindex="-1" role="dialog">
+			<div>
+				<div class="modal-content" include="common/modules_common :: newReaction_modal">
+				</div>
+			</div>
+		</div>
+
+        <div class="row">
+
+            <!-- Blog Post Content Column -->
+            <div class="col-lg-8" th:include="journal/fragments_journal :: journal">
+			Journal Template Here
+            </div>
+
+            <!-- Blog Sidebar Widgets Column -->
+            <div class="col-md-4">
+            
+            	<!-- Recent Posts Well -->
+				<div class="well">
+                    <h4>More Journals from <a th:if="${journal.author!=null}" th:href='@{|/${journal.author.username}|}' href="#" th:text="${journal.author.username}">username</a><span th:if="${journal.author==null}">this former user</span></h4>
+                    <div include="journal/modules_journal :: recentPosts (${recentPosts})">recentPosts</div>
+                </div>
+                                
+                <div class="well" th:if="${!#lists.isEmpty(tagPosts)}">
+                	<h4>More Journals from tags</h4>
+                	<div th:each="tagEntry: ${tagPosts}">
+                    	<h5 th:text="${tagEntry.key}">tag</h5>
+                    	<div include="journal/modules_journal :: recentPosts (${tagEntry.value})">recentPosts</div>
+                    </div>
+                </div>
+                
+                
+            </div>
+
+        </div>
+        <!-- /.row -->
+
+        <hr/>
+
+        <!-- Footer -->
+        <footer th:include="footer :: footer">
+            footer
+        </footer>
+
+    </div>
+	
+	<!-- JQuery 
+	================================================== -->
+	<script th:src="@{|/webjars/jquery/2.1.4/jquery.min.js|}"></script>
+	<script th:include="header :: navbar_js"></script>
+	
+	<!-- JQuery HotKeys
+	================================================== -->
+	<script th:src="@{|/webjars/jQuery.Hotkeys/0.2.0/jquery.hotkeys.js|}"></script>
+	
+	<!-- Bootstrap WYSIWYG
+	================================================== -->
+	<script th:src="@{|/webjars/bootstrap-wysiwyg-steveathon/1.0.5/js/bootstrap-wysiwyg.min.js|}"></script>
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap/3.3.6/js/bootstrap.min.js|}"></script> 
+    
+    <!-- Bootstrap Modal JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap-modal/2.2.5/js/bootstrap-modalmanager.js|}"></script>
+    <script th:src="@{|/webjars/bootstrap-modal/2.2.5/js/bootstrap-modal.js|}"></script> 
+        
+    <!-- My JavaScript 
+    ================================================== -->
+    <script type="text/javascript" th:src="@{|/js/shares.js|}" src="../js/shares.js"></script>
+    <script type="text/javascript">renderOembedFilter();</script>
+    <script include="common/modules_common :: post_options_JS" th:inline="javascript"></script>
+    <script include="journal/modules_journal :: editJournalForm_JS" th:inline="javascript"></script>
+    <script include="common/modules_common :: tags_JS" th:inline="javascript"></script>
+    <script include="common/modules_common :: reactions_JS" th:inline="javascript"></script>
+    
+	
+	<!-- Google Analytics JavaScript 
+ 	================================================== -->
+    <script th:include="google_analytics :: tracking"></script>
+    
+    <!-- Twitter Web Intent Handler JavaScript 
+ 	================================================== -->
+    <script type="text/javascript" async="async" src="https://platform.twitter.com/widgets.js"></script>
+</body>
+</html>

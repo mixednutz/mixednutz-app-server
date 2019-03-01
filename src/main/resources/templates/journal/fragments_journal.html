@@ -20,6 +20,16 @@
 						<input id="newjournal_subject" class="form-control" type='text' th:field="*{subject}" size='50' required="required"/>
 					</div>
 					<div class="form-group">
+						<label for="newjournal_subjectey">Uri</label>
+						<div class="input-group input-group-sm">
+							<span class="input-group-addon">
+								<span>/username/1/2/</span>
+							</span>
+							<input id="newjournal_subjectKey" class="form-control" type='text' th:field="*{subjectKey}" size='50' required="required"/>
+							
+						</div>
+					</div>
+					<div class="form-group">
 						<label for="body">Body</label>
 						<div class="btn-toolbar" data-role="editor-toolbar"
 						        data-target="#editor">
@@ -82,6 +92,75 @@
 	$('#submit-btn').hide();
 	</script>
   
+  	<div th:fragment="journal">
+		<!-- Blog Post --> 
+		
+        <!-- Title -->
+        <h1 itemprop="name" th:text="${journal.subject}">Blog Post Title</h1>
+
+        <!-- Author -->
+        <p class="lead">
+            by <a th:if="${journal.author!=null}" th:href='@{|/${journal.author.username}|}' href="#" th:text="${journal.author.username}">Author</a><span th:if="${journal.author==null}">Former Member</span> 
+        </p>
+        
+        <hr/>
+
+        <!-- Date/Time --> 
+        <p><span class="glyphicon glyphicon-time"></span> Posted on <time th:datetime="${#temporals.formatISO(journal.dateCreated)}" th:text="${#temporals.format(journal.dateCreated, #messages.msg('datetime.format.full'))}">August 24, 2013 at 9:00 PM</time></p>
+
+		<!-- Tags -->
+  		<div include="common/modules_common :: tags (${journal.uri})">tags</div>
+		<!-- Reactions -->
+		<div include="common/modules_common :: reactions (${journal.reactions}, ${reactionScores}, ${journal.uri}, null)">reactions</div>
+        
+  		
+		<hr sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${journal.author.userId}" />
+		
+		<div sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${journal.author.userId}">
+			<!-- Edit -->
+			<button data-toggle="modal" data-target="#editJournalModal" class="btn btn-default" type="button" ><i class="glyphicon glyphicon-pencil"></i>&nbsp;Edit Entry</button>
+			<!-- Delete -->
+			<button data-toggle="modal" data-target="#deleteJournalModal" class="btn btn-danger" type="button" ><i class="glyphicon glyphicon-remove"></i>&nbsp;Delete Entry</button>
+		</div>
+				
+        <hr/>
+
+        <!-- Preview Image -->
+        <!-- <img class="img-responsive" src="http://placehold.it/900x300" alt=""/> 
+
+        <hr/>-->
+
+        <!-- Post Content -->
+        <div th:utext="${journal.filteredBody}">...HTML Body...</div>
+                
+        <hr/>
+        
+        <!-- Tags -->
+  		<div include="common/modules_common :: tags (${journal.uri})">tags</div>
+				
+		<!-- Author Box -->
+		<div include="profile/modules_profile :: authorBio (${profile}, ${journal.author})">recentAlbums</div>
+
+        <!-- Blog Comments -->
+
+        <!-- Comments Form -->
+        <div class="well">
+            <h4>Leave a Comment:</h4>
+            <form role="form" th:action="@{|${journal.uri}/comment/new|}" th:object="${newComment}" method="post">
+                <div class="form-group">
+                    <textarea class="form-control" th:field="*{body}" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+            </form>
+        </div>
+
+        <hr/>
+
+        <!-- Posted Comments -->
+		<div class="comments" include="common/modules_common :: post_comments (${journal})">Comments</div>
+            
+	</div>
+	
   
   </body>
   

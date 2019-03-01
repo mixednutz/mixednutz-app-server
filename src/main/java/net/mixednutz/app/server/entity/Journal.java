@@ -27,6 +27,8 @@ public class Journal extends AbstractJournal<JournalComment> {
 	
 	private ZonedDateTime publishDate; //date to be published
 	private LocalDate publishDateKey; //For URL lookups
+	private String filteredBody;
+
 
 	private List<JournalComment> comments;
 	
@@ -68,6 +70,11 @@ public class Journal extends AbstractJournal<JournalComment> {
 	public void setJournalId(Long journalId) {
 		this.journalId = journalId;
 	}
+	
+	@Transient
+	public String getFilteredBody() {
+		return filteredBody;
+	}
 
 	public void setPublishDate(ZonedDateTime publishDate) {
 		this.publishDate = publishDate;
@@ -79,6 +86,10 @@ public class Journal extends AbstractJournal<JournalComment> {
 
 	public void setPublishDateKey(LocalDate publishDateKey) {
 		this.publishDateKey = publishDateKey;
+	}
+	
+	public void setFilteredBody(String filteredBody) {
+		this.filteredBody = filteredBody;
 	}
 
 	@Transient

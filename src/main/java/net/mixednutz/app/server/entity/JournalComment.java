@@ -18,7 +18,7 @@ public class JournalComment extends AbstractPostComment {
 	
 	private Journal journal;
 	
-	public JournalComment(String type) {
+	public JournalComment() {
 		super(JOURNAL_COMMENT_TYPE);
 	}
 
