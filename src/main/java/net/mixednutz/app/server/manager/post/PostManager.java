@@ -1,13 +1,13 @@
-package net.mixednutz.app.server.manager;
+package net.mixednutz.app.server.manager.post;
 
 import java.time.Instant;
 
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
 import net.mixednutz.api.model.ITimelineElement;
-import net.mixednutz.app.server.entity.Post;
-import net.mixednutz.app.server.entity.PostComment;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.post.Post;
+import net.mixednutz.app.server.entity.post.PostComment;
 
 public interface PostManager<P extends Post<C>, C extends PostComment> {
 	

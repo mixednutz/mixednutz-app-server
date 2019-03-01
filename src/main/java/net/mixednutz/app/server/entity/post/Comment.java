@@ -1,9 +1,11 @@
 /**
  * 
  */
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post;
 
 import java.time.ZonedDateTime;
+
+import net.mixednutz.app.server.entity.User;
 
 /**
  * @author Andy

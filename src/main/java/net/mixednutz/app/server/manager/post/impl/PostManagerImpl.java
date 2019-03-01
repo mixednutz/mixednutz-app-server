@@ -1,4 +1,4 @@
-package net.mixednutz.app.server.manager.impl;
+package net.mixednutz.app.server.manager.post.impl;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -14,20 +14,24 @@ import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
 import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
-import net.mixednutz.app.server.entity.Post;
-import net.mixednutz.app.server.entity.PostComment;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.post.AbstractPostView;
+import net.mixednutz.app.server.entity.post.Post;
+import net.mixednutz.app.server.entity.post.PostComment;
 import net.mixednutz.app.server.manager.ApiManager;
-import net.mixednutz.app.server.manager.PostManager;
+import net.mixednutz.app.server.manager.post.PostManager;
+import net.mixednutz.app.server.manager.post.PostViewManager;
 import net.mixednutz.app.server.repository.PostRepository;
 
-public class PostManagerImpl<P extends Post<C>, C extends PostComment> 
+public class PostManagerImpl<P extends Post<C>, C extends PostComment, V extends AbstractPostView> 
 	implements PostManager<P,C> {
 	
-	private PostRepository<P,C> postRepository;
+	protected PostRepository<P,C> postRepository;
 	
+	protected PostViewManager<P,C,V> postViewManager;
+		
 	@Autowired
-	private ApiManager apiManager;
+	protected ApiManager apiManager;
 	
 	public IPage<? extends ITimelineElement,Instant> getTimelineInternal(
 			User owner, IPageRequest<String> paging) {
@@ -107,10 +111,14 @@ public class PostManagerImpl<P extends Post<C>, C extends PostComment>
 				}})
 			.build();
 	}
-
-	public void setPostRepository(PostRepository<P, C> postRepository) {
-		this.postRepository = postRepository;
+	
+	public List<? extends ITimelineElement> getUserTimelineInternal(User user, User viewer, int pageSize) {
+		return this.getUserTimelineInternal(user, viewer, 
+				net.mixednutz.api.core.model.PageRequest.first(pageSize, Direction.LESS_THAN, String.class)).getItems();
 	}
 	
+	public void incrementViewCount(P post, User viewer) {
+		postViewManager.addView(post, viewer);
+	}
 
 }

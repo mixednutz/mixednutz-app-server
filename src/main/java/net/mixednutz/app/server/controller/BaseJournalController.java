@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
-import net.mixednutz.app.server.entity.Journal;
-import net.mixednutz.app.server.entity.JournalComment;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.VisibilityType;
+import net.mixednutz.app.server.entity.post.journal.Journal;
+import net.mixednutz.app.server.entity.post.journal.JournalComment;
 import net.mixednutz.app.server.format.HtmlFilter;
+import net.mixednutz.app.server.manager.ReactionManager;
+import net.mixednutz.app.server.manager.TagManager;
+import net.mixednutz.app.server.manager.post.journal.JournalManager;
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -26,10 +29,19 @@ public class BaseJournalController {
 	private JournalRepository journalRepository;
 	
 	@Autowired
+	private JournalManager journalManager;
+	
+	@Autowired
 	private UserRepository userRepository;
 	
 	@Autowired
 	private List<HtmlFilter> htmlFilters;
+	
+	@Autowired
+	protected TagManager tagManager;
+	
+	@Autowired
+	protected ReactionManager reactionManager;
 	
 	
 	protected Journal get(String username, int year, int month, int day, @PathVariable String subjectKey) {
@@ -61,7 +73,7 @@ public class BaseJournalController {
 		}
 		
 		model.addAttribute("journal", journal);
-//		User user = auth!=null?(User) auth.getPrincipal():null;
+		User user = auth!=null?(User) auth.getPrincipal():null;
 		
 		//HTML Filter
 		String filteredHtml = journal.getBody();
@@ -75,33 +87,33 @@ public class BaseJournalController {
 //		if (settings==null) {
 //			settings = mysettingsManager.getDefaults();
 //		}
-//		
-//		if (user!=null && !user.isTemporaryUser()) {
-//			journalManager.incrementViewCount(journal, user);
+		
+		if (user!=null) {
+			journalManager.incrementViewCount(journal, user);
 //			notificationManager.markAsRead(user, journal);
-//		} 
-//		
-//		model.addAttribute("tagScores", tagManager.getTagScores(journal.getTags(), journal.getAuthor(), user));
-//		model.addAttribute("reactionScores", reactionManager.getReactionScores(journal.getReactions(), journal.getAuthor(), user));
+		} 
+		
+		model.addAttribute("tagScores", tagManager.getTagScores(journal.getTags(), journal.getAuthor(), user));
+		model.addAttribute("reactionScores", reactionManager.getReactionScores(journal.getReactions(), journal.getAuthor(), user));
 //		if (journal.getOwner()!=null) {
 //			model.addAttribute("profile", myprofileManager.get(journal.getOwner().getId()));
 //		}
 //		model.addAttribute("authors", accountManager.loadCommentAuthorsById(journal));
-//		
-//		//Side bar stuff
-//		model.addAttribute("recentPosts", journalManager.getUserJournals(journal.getOwner()!=null?journal.getOwner():new Account(journal.getOwnerId(),false), 
-//				user!=null?user:ANON_USER, settings.getPublicMsgPageSize(), null).getItems());
-//		if (!journal.getTags().isEmpty()) {
-//			model.addAttribute("tagPosts", journalManager.getNutsterzJournalsForTag(user!=null?user:ANON_USER, 
-//					tagManager.getTagsArray(journal.getTags()), journal.getId()));
-//		}
+		
+		//Side bar stuff
+		model.addAttribute("recentPosts", journalManager.getUserJournals(
+				journal.getOwner(), user, 5));
+		if (!journal.getTags().isEmpty()) {
+			model.addAttribute("tagPosts", journalManager.getJournalsForTag(user, 
+					tagManager.getTagsArray(journal.getTags()), journal.getId()));
+		}
 		
 		//New Comment
 		model.addAttribute("newComment", new JournalComment());
 		
-//		//Tags String
-//		model.addAttribute("tagsString", tagManager.getTagsString(journal.getTags()));
-//		
+		//Tags String
+		model.addAttribute("tagsString", tagManager.getTagsString(journal.getTags()));
+		
 //		if (auth!=null) {
 //			//external feeds compatible for journal crossposting
 //			Map<FeedType, List<AbstractFeed>> journalCrosspostFeeds = 

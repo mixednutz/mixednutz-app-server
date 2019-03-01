@@ -1,37 +1,35 @@
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post.journal;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 
 @Entity
 @Table(name="Journal")
 public class Journal extends AbstractJournal<JournalComment> {
 	
-	private Long journalId;
-	
 	private ZonedDateTime publishDate; //date to be published
 	private LocalDate publishDateKey; //For URL lookups
-	private String filteredBody;
-
-
 	private List<JournalComment> comments;
-	
+	private Set<JournalTag> tags;
+	private Set<JournalReaction> reactions;
+	private Set<JournalView> views;
+	private String filteredBody;
 	
 	@Override
 	public void onPersist() {
@@ -44,14 +42,6 @@ public class Journal extends AbstractJournal<JournalComment> {
 		}
 	}
 
-	@Id
-	@Column(name="journal_id")
-	@GeneratedValue(generator="system-native")
-	@GenericGenerator(name="system-native", strategy = "native")
-	public Long getJournalId(){
-		return journalId;
-	}
-		
 	@Column(name="publish_date")
 	public ZonedDateTime getPublishDate() {
 		return publishDate;
@@ -66,11 +56,24 @@ public class Journal extends AbstractJournal<JournalComment> {
 	public List<JournalComment> getComments() {
 		return comments;
 	}
-
-	public void setJournalId(Long journalId) {
-		this.journalId = journalId;
+	
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy="journal", cascade=CascadeType.ALL, orphanRemoval=true)
+	public Set<JournalTag> getTags() {
+		return tags;
 	}
 	
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy="journal", cascade=CascadeType.ALL, orphanRemoval=true)
+	public Set<JournalReaction> getReactions() {
+		return reactions;
+	}
+	
+	@OneToMany(mappedBy="journal", orphanRemoval=true)
+	public Set<JournalView> getViews() {
+		return views;
+	}
+
 	@Transient
 	public String getFilteredBody() {
 		return filteredBody;
@@ -88,6 +91,18 @@ public class Journal extends AbstractJournal<JournalComment> {
 		this.publishDateKey = publishDateKey;
 	}
 	
+	public void setTags(Set<JournalTag> tags) {
+		this.tags = tags;
+	}
+
+	public void setReactions(Set<JournalReaction> reactions) {
+		this.reactions = reactions;
+	}
+	
+	public void setViews(Set<JournalView> views) {
+		this.views = views;
+	}
+	
 	public void setFilteredBody(String filteredBody) {
 		this.filteredBody = filteredBody;
 	}
@@ -102,7 +117,7 @@ public class Journal extends AbstractJournal<JournalComment> {
 					publishDateKey.get(ChronoField.DAY_OF_MONTH)+"/"+
 					getSubjectKey();
 		}
-		return "/journal/id/"+getJournalId();
+		return "/journal/id/"+getId();
 	}
 	
 }

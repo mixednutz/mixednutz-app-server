@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
-import net.mixednutz.app.server.entity.Journal;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
+import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
@@ -79,10 +79,11 @@ public class MainController {
 		return LOGIN_TEMPLATE;
 	}
 	
-	private void addNewPostForms(Model model) {
+	private void addNewPostForms(Model model, User owner) {
 		//New Journal post
 		final Journal journal = new Journal();
 		model.addAttribute("newpost", journal);
+		journal.setOwnerId(owner!=null?owner.getUserId():null);
 		//New External Feed
 		final ExternalAccountCredentials credentials = new ExternalAccountCredentials();
 		model.addAttribute(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME, credentials);
@@ -98,7 +99,7 @@ public class MainController {
 		 * 
 		 * Only non-user reference data can be in the model
 		 */
-		addNewPostForms(model);	
+		addNewPostForms(model, null);	
 				
 		return MAIN_TEMPLATE;
 	}
@@ -118,6 +119,7 @@ public class MainController {
 		 * 
 		 * Only non-user reference data can be in the model
 		 */
+		addNewPostForms(model, profileUser.get());	
 		
 		return PROFILE_TEMPLATE;
 	}

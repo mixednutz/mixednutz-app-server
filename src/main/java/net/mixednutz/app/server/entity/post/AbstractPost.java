@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -9,14 +9,20 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ConstraintMode;
 import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+
+import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.Visibility;
 
 /**
  * @author Andy
@@ -25,6 +31,7 @@ import org.hibernate.annotations.NotFoundAction;
 @MappedSuperclass
 public abstract class AbstractPost<C extends AbstractPostComment> implements Post<C> {
 			
+	private Long id;
 	private String description;
 	private ZonedDateTime dateCreated; //creation Date
 	private User author;
@@ -47,8 +54,19 @@ public abstract class AbstractPost<C extends AbstractPostComment> implements Pos
 	
 	@Transient
 	public abstract String getUri();
+	
+	@Id
+	@GeneratedValue(generator="system-native")
+	@GenericGenerator(name="system-native", strategy = "native")
+	public Long getId() {
+		return id;
+	}
 
-//	@Column(name="description", columnDefinition="LONGTEXT")
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	//	@Column(name="description", columnDefinition="LONGTEXT")
 	public String getDescription() {
 		return description;
 	}

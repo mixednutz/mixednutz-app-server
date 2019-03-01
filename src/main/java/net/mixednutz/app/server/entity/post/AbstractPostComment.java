@@ -1,13 +1,16 @@
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name="Comment")
@@ -29,6 +32,9 @@ public abstract class AbstractPostComment extends AbstractComment
 	}
 
 	@Id
+	@Column(name="comment_id")
+	@GeneratedValue(generator="system-native")
+	@GenericGenerator(name="system-native", strategy = "native")
 	public Long getCommentId() {
 		return commentId;
 	}

@@ -1,4 +1,4 @@
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post.journal;
 
 import javax.persistence.ConstraintMode;
 import javax.persistence.DiscriminatorValue;
@@ -9,6 +9,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import net.mixednutz.app.server.entity.post.AbstractPostComment;
+import net.mixednutz.app.server.entity.post.Post;
+import net.mixednutz.app.server.entity.post.PostComment;
 
 @Entity
 @DiscriminatorValue(JournalComment.JOURNAL_COMMENT_TYPE)

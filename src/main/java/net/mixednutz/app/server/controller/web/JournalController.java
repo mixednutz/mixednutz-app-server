@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.mixednutz.app.server.controller.BaseJournalController;
-import net.mixednutz.app.server.entity.Journal;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.post.journal.Journal;
 
 
 @Controller

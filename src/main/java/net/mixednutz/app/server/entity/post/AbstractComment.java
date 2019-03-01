@@ -1,4 +1,4 @@
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post;
 
 import java.time.ZonedDateTime;
 
@@ -7,6 +7,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
+
+import net.mixednutz.app.server.entity.User;
 
 
 /**

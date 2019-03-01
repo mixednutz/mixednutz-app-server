@@ -23,7 +23,11 @@
 						<label for="newjournal_subjectey">Uri</label>
 						<div class="input-group input-group-sm">
 							<span class="input-group-addon">
-								<span>/username/1/2/</span>
+								<span th:with="now=${#dates.createNow()}">/<span class="owner" 
+									th:text="${newpost.owner!=null?newpost.owner.username:#authentication.principal.username}">owner</span>/<span  
+									th:text="${#dates.year(now)}" class="year">2004</span>/<span 
+									th:text="${#dates.month(now)}" class="month">1</span>/<span 
+									th:text="${#dates.day(now)}" class="day">1</span>/</span>
 							</span>
 							<input id="newjournal_subjectKey" class="form-control" type='text' th:field="*{subjectKey}" size='50' required="required"/>
 							

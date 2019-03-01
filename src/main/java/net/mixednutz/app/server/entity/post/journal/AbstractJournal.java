@@ -1,8 +1,11 @@
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post.journal;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+
+import net.mixednutz.app.server.entity.post.AbstractPost;
+import net.mixednutz.app.server.entity.post.AbstractPostComment;
 
 
 /**

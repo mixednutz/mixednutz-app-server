@@ -26,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import net.mixednutz.app.server.IntegrationTest;
+import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -77,13 +78,13 @@ public class JournalTest {
 			journal.setVisibility(Visibility.toSelectFollowers(users));
 		}
 		journal = repository.save(journal);
-		assertNotNull(journal.getJournalId());
+		assertNotNull(journal.getId());
 		
 		em.flush();
 		em.clear();
 		
-		journal = repository.findById(journal.getJournalId()).get();
-		assertNotNull(journal.getJournalId());		
+		journal = repository.findById(journal.getId()).get();
+		assertNotNull(journal.getId());		
 		System.out.println(journal.getUri());
 		
 		em.flush();
@@ -112,7 +113,7 @@ public class JournalTest {
 		journal.setOwnerId(user.getUserId());
 		journal.setVisibility(Visibility.asPrivate());
 		journal = repository.save(journal);
-		assertNotNull(journal.getJournalId());
+		assertNotNull(journal.getId());
 		
 		em.flush();
 		em.clear();

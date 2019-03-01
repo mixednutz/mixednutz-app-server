@@ -1,4 +1,4 @@
-package net.mixednutz.app.server.entity;
+package net.mixednutz.app.server.entity.post;
 
 public interface PostComment extends Comment {
 	
