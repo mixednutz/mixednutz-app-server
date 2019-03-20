@@ -53,8 +53,7 @@ public class ApiManagerImpl implements ApiManager{
 		return api;
 	}
 
-	@Override
-	public InternalTimelineElement toTimelineElement(Post<?> entity) {
+	protected InternalTimelineElement toTimelineElement(Post<?> entity) {
 		InternalTimelineElement api = new InternalTimelineElement();
 		api.setUri(entity.getUri());
 		api.setUrl(networkInfo.getBaseUrl()+entity.getUri());

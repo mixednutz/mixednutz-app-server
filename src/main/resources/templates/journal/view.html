@@ -99,14 +99,14 @@
             	<!-- Recent Posts Well -->
 				<div class="well">
                     <h4>More Journals from <a th:if="${journal.author!=null}" th:href='@{|/${journal.author.username}|}' href="#" th:text="${journal.author.username}">username</a><span th:if="${journal.author==null}">this former user</span></h4>
-                    <div include="journal/modules_journal :: recentPosts (${recentPosts})">recentPosts</div>
+                    <div th:include="journal/fragments_journal :: recentPosts (${recentPosts})">recentPosts</div>
                 </div>
                                 
                 <div class="well" th:if="${!#lists.isEmpty(tagPosts)}">
                 	<h4>More Journals from tags</h4>
                 	<div th:each="tagEntry: ${tagPosts}">
                     	<h5 th:text="${tagEntry.key}">tag</h5>
-                    	<div include="journal/modules_journal :: recentPosts (${tagEntry.value})">recentPosts</div>
+                    	<div th:include="journal/fragments_journal :: recentPosts (${tagEntry.value})">recentPosts</div>
                     </div>
                 </div>
                 

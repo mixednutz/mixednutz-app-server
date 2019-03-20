@@ -143,7 +143,7 @@
   		<div include="common/modules_common :: tags (${journal.uri})">tags</div>
 				
 		<!-- Author Box -->
-		<div include="profile/modules_profile :: authorBio (${profile}, ${journal.author})">recentAlbums</div>
+		<div include="profile/modules_profile :: authorBio (${profile}, ${journal.author})">authorBox</div>
 
         <!-- Blog Comments -->
 
@@ -163,6 +163,15 @@
         <!-- Posted Comments -->
 		<div class="comments" include="common/modules_common :: post_comments (${journal})">Comments</div>
             
+	</div>
+	
+	<div th:fragment="recentPosts (posts)">
+		<ul class="list-group">
+			<li th:each="recentPost : ${posts}" class="list-group-item">
+				<a th:href="@{|${recentPost.uri}|}" href="#" th:text="${recentPost.title}">Cras justo odio</a>
+				<small><time th:datetime="${#temporals.formatISO(recentPost.postedOnDate)}" th:text="${#temporals.format(recentPost.postedOnDate, #messages.msg('date.format.full'))}">November 11, 2014</time></small>
+			</li>
+		</ul>
 	</div>
 	
   

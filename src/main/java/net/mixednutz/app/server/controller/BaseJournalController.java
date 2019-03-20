@@ -1,6 +1,7 @@
 package net.mixednutz.app.server.controller;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -16,6 +17,7 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalComment;
+import net.mixednutz.app.server.entity.post.journal.JournalTag;
 import net.mixednutz.app.server.format.HtmlFilter;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
@@ -144,14 +146,14 @@ public class BaseJournalController {
 		
 		journal.setAuthor(user);
 		journal.setAuthorId(user.getUserId());
-//		journal.setTags(new HashSet<JournalTag>());
+		journal.setTags(new HashSet<>());
 		if (journal.getSubject()==null || journal.getSubject().trim().length()==0) {
 			journal.setSubject("(No Subject)");
 		}
-//		String[] tagArray = tagManager.splitTags(tagsString);
-//		for (String tagString : tagArray) {
-//			journal.getTags().add(new JournalTag(journal, tagString));
-//		}
+		String[] tagArray = tagManager.splitTags(tagsString);
+		for (String tagString : tagArray) {
+			journal.getTags().add(new JournalTag(journal, tagString));
+		}
 		
 		if (groupId!=null) {
 			journal.setOwnerId(groupId);

@@ -38,6 +38,10 @@ public class JournalManagerImpl extends PostManagerImpl<Journal, JournalComment,
 		this.postViewManager = journalViewManager;
 	}
 
+	protected <T extends ITimelineElement> T toTimelineElement(Journal journal, User viewer, Class<T> returnType) {
+		return returnType.cast(apiManager.toTimelineElement(journal, viewer));
+	}
+	
 	@Override
 	public List<? extends ITimelineElement> getUserJournals(User user, User viewer, int pageSize) {
 		return this.getUserTimelineInternal(user, viewer, pageSize);
@@ -52,7 +56,7 @@ public class JournalManagerImpl extends PostManagerImpl<Journal, JournalComment,
 			if (!journalsForTag.isEmpty()) {
 				List<ITimelineElement> newjournals = new ArrayList<>();
 				for (Journal journal: journalsForTag) {
-					newjournals.add(apiManager.toTimelineElement(journal));
+					newjournals.add(toTimelineElement(journal, null, ITimelineElement.class));
 				}
 				journals.put(tag, newjournals);
 			}

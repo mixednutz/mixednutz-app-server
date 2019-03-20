@@ -23,7 +23,7 @@ import net.mixednutz.app.server.manager.post.PostManager;
 import net.mixednutz.app.server.manager.post.PostViewManager;
 import net.mixednutz.app.server.repository.PostRepository;
 
-public class PostManagerImpl<P extends Post<C>, C extends PostComment, V extends AbstractPostView> 
+public abstract class PostManagerImpl<P extends Post<C>, C extends PostComment, V extends AbstractPostView> 
 	implements PostManager<P,C> {
 	
 	protected PostRepository<P,C> postRepository;
@@ -32,6 +32,8 @@ public class PostManagerImpl<P extends Post<C>, C extends PostComment, V extends
 		
 	@Autowired
 	protected ApiManager apiManager;
+	
+	protected abstract <T extends ITimelineElement> T toTimelineElement(P post, User viewer, Class<T> returnType);
 	
 	public IPage<? extends ITimelineElement,Instant> getTimelineInternal(
 			User owner, IPageRequest<String> paging) {
@@ -57,7 +59,7 @@ public class PostManagerImpl<P extends Post<C>, C extends PostComment, V extends
 		}
 		List<ITimelineElement> elements = new ArrayList<>();
 		for (P content: contents) {
-			elements.add(apiManager.toTimelineElement(content));
+			elements.add(toTimelineElement(content, null, ITimelineElement.class));
 		}
 		
 		return new PageBuilder<ITimelineElement, Instant>()
@@ -98,7 +100,7 @@ public class PostManagerImpl<P extends Post<C>, C extends PostComment, V extends
 		}
 		List<ITimelineElement> elements = new ArrayList<>();
 		for (P content: contents) {
-			elements.add(apiManager.toTimelineElement(content));
+			elements.add(toTimelineElement(content, viewer, ITimelineElement.class));
 		}
 		
 		return new PageBuilder<ITimelineElement, Instant>()
