@@ -14,6 +14,7 @@ import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
 import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
+import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.AbstractPostView;
 import net.mixednutz.app.server.entity.post.Post;
@@ -33,9 +34,9 @@ public abstract class PostManagerImpl<P extends Post<C>, C extends PostComment, 
 	@Autowired
 	protected ApiManager apiManager;
 	
-	protected abstract <T extends ITimelineElement> T toTimelineElement(P post, User viewer, Class<T> returnType);
+	protected abstract InternalTimelineElement toTimelineElement(P post, User viewer);
 	
-	public IPage<? extends ITimelineElement,Instant> getTimelineInternal(
+	public IPage<InternalTimelineElement,Instant> getTimelineInternal(
 			User owner, IPageRequest<String> paging) {
 			
 		List<P> contents = null;
@@ -57,23 +58,23 @@ public abstract class PostManagerImpl<P extends Post<C>, C extends PostComment, 
 						PageRequest.of(0, paging.getPageSize()));
 			}
 		}
-		List<ITimelineElement> elements = new ArrayList<>();
+		List<InternalTimelineElement> elements = new ArrayList<>();
 		for (P content: contents) {
-			elements.add(toTimelineElement(content, null, ITimelineElement.class));
+			elements.add(toTimelineElement(content, null));
 		}
 		
-		return new PageBuilder<ITimelineElement, Instant>()
+		return new PageBuilder<InternalTimelineElement, Instant>()
 			.setItems(elements)
 			.setPageRequest(pageRequest)
-			.setTokenCallback(new GetTokenCallback<ITimelineElement, Instant>(){
+			.setTokenCallback(new GetTokenCallback<InternalTimelineElement, Instant>(){
 				@Override
-				public Instant getToken(ITimelineElement item) {
+				public Instant getToken(InternalTimelineElement item) {
 					return item.getPostedOnDate().toInstant();
 				}})
 			.build();
 	}
 	
-	public IPage<? extends ITimelineElement,Instant> getUserTimelineInternal(
+	public IPage<InternalTimelineElement,Instant> getUserTimelineInternal(
 			User owner, User viewer, IPageRequest<String> paging) {
 			
 		List<P> contents = null;
@@ -98,17 +99,17 @@ public abstract class PostManagerImpl<P extends Post<C>, C extends PostComment, 
 						PageRequest.of(0, paging.getPageSize()));
 			}
 		}
-		List<ITimelineElement> elements = new ArrayList<>();
+		List<InternalTimelineElement> elements = new ArrayList<>();
 		for (P content: contents) {
-			elements.add(toTimelineElement(content, viewer, ITimelineElement.class));
+			elements.add(toTimelineElement(content, viewer));
 		}
 		
-		return new PageBuilder<ITimelineElement, Instant>()
+		return new PageBuilder<InternalTimelineElement, Instant>()
 			.setItems(elements)
 			.setPageRequest(pageRequest)
-			.setTokenCallback(new GetTokenCallback<ITimelineElement, Instant>(){
+			.setTokenCallback(new GetTokenCallback<InternalTimelineElement, Instant>(){
 				@Override
-				public Instant getToken(ITimelineElement item) {
+				public Instant getToken(InternalTimelineElement item) {
 					return item.getPostedOnDate().toInstant();
 				}})
 			.build();

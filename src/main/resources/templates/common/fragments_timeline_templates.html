@@ -37,13 +37,81 @@
 
 	<div th:fragment="timeline_templates">
 		<div id="templates" class="hidden">
-			<div include="common/fragments_timeline_templates :: native_templates"></div>
+			<div th:include="common/fragments_timeline_templates :: native_templates"></div>
 			<div th:include="common/fragments_timeline_templates :: feed_templates"></div>
 		</div>
 	</div>
 
 
 	<div th:fragment="native_templates">
+		<div id="template_Journal" class="element prerender">
+			<div class="Journal">
+				<div class="reshared">
+					<div class="resharedBy">
+						<small>Reshared by <span class="name">Username</span></small>
+					</div>
+					<span class="resharedComment">Comment</span>
+				</div>
+				<div class="row">
+					<div class="col-sm-7">
+						<div class="avatar">
+							<img src="" width="48" />
+						</div>
+						<div class="subject">
+							Blog: <a href="#" class="title">Lorem ipsum dolor sit amet</a>
+						</div>
+						<div class="username hidden-xs">
+							by <a href="#"><span class="name">Username</span> <small
+								class="screenname">screenname</small></a> <span class="owner">in
+								<a href="#"></a>
+							</span>
+						</div>
+					</div>
+					<div class="stats col-sm-5">
+						<div class="createdAt">
+							Posted on: <span>11/11/2014</span>
+						</div>
+						<div class="sizeOfComments">
+							Comments: <span>0</span>
+						</div>
+					</div>
+				</div>
+				<div class="preview">
+					<div>
+						<span class="description">Description</span> [<a class="readmore">READ
+							MORE</a>]
+					</div>
+				</div>
+				<div>
+					<span class="glyphicon glyphicon-tag"></span> Tags: <span
+						class="tags-list"></span>
+				</div>
+				<div>
+					<i class="fa fa-smile-o"></i> Reactions: <span
+						class="reactions-list"></span>
+				</div>
+				<div class="action-group" role="group">
+					<a sec:authorize="isAuthenticated()" class="reactBtn" href="#"
+						data-toggle="modal" data-target="#reactModal"> <span
+						class="fa-stack fa-stack fa-lg"> <i
+							class="fa fa-circle fa-stack-2x share_background"></i> <i
+							class="fa fa-smile-o fa-stack-1x"></i>
+					</span>
+					</a> <a sec:authorize="isAuthenticated()" class="shareBtn" href="#"
+						data-toggle="modal" data-target="#reshareJournalModal"> <span
+						class="fa-stack fa-stack fa-lg"> <i
+							class="fa fa-circle fa-stack-2x share_background"></i> <i
+							class="fa fa-share-alt fa-stack-1x"></i>
+					</span>
+					</a> <span class="protectedAlert"
+						title="This post was posted to a select visibility and cannot be reshared.">
+						<span class="fa-stack fa-stack fa-lg"> <i
+							class="fa fa-lock fa-stack-1x"></i>
+					</span>
+					</span> <small class="id" style="display: none;"></small>
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<div th:fragment="feed_templates">

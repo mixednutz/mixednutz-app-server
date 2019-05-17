@@ -85,7 +85,7 @@
   		/*direction is "prepend" or "append"*/
   		var loopFunction = function (index, element) {
   			var builtElement = null;
-  			builtElement = buildTimelineElement(element);
+  			builtElement = buildInternalTimelineElement(element);
   			if (builtElement!=null) {
   				if (direction=='prepend') {
   					builtElement.prependTo("#elements");
@@ -178,7 +178,7 @@
   		/*direction is "prepend" or "append"*/
   		var loopFunction = function (index, element) {
   			var builtElement = null;
-  			builtElement = buildTimelineElement(element, feedId);
+  			builtElement = buildExternalFeedTimelineElement(element, feedId);
   			if (builtElement!=null) {
   				if (direction=='prepend') {
   					builtElement.prependTo("#elements");

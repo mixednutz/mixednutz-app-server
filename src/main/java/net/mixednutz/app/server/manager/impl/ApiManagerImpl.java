@@ -11,15 +11,14 @@ import net.mixednutz.api.core.model.AlternateLink;
 import net.mixednutz.api.core.model.Link;
 import net.mixednutz.api.core.model.ReactionCount;
 import net.mixednutz.api.core.model.TagCount;
-import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.InternalTimelineElement.Type;
-import net.mixednutz.app.server.entity.post.Post;
-import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.NetworkInfo;
 import net.mixednutz.app.server.entity.ReactionScore;
 import net.mixednutz.app.server.entity.TagScore;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.post.Post;
+import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
@@ -39,7 +38,7 @@ public class ApiManagerImpl implements ApiManager{
 	private static final String APPLICATION_JSON_OEMBED = "application/json+oembed";
 	
 	@Override
-	public ITimelineElement toTimelineElement(Journal entity, User viewer) {
+	public InternalTimelineElement toTimelineElement(Journal entity, User viewer) {
 		InternalTimelineElement api = toTimelineElement((Post<?>)entity);
 		api.setType(new Type("Journal",
 				networkInfo.getHostName(),

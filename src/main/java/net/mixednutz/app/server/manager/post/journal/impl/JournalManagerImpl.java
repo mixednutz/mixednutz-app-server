@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.mixednutz.api.model.ITimelineElement;
+import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalComment;
@@ -38,8 +39,8 @@ public class JournalManagerImpl extends PostManagerImpl<Journal, JournalComment,
 		this.postViewManager = journalViewManager;
 	}
 
-	protected <T extends ITimelineElement> T toTimelineElement(Journal journal, User viewer, Class<T> returnType) {
-		return returnType.cast(apiManager.toTimelineElement(journal, viewer));
+	protected InternalTimelineElement toTimelineElement(Journal journal, User viewer) {
+		return apiManager.toTimelineElement(journal, viewer);
 	}
 	
 	@Override
@@ -54,9 +55,9 @@ public class JournalManagerImpl extends PostManagerImpl<Journal, JournalComment,
 		for (String tag: tags) {
 			List<Journal> journalsForTag = getJournalRepository().getNutsterzJournalsForTag(user, tag, excludeId);
 			if (!journalsForTag.isEmpty()) {
-				List<ITimelineElement> newjournals = new ArrayList<>();
+				List<InternalTimelineElement> newjournals = new ArrayList<>();
 				for (Journal journal: journalsForTag) {
-					newjournals.add(toTimelineElement(journal, null, ITimelineElement.class));
+					newjournals.add(toTimelineElement(journal, null));
 				}
 				journals.put(tag, newjournals);
 			}

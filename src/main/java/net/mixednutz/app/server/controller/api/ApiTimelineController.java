@@ -2,7 +2,6 @@ package net.mixednutz.app.server.controller.api;
 
 import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -28,6 +27,7 @@ import net.mixednutz.app.server.controller.exception.NotAuthenticatedException;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserSettings;
+import net.mixednutz.app.server.manager.TimelineManager;
 import net.mixednutz.app.server.repository.UserRepository;
 import net.mixednutz.app.server.repository.UserSettingsRepository;
 
@@ -50,6 +50,9 @@ public class ApiTimelineController {
 	
 	@Autowired
 	private ExternalFeedApiController externalFeedApi;
+	
+	@Autowired
+	private TimelineManager timelineManager;
 	
 	@Autowired
 	private UserSettingsRepository settingsRepository;
@@ -79,14 +82,14 @@ public class ApiTimelineController {
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
 
 		return getHomeTimeline(
-				PageRequest.first(pageSize, Direction.LESS_THAN, Date.class), 
+				PageRequest.first(pageSize, Direction.LESS_THAN, String.class), 
 				pageSize, user);
 	}
 	
 	@RequestMapping(value={HOME_TIMELINE_NEXTPAGE_ENDPOINT}, 
 			method = RequestMethod.POST)
 	public @ResponseBody IPage<? extends ITimelineElement,Instant> getHomeTimeline( 
-			@RequestBody PageRequest<Date> prevPage, 
+			@RequestBody PageRequest<String> prevPage, 
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
 			@AuthenticationPrincipal User user) {
 		if (user==null) {
@@ -98,7 +101,11 @@ public class ApiTimelineController {
 			prevPage.setPageSize(pageSize);
 		}
 		
-		return stubData();
+		//Get internal data
+		IPage<? extends ITimelineElement,Instant> internalContent = 
+				timelineManager.getHomeTimeline(user, prevPage);
+		
+		return internalContent;
 	}
 	
 	@RequestMapping(value={USER_TIMELINE_ENDPOINT}, 
@@ -128,8 +135,17 @@ public class ApiTimelineController {
 			throw new UserNotFoundException("User "+username+" not found");
 		}
 		
+		//If pageSize is null, grab default
+		if (prevPage.getPageSize()==null) {
+			prevPage.setPageSize(pageSize);
+		}
+		
 		UserSettings settings = settingsRepository.findById(profileUser.get().getUserId())
 				.orElse(new UserSettings());
+		
+		//Get local data
+		
+		
 		if (settings.isShowCombinedExternalFeedsOnProfile()) {
 			//TODO combine this with local content
 			return externalFeedApi.apiCombinedExternalFeedsUserTimeline(username, hashtag, pageSize, 

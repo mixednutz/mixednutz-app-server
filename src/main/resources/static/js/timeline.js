@@ -215,7 +215,7 @@ function formatDateTimeTodayYesterday(date, dateCallback, timeCallback) {
 	return formatDateTodayYesterday(date, dateCallback) + " at " + time;
 }
 
-function buildTimelineElement(element, feedId) {
+function buildExternalFeedTimelineElement(element, feedId) {
 	var type = element.type.id;
 	var id = type+"_"+element.providerId;
 	if ($("#"+id).length>0) {
@@ -284,6 +284,59 @@ function buildTimelineElement(element, feedId) {
 	} else {
 		oembedDiv.remove();
 	}
+	
+	return template;
+}
+
+function buildInternalTimelineElement(element, feedId) {
+	var type = element.type.id;
+	var id = type+"_"+element.providerId;
+	if ($("#"+id).length>0) {
+		console.log(id+" already exists");
+		return null;
+	}
+	
+	console.log('#template_'+element.type.name); 
+	var template = $('#template_'+element.type.name).clone();
+	template.attr("id",id); 	
+	
+	//Default stuff (avatar/username/date)
+	template.find(".avatar img").attr({
+		'src':element.postedByUser.avatar.src,
+		'title':element.postedByUser.avatar.title});
+	console.log(element.postedByUser);
+	template.find(".username .name").text(
+			element.postedByUser.displayName!=null?element.postedByUser.displayName:element.postedByUser.username);
+	template.find(".username a")
+		.attr('href',element.postedByUser.url)
+		.attr('target','_new');
+	if (element.postedByUser.displayName!=null) {
+		template.find(".username .screenname").text(element.postedByUser.username);
+	} else {
+		template.find(".username .screenname").remove();
+	}
+	
+	if (element.postedToGroup!=null) {
+		
+	} else {
+		template.find(".owner").remove();
+	}
+	template.find(".createdAt span").text(new Date(element.postedOnDate).toLocaleString());
+	template.find(".subject a")
+		.attr('href',element.url)
+		.text(element.title);
+	template.find(".preview a.readmore").attr('href',getRelativePath(element.uri));
+	//Preview
+	var preview = template.find(".preview");
+	//preview.css('display','none');
+	var paneBody = preview.find(".pane-body");
+	var oembedDiv = preview.find(".oembed").remove();
+	paneBody.find(".title").html(element.title);
+ 	paneBody.find(".description").html(element.description);
+ 	preview.find("a.pane").attr({
+			"href":element.url});
+ 	//TODO re-implement resharing
+ 	template.find(".reshared").remove();
 	
 	return template;
 }

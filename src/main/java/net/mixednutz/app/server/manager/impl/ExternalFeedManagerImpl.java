@@ -332,6 +332,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 					externalFeedTimelineElementRepository.save(
 							new ExternalFeedTimelineElement(timelineElement)), 
 					timelineType);
+			System.out.println(content.getId());
 			externalFeedContentRepository.save(content);
 		}
 	}
