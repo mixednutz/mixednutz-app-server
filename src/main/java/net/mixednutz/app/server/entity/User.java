@@ -1,7 +1,5 @@
 package net.mixednutz.app.server.entity;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,12 +10,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import net.mixednutz.api.core.model.Image;
-import net.mixednutz.api.model.IAction;
-import net.mixednutz.api.model.IUser;
-
 @Entity
-public class User extends BaseUserDetails implements IUser {
+public class User extends BaseUserDetails {
 	
 	/**
 	 * NOTE : IF YOU EVER CHANGE THIS CLASS, YOU HAVE TO PURGE THE TOKEN STORE
@@ -29,8 +23,6 @@ public class User extends BaseUserDetails implements IUser {
 	private Long userId;
 	private String displayName;
 	private String avatarSrc;
-	private String uri;
-	private String url;
 	private boolean _private;
 	
 	/*
@@ -59,7 +51,6 @@ public class User extends BaseUserDetails implements IUser {
 	}
 	@Transient
 	@JsonIgnore
-	@Override
 	public String getProviderId() {
 		return userId!=null?userId.toString():null;
 	}
@@ -104,38 +95,7 @@ public class User extends BaseUserDetails implements IUser {
 	public void setAvatarSrc(String avatarSrc) {
 		this.avatarSrc = avatarSrc;
 	}
-	@Transient
-	public String getUri() {
-		return uri;
-	}
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
-	@Transient
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	@Transient
-	@Override
-	public Image getAvatar() {
-		return new Image(this.avatarSrc, this.getUsername()+"'s avatar");
-	}
-	@Transient
-	@Override
-	public List<? extends IAction> getActions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Transient
-	@Override
-	public UserProfile getProfileData() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Transient
 	@JsonIgnore
 	public java.lang.String getPasswordConfirm() {

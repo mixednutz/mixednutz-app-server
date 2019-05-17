@@ -11,6 +11,7 @@ import net.mixednutz.api.core.model.ReactionCount;
 import net.mixednutz.api.core.model.ReshareCount;
 import net.mixednutz.api.core.model.TagCount;
 import net.mixednutz.api.model.ITimelineElement;
+import net.mixednutz.api.model.IUser;
 
 public class InternalTimelineElement implements ITimelineElement {
 	
@@ -45,7 +46,7 @@ public class InternalTimelineElement implements ITimelineElement {
 	/**
 	 * User who posted this element
 	 */
-	private User postedByUser;
+	private IUser postedByUser;
 	
 	/**
 	 * Optional group this element was posted to
@@ -152,11 +153,11 @@ public class InternalTimelineElement implements ITimelineElement {
 		this.type = type;
 	}
 
-	public User getPostedByUser() {
+	public IUser getPostedByUser() {
 		return postedByUser;
 	}
 
-	public void setPostedByUser(User postedByUser) {
+	public void setPostedByUser(IUser postedByUser) {
 		this.postedByUser = postedByUser;
 	}
 

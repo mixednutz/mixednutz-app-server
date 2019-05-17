@@ -27,6 +27,7 @@ import net.mixednutz.app.server.controller.exception.NotAuthenticatedException;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserSettings;
+import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.TimelineManager;
 import net.mixednutz.app.server.repository.UserRepository;
 import net.mixednutz.app.server.repository.UserSettingsRepository;
@@ -58,6 +59,9 @@ public class ApiTimelineController {
 	private UserSettingsRepository settingsRepository;
 	
 	@Autowired
+	private ApiManager apiManager;
+	
+	@Autowired
 	UserRepository userRepository;
 		
 	@RequestMapping(value="/timeline/bundle", method = RequestMethod.GET)
@@ -70,7 +74,7 @@ public class ApiTimelineController {
 //				.addFollowingList(friendsApi.apiGetFollowing(user))
 				.addExternalFeedsList(externalFeedApi.externalFeeds(user))
 //				.addFriendgroups(friendsApi.apiGetCategories(user))
-				.addUser(user)
+				.addUser(apiManager.toUser(user))
 //				.addProfile(profileApi.getProfile(user))
 				.addSettings(settingsRepository.findById(user.getUserId()).
 						orElse(new UserSettings()));

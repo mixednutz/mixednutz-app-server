@@ -16,6 +16,7 @@ import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
 @Controller
@@ -31,6 +32,9 @@ public class ApiUserController {
 	@Autowired
 	ExternalFeedApiController externalFeedApi;
 	
+	@Autowired
+	private ApiManager apiManager;
+	
 	@RequestMapping(value="/{username}/bundle", method = RequestMethod.GET)
 	public @ResponseBody UserProfileBundle getUserTimelineBundle(
 			@PathVariable String username,
@@ -44,7 +48,7 @@ public class ApiUserController {
 					}});
 				
 		UserProfileBundle bundle = new UserProfileBundle()
-				.addUser(profileUser)
+				.addUser(apiManager.toUser(profileUser))
 				.addExternalFeedsList(externalFeedApi.externalFeeds(username));
 //				.addFollowerCount(friendManager.countFollowers(account, false))
 //				.addFollowingCount(friendManager.countFollowing(account, false));
@@ -71,7 +75,7 @@ public class ApiUserController {
 	 */
 	@RequestMapping(value=USER_PROFILE_ENDPOINT, method = RequestMethod.GET)
 	public @ResponseBody IUserSmall loggedInUser(@AuthenticationPrincipal User user) {
-		return user;
+		return apiManager.toUser(user);
 	}
 	
 	public static class UserProfileBundle extends TreeMap<String, Object> {
