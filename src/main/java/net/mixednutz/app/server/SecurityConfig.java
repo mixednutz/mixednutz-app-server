@@ -2,6 +2,7 @@ package net.mixednutz.app.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -9,10 +10,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
 import net.mixednutz.app.server.manager.UserService;
 
@@ -22,6 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired(required=false)
+	SslConfigurer sslConfigurer;
 	
 	@Bean
 	public DaoAuthenticationProvider daoProvider() {
@@ -122,9 +128,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        			"/event/**",
 	        			"/privacy/**").authenticated()
 //	        	.hasRole("MIXEDNUTZ")
-	        	.anyRequest().permitAll()
-	        	.and()
-	        .requiresChannel().anyRequest().requiresSecure();
+	        	.anyRequest().permitAll();
+    	if (sslConfigurer!=null) {
+    		http.apply(sslConfigurer);
+    	}    	
     }
+	
+	@Component
+	@Profile("ssl")
+	public class SslConfigurer extends AbstractHttpConfigurer<SslConfigurer, HttpSecurity> {
+
+		@Override
+		public void init(HttpSecurity http) throws Exception {
+			http.requiresChannel().anyRequest().requiresSecure();
+		}
+
+	}
 
 }
