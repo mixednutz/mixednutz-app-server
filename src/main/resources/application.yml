@@ -47,6 +47,9 @@ spring:
   profiles: ssl
   
 server:
+  tomcat:
+    remote_ip_header: x-forwarded-for
+    protocol_header: x-forwarded-proto
   ssl:
     key-store: ${KEYSTORE_FILE}
     key-store-type: ${KEYSTORE_TYPE}
