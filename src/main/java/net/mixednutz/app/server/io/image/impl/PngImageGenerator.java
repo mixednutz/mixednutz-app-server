@@ -27,10 +27,10 @@ public class PngImageGenerator extends AbstractImageGenerator {
 	public String getMimeType() {
 		return MediaType.IMAGE_PNG_VALUE;
 	}
-	@Value("${photoDirectory}") 
+	@Value("${photoDirectory:#{null}}")
 	public void setPhotoDirectory(String photosDirectory) {
 		super.setAvatarDirectory(new File(photosDirectory,"avatars"));
-		super.setDestinationDirectory(new File(photosDirectory));
+		super.setDestinationDirectory(new File(photosDirectory!=null?photosDirectory:""));
 	}
 	@Value("#{systemProperties['java.io.tmpdir']}")
 	public void setTempDirectory(String tempDirectory) {

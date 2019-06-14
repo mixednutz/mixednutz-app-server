@@ -15,9 +15,6 @@ mixednutz:
     host-name: andrewfesta.com
     display-name: AndrewFesta.com
     
-photoDirectory: ${PHOTO_DIRECTORY}
-
-
 ---
 spring:
   profiles: aws

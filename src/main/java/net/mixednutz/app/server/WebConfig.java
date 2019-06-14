@@ -11,12 +11,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	@Value("${photoDirectory}") 
+	@Value("${photoDirectory:#{null}}")
 	String photoDirectory;
 	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		URI photoDirectoryUri = Paths.get(photoDirectory).toUri();
+		URI photoDirectoryUri = Paths.get(photoDirectory!=null?photoDirectory:"").toUri();
 		
 		registry
 			.addResourceHandler("/photos/**")

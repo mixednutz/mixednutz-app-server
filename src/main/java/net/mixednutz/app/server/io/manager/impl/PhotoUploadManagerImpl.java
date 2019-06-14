@@ -40,10 +40,10 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	
 	private static Logger LOG = LoggerFactory.getLogger(PhotoUploadManagerImpl.class);
 
-	@Value("${photoDirectory}")
+	@Value("${photoDirectory:#{null}}")
 	private String photosDirectory;
 	
-	@Value("${mixednutz.aws.photosBucket}")
+	@Value("${mixednutz.aws.photosBucket:#{null}}")
 	private String photosBucket;
 	
 	private static final String SLASH = "/";
@@ -132,7 +132,11 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	public String uploadFile(User user, PersistableFile persistableFile, String size) throws IOException {
 		File localOriginal = uploadLocally(persistableFile.getInputStream(), persistableFile.getContentType());
 
-		uploadToCloud(user, localOriginal, persistableFile.getContentType(), false, size);
+		if (photosBucket!=null) {
+			uploadToCloud(user, localOriginal, persistableFile.getContentType(), false, size);
+		} else {
+			LOG.warn("No photosBucket defined.  Unable to upload to cloud");
+		}
 		
 		return localOriginal.getName();
 	}
@@ -167,6 +171,10 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	}
 	
 	protected void uploadToCloud(User user, final File file, String contentType, boolean replaceIfExisting, String size) {
+		if (photosBucket==null) {
+			LOG.warn("No photosBucket defined.  Unable to upload to cloud");
+			return;
+		}
 		//Syncronous uploader
 		Executor executor = new Executor() {
 			@Override
@@ -179,6 +187,11 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	}
 	
 	protected void uploadAllSizesToCloud(User user, final File file, String contentType, boolean replaceIfExisting) {
+		if (photosBucket==null) {
+			LOG.warn("No photosBucket defined.  Unable to upload to cloud");
+			return;
+		}
+		
 		ExecutorService executor = Executors.newCachedThreadPool();
 		LOG.info("File {} is {} bytes.", file.getName(), file.length());
 		
@@ -210,6 +223,9 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	}
 	
 	protected FileWrapper downloadCloudFileInternal(User user, String filename, String sizeName) throws IOException {
+		if (photosBucket==null) {
+			return null;
+		}
 		try (S3Object s3object = downloadFromCloud(photosBucket, getCloudFileName(filename, user.getUserId(), sizeName))) {
 			File file;
 			String contentType = s3object.getObjectMetadata().getContentType();

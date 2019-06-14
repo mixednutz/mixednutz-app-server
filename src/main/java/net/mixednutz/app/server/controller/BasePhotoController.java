@@ -93,6 +93,9 @@ public class BasePhotoController {
 			LOG.error("Error reading image", e);
 			return new ResponseEntity<>(null, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		if (file==null) {
+			return new ResponseEntity<>(null, new HttpHeaders(), HttpStatus.NOT_FOUND);
+		}
 		try {
 			if (missingSize) {
 				photoUploadManager.uploadFile(photoAccount, file.getFile(), size);
