@@ -4,8 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import net.mixednutz.app.server.entity.NetworkInfo;
-
+import net.mixednutz.api.core.model.NetworkInfo;
 
 @Configuration
 @ConfigurationProperties(prefix="mixednutz.network-info")
@@ -14,8 +13,6 @@ public class NetworkInfoConfig {
 	private String id;
 	private String hostName;
 	private String displayName;
-	private String baseUrl;
-	private String baseOembedUrl;
 	
 	@Bean
 	public NetworkInfo networkInfo() {
@@ -23,7 +20,7 @@ public class NetworkInfoConfig {
 		networkInfo.setId(id);
 		networkInfo.setHostName(hostName);
 		networkInfo.setDisplayName(displayName);
-		networkInfo.setBaseOembedUrl(baseOembedUrl);
+		networkInfo.setBaseUrl("https://"+hostName);
 		return networkInfo;
 	}
 	
@@ -46,20 +43,4 @@ public class NetworkInfoConfig {
 		this.displayName = displayName;
 	}
 
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-
-	public String getBaseOembedUrl() {
-		return baseOembedUrl;
-	}
-
-	public void setBaseOembedUrl(String baseOembedUrl) {
-		this.baseOembedUrl = baseOembedUrl;
-	}
-		
 }

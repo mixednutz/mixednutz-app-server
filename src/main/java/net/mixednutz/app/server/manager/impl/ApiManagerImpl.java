@@ -1,6 +1,8 @@
 package net.mixednutz.app.server.manager.impl;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import net.mixednutz.api.core.model.Action;
 import net.mixednutz.api.core.model.AlternateLink;
 import net.mixednutz.api.core.model.Image;
 import net.mixednutz.api.core.model.Link;
+import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.api.core.model.ReactionCount;
 import net.mixednutz.api.core.model.TagCount;
 import net.mixednutz.api.model.IAction;
@@ -23,10 +26,10 @@ import net.mixednutz.api.model.IImage;
 import net.mixednutz.api.model.IUser;
 import net.mixednutz.api.model.IUserProfile;
 import net.mixednutz.app.server.controller.BasePhotoController;
+import net.mixednutz.app.server.controller.api.OembedController;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.InternalTimelineElement.Type;
-import net.mixednutz.app.server.entity.NetworkInfo;
 import net.mixednutz.app.server.entity.ReactionScore;
 import net.mixednutz.app.server.entity.TagScore;
 import net.mixednutz.app.server.entity.User;
@@ -57,8 +60,9 @@ public class ApiManagerImpl implements ApiManager{
 	private static final String AVATARS_DIR = BasePhotoController.PHOTOS_STORAGE_DIR;
 	private static final String AVATARS_QUERY = "size=avatar";
 	private static final String DEFAULT_AVATAR_URI = "/img/nophoto.gif";
+	private static final String OEMBED_DIR = OembedController.OEMBED_DIR;
 	
-	public static String getAvatarUri(String avatarFilename) {
+	private static String getAvatarUri(String avatarFilename) {
 		if (avatarFilename!=null && !"".equals(avatarFilename.trim())) {
 			return AVATARS_DIR + "/"
 					+ avatarFilename + "?"+ AVATARS_QUERY;
@@ -66,10 +70,26 @@ public class ApiManagerImpl implements ApiManager{
 		return DEFAULT_AVATAR_URI;
 	}
 	
+	private static String getOembedUri(String url) {
+		return OEMBED_DIR + "?url=" + url;
+	}
+	
+	private String getBaseUrl() {
+		try {
+			URL baseUrl = new URL(
+					request.getScheme(), 
+					request.getServerName(), 
+					request.getServerPort(), 
+					"");
+			return baseUrl.toExternalForm();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Something's wrong with creating the baseUrl!", e);
+		}
+	}
+	
 	@Override
 	public UserWrapper toUser(User entity) {
-		networkInfo.init(request);
-		return new UserWrapper(entity, networkInfo);
+		return new UserWrapper(entity);
 	}
 	
 	public IUser toUser(User entity, UserProfile profile) {
@@ -92,17 +112,15 @@ public class ApiManagerImpl implements ApiManager{
 	}
 
 	protected InternalTimelineElement toTimelineElement(Post<?> entity) {
-		networkInfo.init(request);
-		
 		InternalTimelineElement api = new InternalTimelineElement();
 		api.setUri(entity.getUri());
-		api.setUrl(networkInfo.getBaseUrl()+entity.getUri());
+		api.setUrl(getBaseUrl()+entity.getUri());
 		api.setPostedByUser(toUser(entity.getAuthor()));
 		api.setPostedOnDate(entity.getDateCreated());
 		api.setDescription(entity.getDescription());
 		api.setAlternateLinks(new ArrayList<>());
 		api.getAlternateLinks().add(new AlternateLink(
-				networkInfo.getOembedBaseUrl()+"?url="+api.getUrl(), APPLICATION_JSON_OEMBED));
+				getOembedUri(api.getUrl()), APPLICATION_JSON_OEMBED));
 		return api;
 	}
 	
@@ -151,16 +169,14 @@ public class ApiManagerImpl implements ApiManager{
 	}
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class UserWrapper implements IUser {
+	public class UserWrapper implements IUser {
 
 		final private User user;
-		final private NetworkInfo networkInfo;
 		private UserProfileWrapper profile;
 		
-		public UserWrapper(User user, NetworkInfo networkInfo) {
+		public UserWrapper(User user) {
 			super();
 			this.user = user;
-			this.networkInfo = networkInfo;
 		}
 		
 		public UserWrapper addProfile(UserProfile profile) {
@@ -182,7 +198,7 @@ public class ApiManagerImpl implements ApiManager{
 
 		@Override
 		public IImage getAvatar() {
-			return new Image(networkInfo.getBaseUrl()+getAvatarUri(user.getAvatarFilename()), user.getUsername()+"'s avatar");
+			return new Image(getBaseUrl()+getAvatarUri(user.getAvatarFilename()), user.getUsername()+"'s avatar");
 		}
 
 		@Override
@@ -202,7 +218,7 @@ public class ApiManagerImpl implements ApiManager{
 
 		@Override
 		public String getUrl() {
-			return networkInfo.getBaseUrl()+getUri();
+			return getBaseUrl()+getUri();
 		}
 
 		@Override

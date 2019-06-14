@@ -1,6 +1,6 @@
 spring: 
   
-  profiles.active: jpa-dev, mixednutz_base, twitter
+  profiles.active: jpa-dev, mixednutz_base, twitter, aws, aws-local
   
   data:
     rest:
@@ -14,9 +14,15 @@ mixednutz:
     id: andrewfestadotcom
     host-name: andrewfesta.com
     display-name: AndrewFesta.com
-    base-oembed-url: https://${HOST_AND_PORT}/oembed
     
 photoDirectory: ${PHOTO_DIRECTORY}
+
+
+---
+spring:
+  profiles: aws
+
+server.port: 5000
 
 ---
 # Optionally link up with other Mixednutz instance

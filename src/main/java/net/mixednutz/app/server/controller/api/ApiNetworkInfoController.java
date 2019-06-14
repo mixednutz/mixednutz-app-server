@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import net.mixednutz.app.server.entity.NetworkInfo;
-
+import net.mixednutz.api.core.model.NetworkInfo;
 
 @Controller
 public class ApiNetworkInfoController {
@@ -22,7 +21,6 @@ public class ApiNetworkInfoController {
 	@RequestMapping(value={"/social-network-info","/network-info","/mixednutz-info"}, 
 			method = RequestMethod.GET)
 	public @ResponseBody NetworkInfo networkInfo(HttpServletRequest request) throws MalformedURLException {
-		networkInfo.init(request);
 		return networkInfo;
 	}
 }

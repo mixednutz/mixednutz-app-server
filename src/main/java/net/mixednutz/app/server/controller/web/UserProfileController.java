@@ -21,7 +21,6 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.io.domain.PersistableMultipartFile;
 import net.mixednutz.app.server.io.manager.PhotoUploadManager;
-import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -33,10 +32,7 @@ public class UserProfileController {
 	
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
-	private ExternalFeedManager externalFeedManager;
-	
+		
 	@Autowired
 	protected PhotoUploadManager photoUploadManager;
 	
