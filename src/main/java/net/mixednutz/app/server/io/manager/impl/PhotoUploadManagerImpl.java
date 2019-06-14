@@ -132,11 +132,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	public String uploadFile(User user, PersistableFile persistableFile, String size) throws IOException {
 		File localOriginal = uploadLocally(persistableFile.getInputStream(), persistableFile.getContentType());
 
-		if (photosBucket!=null) {
-			uploadToCloud(user, localOriginal, persistableFile.getContentType(), false, size);
-		} else {
-			LOG.warn("No photosBucket defined.  Unable to upload to cloud");
-		}
+		uploadToCloud(user, localOriginal, persistableFile.getContentType(), false, size);
 		
 		return localOriginal.getName();
 	}
@@ -171,10 +167,6 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	}
 	
 	protected void uploadToCloud(User user, final File file, String contentType, boolean replaceIfExisting, String size) {
-		if (photosBucket==null) {
-			LOG.warn("No photosBucket defined.  Unable to upload to cloud");
-			return;
-		}
 		//Syncronous uploader
 		Executor executor = new Executor() {
 			@Override
@@ -187,11 +179,6 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	}
 	
 	protected void uploadAllSizesToCloud(User user, final File file, String contentType, boolean replaceIfExisting) {
-		if (photosBucket==null) {
-			LOG.warn("No photosBucket defined.  Unable to upload to cloud");
-			return;
-		}
-		
 		ExecutorService executor = Executors.newCachedThreadPool();
 		LOG.info("File {} is {} bytes.", file.getName(), file.length());
 		
@@ -223,9 +210,6 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	}
 	
 	protected FileWrapper downloadCloudFileInternal(User user, String filename, String sizeName) throws IOException {
-		if (photosBucket==null) {
-			return null;
-		}
 		try (S3Object s3object = downloadFromCloud(photosBucket, getCloudFileName(filename, user.getUserId(), sizeName))) {
 			File file;
 			String contentType = s3object.getObjectMetadata().getContentType();
@@ -409,19 +393,25 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 			LOG.debug("Working on local file {} size: {}", localFile.getName(), localFile.length());
 			try (FileWrapper pFile = new FileWrapper(localFile, contentType)) {
 				String filename = getCloudFileName(pFile.getFile(), userId, sizeName);
-				if (!existsInCloud(photosBucket, filename) || replaceIfExisting) {
-					if (replaceIfExisting) {
-						LOG.debug("Replacing {} in {}", filename, photosBucket);
-					} else {
-						LOG.debug("{} not found in {}", filename, photosBucket);
-					}
+				if (photosBucket==null) {
+					LOG.warn("photoBucket is not set.  Local copies are not uploaded to cloud.");
 					File sourceFile = getSourceFile(pFile);
-					LOG.info("Uploading {} to {}/{}", new Object[]{sourceFile.getAbsolutePath(), photosBucket, filename});
-					uploadToCloud(sourceFile, photosBucket, filename);
+					LOG.info("Created local file {}", new Object[]{sourceFile.getAbsolutePath()});
 				} else {
-					LOG.debug("{} already exists at {}/{}", new Object[]{localFile.getAbsolutePath(), photosBucket, filename});
+					if (!existsInCloud(photosBucket, filename) || replaceIfExisting) {
+						if (replaceIfExisting) {
+							LOG.debug("Replacing {} in {}", filename, photosBucket);
+						} else {
+							LOG.debug("{} not found in {}", filename, photosBucket);
+						}
+						File sourceFile = getSourceFile(pFile);
+						LOG.info("Uploading {} to {}/{}", new Object[]{sourceFile.getAbsolutePath(), photosBucket, filename});
+						uploadToCloud(sourceFile, photosBucket, filename);
+					} else {
+						LOG.debug("{} already exists at {}/{}", new Object[]{localFile.getAbsolutePath(), photosBucket, filename});
+					}
+					LOG.debug("Finished uploading {} to {}/{}", new Object[]{localFile.getAbsolutePath(), photosBucket, filename});
 				}
-				LOG.debug("Finished uploading {} to {}/{}", new Object[]{localFile.getAbsolutePath(), photosBucket, filename});
 			} catch (Exception e) {
 				LOG.error("Unable to upload "+localFile.getAbsolutePath()+" "+sizeName, e);
 			} catch (Throwable t) {
