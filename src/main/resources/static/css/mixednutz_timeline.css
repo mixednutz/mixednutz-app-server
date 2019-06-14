@@ -20,7 +20,7 @@
 	font-size: 1.5em;
 	display: block;
 }
-.userpath, .location, .socialmedia {
+.bio, .userpath, .location, .socialmedia {
 	text-align:center; 
 }
 .profile .followers {

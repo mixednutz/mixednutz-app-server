@@ -20,7 +20,7 @@ page.updateExternalFeeds = function() {
 			var template = $('#feed_visibility_template').clone();
 			template.attr("id","externalFeedAccount_"+account.feedId); 
 			template.find(".iconName").addClass("fa-"+feed.feedInfo.fontAwesomeIconName);
-			template.find(".displayName").text(feed.feedInfo.displayName);
+			template.find(".displayName").text(account.name);
 			template.find("[name=feedId]").val(account.feedId);
 			template.find("[name=visibility]").val(account.visibility);
 		}

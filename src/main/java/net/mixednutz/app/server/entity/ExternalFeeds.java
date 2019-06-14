@@ -42,7 +42,8 @@ public class ExternalFeeds {
 
 		private Long feedId;
 		private String providerId;
-		private User user;
+		private User user; //foreign key
+		private String username; //feed's username
 		private String name;
 		private String imageUrl;
 		private String type;
@@ -116,6 +117,10 @@ public class ExternalFeeds {
 			return new Image(this.imageUrl);
 		}
 
+		/**
+		 * Foreign relationship back to the User entity
+		 * @return
+		 */
 		@ManyToOne()
 		@JoinColumn(name="user_id")
 		@JsonIgnore
@@ -125,6 +130,18 @@ public class ExternalFeeds {
 				
 		public void setUser(User user) {
 			this.user = user;
+		}
+
+		/**
+		 * Feed's username
+		 * @return
+		 */
+		public String getUsername() {
+			return username;
+		}
+
+		public void setUsername(String providerUsername) {
+			this.username = providerUsername;
 		}
 
 		public ZonedDateTime getDateCreated() {

@@ -25,8 +25,10 @@
 		
 		<mixednutz-java-api-core.version>2.0.0-SNAPSHOT</mixednutz-java-api-core.version>
 		<mixednutz-java-api-twitter.version>2.0.0-SNAPSHOT</mixednutz-java-api-twitter.version>
+		<io-utils.version>0.2.2</io-utils.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
+		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		<version.commons-codec>1.4</version.commons-codec>
 	
 		<version.webjars-locator>0.30</version.webjars-locator>
@@ -55,6 +57,11 @@
 			<groupId>net.mixednutz</groupId>
 			<artifactId>mixednutz-java-api-twitter</artifactId>
 			<version>${mixednutz-java-api-twitter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.andrewfesta.io</groupId>
+   			<artifactId>io-utils</artifactId>
+   			<version>${io-utils.version}</version>
 		</dependency>
 	
 		<!--  Spring -->
@@ -88,16 +95,15 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-aws</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- Spring Social -->
-		<dependency>
-	        <groupId>org.springframework.social</groupId>
-	        <artifactId>spring-social-web</artifactId>
-	        <version>${version.spring-social}</version>
-	    </dependency>
+		
 		<!-- Thymeleaf -->
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
@@ -108,7 +114,15 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 		</dependency>
-				
+		
+		
+		<!-- Spring Social -->
+		<dependency>
+	        <groupId>org.springframework.social</groupId>
+	        <artifactId>spring-social-web</artifactId>
+	        <version>${version.spring-social}</version>
+	    </dependency>
+						
 		<!-- WebJars -->
 		<dependency>
    			<groupId>org.webjars</groupId>
@@ -214,6 +228,18 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>

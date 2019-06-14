@@ -15,7 +15,7 @@
 	
 	<meta name="author" th:if="${journal.author!=null}" th:content="${journal.author.username}"/>
 	<!-- link rel="author" href="https://plus.google.com/[YOUR PERSONAL G+ PROFILE HERE]"/-->
-	<meta th:if="${profile!=null and profile.twitterAccount!=null}" property="twitter:creator" th:content="${profile.twitterAccount.twitterScreenname}" content="@username" />
+	<meta th:if="${profile!=null and profile.twitterAccount!=null}" property="twitter:creator" th:content="@{|@${profile.twitterAccount.username}}" content="@username" />
 	
 	<meta name="description" th:content="${journal.description}"/>
     <meta property="og:description" th:content="${journal.description}"/>
@@ -127,30 +127,28 @@
 	
 	<!-- JQuery 
 	================================================== -->
-	<script th:src="@{|/webjars/jquery/2.1.4/jquery.min.js|}"></script>
+	<script th:src="@{|/webjars/jquery/jquery.min.js|}"></script>
 	<script th:include="header :: navbar_js"></script>
 	
 	<!-- JQuery HotKeys
 	================================================== -->
-	<script th:src="@{|/webjars/jQuery.Hotkeys/0.2.0/jquery.hotkeys.js|}"></script>
+	<script th:src="@{|/webjars/jQuery.Hotkeys/jquery.hotkeys.js|}"></script>
 	
 	<!-- Bootstrap WYSIWYG
 	================================================== -->
-	<script th:src="@{|/webjars/bootstrap-wysiwyg-steveathon/1.0.5/js/bootstrap-wysiwyg.min.js|}"></script>
+	<script th:src="@{|/webjars/bootstrap-wysiwyg-steveathon/js/bootstrap-wysiwyg.min.js|}"></script>
 	
 	<!-- Bootstrap core JavaScript
     ================================================== -->
-    <script th:src="@{|/webjars/bootstrap/3.3.6/js/bootstrap.min.js|}"></script> 
+    <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script> 
     
     <!-- Bootstrap Modal JavaScript
     ================================================== -->
-    <script th:src="@{|/webjars/bootstrap-modal/2.2.5/js/bootstrap-modalmanager.js|}"></script>
-    <script th:src="@{|/webjars/bootstrap-modal/2.2.5/js/bootstrap-modal.js|}"></script> 
-        
+    <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modalmanager.js|}"></script>
+    <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modal.js|}"></script>
+    
     <!-- My JavaScript 
     ================================================== -->
-    <script type="text/javascript" th:src="@{|/js/shares.js|}" src="../js/shares.js"></script>
-    <script type="text/javascript">renderOembedFilter();</script>
     <script include="common/modules_common :: post_options_JS" th:inline="javascript"></script>
     <script include="journal/modules_journal :: editJournalForm_JS" th:inline="javascript"></script>
     <script include="common/modules_common :: tags_JS" th:inline="javascript"></script>

@@ -125,6 +125,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        			"/v1/search/**",
 	        			"/settings/**",
 	        			"/**/loggedin/**",
+	        			"/**/edit",
 	        			"/event/**",
 	        			"/privacy/**").authenticated()
 //	        	.hasRole("MIXEDNUTZ")

@@ -1,11 +1,16 @@
 package net.mixednutz.app.server.manager.impl;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import net.mixednutz.api.core.model.Action;
 import net.mixednutz.api.core.model.AlternateLink;
@@ -17,12 +22,15 @@ import net.mixednutz.api.model.IAction;
 import net.mixednutz.api.model.IImage;
 import net.mixednutz.api.model.IUser;
 import net.mixednutz.api.model.IUserProfile;
+import net.mixednutz.app.server.controller.BasePhotoController;
+import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.InternalTimelineElement.Type;
 import net.mixednutz.app.server.entity.NetworkInfo;
 import net.mixednutz.app.server.entity.ReactionScore;
 import net.mixednutz.app.server.entity.TagScore;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.entity.post.Post;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.manager.ApiManager;
@@ -36,6 +44,9 @@ public class ApiManagerImpl implements ApiManager{
 	private NetworkInfo networkInfo;
 	
 	@Autowired
+	private HttpServletRequest request;
+	
+	@Autowired
 	private TagManager tagManager;
 	
 	@Autowired
@@ -43,9 +54,26 @@ public class ApiManagerImpl implements ApiManager{
 	
 	private static final String APPLICATION_JSON_OEMBED = "application/json+oembed";
 	
+	private static final String AVATARS_DIR = BasePhotoController.PHOTOS_STORAGE_DIR;
+	private static final String AVATARS_QUERY = "size=avatar";
+	private static final String DEFAULT_AVATAR_URI = "/img/nophoto.gif";
+	
+	public static String getAvatarUri(String avatarFilename) {
+		if (avatarFilename!=null && !"".equals(avatarFilename.trim())) {
+			return AVATARS_DIR + "/"
+					+ avatarFilename + "?"+ AVATARS_QUERY;
+		}
+		return DEFAULT_AVATAR_URI;
+	}
+	
 	@Override
-	public IUser toUser(User entity) {
+	public UserWrapper toUser(User entity) {
+		networkInfo.init(request);
 		return new UserWrapper(entity, networkInfo);
+	}
+	
+	public IUser toUser(User entity, UserProfile profile) {
+		return toUser(entity).addProfile(profile);
 	}
 	
 	@Override
@@ -64,6 +92,8 @@ public class ApiManagerImpl implements ApiManager{
 	}
 
 	protected InternalTimelineElement toTimelineElement(Post<?> entity) {
+		networkInfo.init(request);
+		
 		InternalTimelineElement api = new InternalTimelineElement();
 		api.setUri(entity.getUri());
 		api.setUrl(networkInfo.getBaseUrl()+entity.getUri());
@@ -120,15 +150,24 @@ public class ApiManagerImpl implements ApiManager{
 		return api;
 	}
 	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class UserWrapper implements IUser {
 
 		final private User user;
 		final private NetworkInfo networkInfo;
+		private UserProfileWrapper profile;
 		
 		public UserWrapper(User user, NetworkInfo networkInfo) {
 			super();
 			this.user = user;
 			this.networkInfo = networkInfo;
+		}
+		
+		public UserWrapper addProfile(UserProfile profile) {
+			if (profile!=null) {
+				this.profile = new UserProfileWrapper(profile);
+			}
+			return this;
 		}
 
 		@Override
@@ -143,7 +182,7 @@ public class ApiManagerImpl implements ApiManager{
 
 		@Override
 		public IImage getAvatar() {
-			return new Image(user.getAvatarSrc(), user.getUsername()+"'s avatar");
+			return new Image(networkInfo.getBaseUrl()+getAvatarUri(user.getAvatarFilename()), user.getUsername()+"'s avatar");
 		}
 
 		@Override
@@ -174,11 +213,45 @@ public class ApiManagerImpl implements ApiManager{
 
 		@Override
 		public IUserProfile getProfileData() {
-			// TODO Auto-generated method stub
-			return null;
+			return profile;
+		}
+
+		public LocalDate getMemberSince() {
+			return user.getMemberSince().toLocalDate();
 		}
 		
 	}
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class UserProfileWrapper extends UserProfile implements IUserProfile {
+		
+		final private UserProfile userProfile;
 
+		public UserProfileWrapper(UserProfile userProfile) {
+			super();
+			this.userProfile = userProfile;
+		}
+
+		public String getLocation() {
+			return userProfile.getLocation();
+		}
+
+		public String getBio() {
+			return userProfile.getBio();
+		}
+
+		public String getPronouns() {
+			return userProfile.getPronouns();
+		}
+
+		public String getWebsite() {
+			return userProfile.getWebsite();
+		}
+
+		public Oauth1AuthenticatedFeed getTwitterAccount() {
+			return userProfile.getTwitterAccount();
+		}
+				
+	}
 
 }

@@ -114,6 +114,7 @@ public class NewExternalCredentialsController {
 			feed.setUser(creds.getUser());
 			feed.setCredentials((Oauth1Credentials) creds);
 			feed.setImageUrl(connection.getImageUrl());
+			feed.setUsername(userProfile.getUsername());			
 			feed.setName(networkInfo.getDisplayName() + " - " + userProfile.getUsername());
 			feed.setVisibility(creds.getVisibility());
 			return feed;
@@ -128,6 +129,7 @@ public class NewExternalCredentialsController {
 			feed.setUser(creds.getUser());
 			feed.setCredentials((Oauth2Credentials) creds);
 			feed.setImageUrl(connection.getImageUrl());
+			feed.setUsername(userProfile.getUsername());
 			feed.setName(networkInfo.getDisplayName() + " - " + userProfile.getUsername());
 			feed.setVisibility(creds.getVisibility());
 			return feed;

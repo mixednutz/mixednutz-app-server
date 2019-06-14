@@ -22,6 +22,7 @@ public class ApiNetworkInfoController {
 	@RequestMapping(value={"/social-network-info","/network-info","/mixednutz-info"}, 
 			method = RequestMethod.GET)
 	public @ResponseBody NetworkInfo networkInfo(HttpServletRequest request) throws MalformedURLException {
+		networkInfo.init(request);
 		return networkInfo;
 	}
 }

@@ -237,6 +237,9 @@ function buildExternalFeedTimelineElement(element, feedId) {
 	template.find(".avatar img").attr({
 		'src':element.postedByUser.avatar.src,
 		'title':element.postedByUser.avatar.title});
+	template.find(".avatar a").attr({
+		'href':element.postedByUser.url,
+		'target':'_new'});
 	template.find(".username .name").text(element.postedByUser.displayName);
 	template.find(".username a")
 		.attr('href',element.postedByUser.url)
@@ -304,12 +307,13 @@ function buildInternalTimelineElement(element, feedId) {
 	template.find(".avatar img").attr({
 		'src':element.postedByUser.avatar.src,
 		'title':element.postedByUser.avatar.title});
+	template.find(".avatar a").attr({
+		'href':element.postedByUser.url});
 	console.log(element.postedByUser);
 	template.find(".username .name").text(
 			element.postedByUser.displayName!=null?element.postedByUser.displayName:element.postedByUser.username);
 	template.find(".username a")
-		.attr('href',element.postedByUser.url)
-		.attr('target','_new');
+		.attr('href',element.postedByUser.url);
 	if (element.postedByUser.displayName!=null) {
 		template.find(".username .screenname").text(element.postedByUser.username);
 	} else {

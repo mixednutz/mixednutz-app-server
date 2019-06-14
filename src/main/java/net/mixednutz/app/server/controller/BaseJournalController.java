@@ -23,6 +23,7 @@ import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
 import net.mixednutz.app.server.manager.post.journal.JournalManager;
 import net.mixednutz.app.server.repository.JournalRepository;
+import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
 public class BaseJournalController {
@@ -32,6 +33,9 @@ public class BaseJournalController {
 	
 	@Autowired
 	private JournalManager journalManager;
+	
+	@Autowired
+	private UserProfileRepository profileRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -97,9 +101,9 @@ public class BaseJournalController {
 		
 		model.addAttribute("tagScores", tagManager.getTagScores(journal.getTags(), journal.getAuthor(), user));
 		model.addAttribute("reactionScores", reactionManager.getReactionScores(journal.getReactions(), journal.getAuthor(), user));
-//		if (journal.getOwner()!=null) {
-//			model.addAttribute("profile", myprofileManager.get(journal.getOwner().getId()));
-//		}
+		if (journal.getOwner()!=null) {
+			model.addAttribute("profile", profileRepository.findById(journal.getOwner().getUserId()).orElse(null));
+		}
 //		model.addAttribute("authors", accountManager.loadCommentAuthorsById(journal));
 		
 		//Side bar stuff

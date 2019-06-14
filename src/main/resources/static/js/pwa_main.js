@@ -87,8 +87,8 @@ page.updateTimelineInput = function() {
 		//TODO we want to show this publicly if settings allow it
 		var template = page.homeTimelineTemplate.clone();
   		template.attr("id","homeTimeline"+app.user.username); 
-  		if (app.user.imageUrl) {
-			template.find(".defaultPicture").attr("src", app.user.imageUrl.href);	
+  		if (app.user.avatar!=null && app.user.avatar.src!=null) { 
+			template.find(".defaultPicture").attr("src", app.user.avatar.src);	
 		} else {
 			template.find(".defaultPicture").attr("src", defaultPicture);
 		}

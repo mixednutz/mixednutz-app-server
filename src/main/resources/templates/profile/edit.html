@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Language" content="en" />
+	<title th:text="|#{profile.edit.window-title} - #{site.title}|">My Timeline - MixedNutz.net</title>
+	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
+	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
+	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
+	<link th:href="@{|/webjars/github-com-skywalkapps-bootstrap-notifications/1.0.3/dist/stylesheets/bootstrap-notifications.min.css|}" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/css/default_theme.css|}" href="../css/default_theme" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/webjars/fontawesome/css/font-awesome.min.css|}" rel="stylesheet" type="text/css" />
+		
+	<!-- PWA Manifest -->
+	<link th:href="@{|/manifest.json|}" rel="manifest" href="/manifest.json" />
+	
+	<meta name="description" th:content="#{profile.edit.description}" content="Welcome to your MixedNutz home.  Check out what your network is up to." />
+	<meta rel="icon" sizes="192x192" th:href="@{|img/icon-192x192.png|}" href="img/icon-192x192.png" />
+	<meta name="theme-color" content="#222222"/>
+	
+</head>
+<body>
+
+	<!-- Banner -->
+	<div th:replace="header :: navbar">navbar</div>
+	
+	<div class="container">
+	
+		<h1>Edit Profile</h1>
+		
+		<div th:include="profile/fragments_profile :: profile_form">profile_form</div>
+	
+	</div>
+    
+    <!-- Footer -->
+    <footer th:include="footer :: footer">
+        footer
+    </footer>
+    
+
+
+	<!-- Placed at the end of the document so the pages load faster -->	
+	
+	<!-- JQuery 
+	================================================== -->
+	<script th:src="@{|/webjars/jquery/jquery.min.js|}"></script>
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
+    
+    <!-- IDB-Keyval -->
+    <script th:src="@{|/webjars/idb-keyval/dist/idb-keyval-iife.js|}"></script>
+    
+    <!-- My JavaScript 
+ 	================================================== -->
+ 	<script th:include="header :: navbar_js" th:inline="javascript"></script>
+    <script type="text/javascript" th:src="@{|/js/pwa_profile_edit.js|}" src="../js/pwa_clearBundle.js"></script>
+    <script type="text/javascript" th:src="@{|/js/pwa.js|}" src="../js/pwa.js"></script>
+    
+        
+    
+  	<!-- Google Analytics JavaScript 
+ 	================================================== -->
+    <script th:include="google_analytics :: tracking"></script>
+</body>
+</html>
+

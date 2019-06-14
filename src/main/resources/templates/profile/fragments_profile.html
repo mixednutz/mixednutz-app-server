@@ -74,6 +74,135 @@
  		</div>
   	</div>
   	
+  	<div th:fragment="viewuser_profile" class="profile extended-profile" hidden="hidden">
+  		<p class="bio"></p>
+  		
+  		<p class="pronouns"></p>
+  		
+  		<p class="location"></p>
+  	
+  		<p class="row">
+  			<span class="col-xs-6 membersince">Member Since <strong><time></time></strong></span> 
+  			<span class="col-xs-6 lastlogin">Last Login <strong><time></time></strong></span>
+  		</p>
+  		<p class="row">
+  			<a class="col-xs-6 followers" href="#"><strong class="followingCount">0</strong> Following</a> 
+  			<a class="col-xs-6 followers" href="#"><strong class="followerCount">0</strong> Followers</a>
+  		</p>
+  	
+  		<div class="socialmedia">
+  			<div class="content-socmed-author">
+				<!-- <span class="socmed-author socmed-author-email"><a href="#" target="_blank" ><i class="fa fa-envelope fa-2x"></i></a></span> 
+				<span class="socmed-author socmed-author-rss"><a href="#" target="_blank" ><i class="fa fa-rss fa-2x"></i></a></span> 
+				<span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span> -->
+				<span class="socmed-author socmed-author-twitter"><a target="_blank" ><i class="fa fa-twitter fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-instagram"><a target="_blank" ><i class="fa fa-instagram fa-2x"></i></a></span>
+				<!-- <span class="socmed-author socmed-author-facebook"><a href="#" target="_blank" ><i class="fa fa-facebook fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-gplus"><a href="#" target="_blank" ><i class="fa fa-google-plus fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-youtube"><a href="#" target="_blank" ><i class="fa fa-youtube fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-linkedin"><a href="#" target="_blank" ><i class="fa fa-linkedin fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-pinterest"><a href="#" target="_blank" ><i class="fa fa-pinterest fa-2x"></i></a></span> -->
+			</div>
+		</div>
+  	</div>
+  	
+  	<div th:fragment="authorBio (profile, author)">
+	  	<div class="author-bio" th:if="${profile!=null and author!=null}">
+			<div class="row">
+				<div class="col-xs-12 col-sm-2 avatar-photo">
+					<img class="avatar" th:if="${author.avatarFilename!=null}" th:src="@{|/photos-storage/${author.avatarFilename}?size=avatar|}" src="../../img/nophoto.gif" width="100"/>
+					<img class="avatar" th:if="${author.avatarFilename==null}" th:src="@{|/img/nophoto.gif|}" src="../../img/nophoto.gif" width="100"/>
+				</div>
+				<div class="col-xs-12 col-sm-10 author-info ">
+					<h3 class="author-title" th:text="${author.username}"><span>username</span></h3>
+					<span th:text="${profile.bio}">bio</span>
+					<div class="content-socmed-author">
+						<!-- <span class="socmed-author socmed-author-email"><a href="#" target="_blank" ><i class="fa fa-envelope fa-2x"></i></a></span> 
+						<span class="socmed-author socmed-author-rss"><a href="#" target="_blank" ><i class="fa fa-rss fa-2x"></i></a></span> 
+						<span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span> -->
+						<span th:if="${profile.twitterAccount!=null}" class="socmed-author socmed-author-twitter"><a th:href="@{|https://twitter.com/${profile.twitterAccount.username}|}" href="#" target="_blank" ><i class="fa fa-twitter fa-2x"></i></a></span>
+						<!-- <span th:if="${profile.instagramAccount!=null}" class="socmed-author socmed-author-instagram"><a th:href="@{|https://www.instagram.com/${profile.instagramAccount.instagramScreenname}|}" href="#" target="_blank" ><i class="fa fa-instagram fa-2x"></i></a></span>
+						<span class="socmed-author socmed-author-facebook"><a href="#" target="_blank" ><i class="fa fa-facebook fa-2x"></i></a></span>
+						<span class="socmed-author socmed-author-gplus"><a href="#" target="_blank" ><i class="fa fa-google-plus fa-2x"></i></a></span>
+						<span class="socmed-author socmed-author-youtube"><a href="#" target="_blank" ><i class="fa fa-youtube fa-2x"></i></a></span>
+						<span class="socmed-author socmed-author-linkedin"><a href="#" target="_blank" ><i class="fa fa-linkedin fa-2x"></i></a></span>
+						<span class="socmed-author socmed-author-pinterest"><a href="#" target="_blank" ><i class="fa fa-pinterest fa-2x"></i></a></span> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  	
+  	<div th:fragment="profile_form">
+		
+		<form th:action="@{|/${#authentication.principal.username}/edit|}" th:object="${form}" method="post" enctype="multipart/form-data">
+		
+			<!--  User Name -->
+			<div class="username form-group">
+			    <label th:text="#{form.username.label}">Username</label>
+			    <p class="form-control-static" th:text="${#authentication.principal.username}"></p>
+			 </div>
+  
+			<!-- Display Name -->
+			<div class="displayName form-group">
+				<label for="displayName" th:text="#{form.displayName.label}">form.displayName.label</label>
+				<input id="displayName" type="text" th:field="*{displayName}" class="form-control" />
+				<small id="displayName_help" class="form-text text-muted" th:text="#{form.displayName.help}">form.displayName.help</small>
+			</div>
+			
+			<!-- Avatar -->
+			<div class="avatar form-group"> 
+				<label for="avatar" th:text="#{form.avatar.label}">form.avatar.label</label>
+				<input type="file" id="avatar" name="avatar" accept=".gif,.png,.jpg"/>
+				<small id="avatar_help" class="form-text text-muted" th:text="#{form.avatar.help}">form.avatar.help</small>
+			</div>
+			<div class="clearAvatar form-check"> 
+				<input class="form-check-input" type="checkbox" id="clearAvatar" name="clearAvatar" />
+				<label class="form-check-label" for="clearAvatar" th:text="#{form.clearAvatar.label}">form.clearAvatar.label</label>
+				<small id="clearAvatar_help" class="form-text text-muted" th:text="#{form.clearAvatar.help}">form.clearAvatar.help</small>
+			</div>
+			<div class="form-group">
+			    <p class="form-control-static"><img th:src="@{|#{defaultphoto.href}|}" src="../img/nophoto.gif"/></p>
+			 </div>
+			
+			
+			<!-- Bio -->
+			<div class="bio form-group">
+				<label for="bio" th:text="#{form.bio.label}">form.bio.label</label>
+				<textarea id="bio" type="text" th:field="*{bio}" class="form-control" />
+				<small id="bio_help" class="form-text text-muted" th:text="#{form.bio.help}">form.bio.help</small>
+			</div>
+			
+			
+			<!-- Location -->
+			<div class="location form-group">
+				<label for="location" th:Text="#{form.location.label}">form.location.label</label>
+				<input id="location" type="text" th:field="*{location}" class="form-control" />
+				<small id="location_help" class="form-text text-muted" th:text="#{form.location.help}">form.location.help</small>
+			</div>
+			
+			<!-- Pronouns -->
+			<div class="pronouns form-group">
+				<label for="pronouns" th:text="#{form.pronouns.label}">form.pronouns.label</label>
+				<input id="pronouns" type="text" th:field="*{pronouns}" class="form-control" />
+				<small id="pronouns_help" class="form-text text-muted" th:text="#{form.pronouns.help}">form.pronouns.help</small>
+			</div>
+			
+			<!-- Twitter Account -->
+			<div class="twitterAccountId form-group">
+				<label for="twitterAccountId" th:text="#{form.twitterAccountId.label}">form.twitterAccountId.label</label>
+				<select id="twitterAccountId" th:field="*{twitterAccountId}" class="form-control">
+					<option value="0">None</option>
+				</select>
+				<small id="twitterAccountId_help" class="form-text text-muted" th:text="#{form.twitterAccountId.help}">form.twitterAccountId.help</small>
+			</div>
+						
+			<div class="form-group">
+				<button type="submit" class="btn btn-success" th:text="#{profile.edit.form.submit}">profile.edit.form.submit</button>
+			</div>
+		
+		</form>
+	</div>
   	  
   
   </body>

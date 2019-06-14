@@ -1,9 +1,12 @@
 package net.mixednutz.app.server.entity;
 
+import java.time.ZonedDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -22,7 +25,8 @@ public class User extends BaseUserDetails {
 	
 	private Long userId;
 	private String displayName;
-	private String avatarSrc;
+	private ZonedDateTime memberSince;
+	private String avatarFilename;
 	private boolean _private;
 	
 	/*
@@ -40,6 +44,12 @@ public class User extends BaseUserDetails {
 		this.setAccountNonLocked(true);
 		this.setCredentialsNonExpired(true);
 	}
+	
+	@PrePersist
+	public void onCreate() {
+		this.memberSince = ZonedDateTime.now();
+	}
+	
 	@Id
 	@GeneratedValue(generator="system-native")
 	@GenericGenerator(name="system-native", strategy = "native")
@@ -81,19 +91,25 @@ public class User extends BaseUserDetails {
 	public void setPrivate(boolean _private) {
 		this._private = _private;
 	}
-	@Transient
 	public String getDisplayName() {
 		return displayName;
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	@JsonIgnore
-	public String getAvatarSrc() {
-		return avatarSrc;
+	@Column(updatable=false)
+	public ZonedDateTime getMemberSince() {
+		return memberSince;
 	}
-	public void setAvatarSrc(String avatarSrc) {
-		this.avatarSrc = avatarSrc;
+	public void setMemberSince(ZonedDateTime memberSince) {
+		this.memberSince = memberSince;
+	}
+	@JsonIgnore
+	public String getAvatarFilename() {
+		return avatarFilename;
+	}
+	public void setAvatarFilename(String avatarSrc) {
+		this.avatarFilename = avatarSrc;
 	}
 	
 	@Transient

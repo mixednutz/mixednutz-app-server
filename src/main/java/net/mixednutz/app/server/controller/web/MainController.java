@@ -94,6 +94,10 @@ public class MainController {
 			Model model
 			) {
 		
+		if (setupController.isFirstTime()) {
+			return setupController.firstTime(model);
+		}
+		
 		/*
 		 * Progressive Web Application.
 		 * 
@@ -107,6 +111,11 @@ public class MainController {
 	@RequestMapping(value="/{username}", method = RequestMethod.GET)
 	public String profile(@PathVariable String username, 
 			@AuthenticationPrincipal User authenticatedUser, Model model) {
+		
+		if (setupController.isFirstTime()) {
+			return setupController.firstTime(model);
+		}
+		
 		// Load user
 		Optional<User> profileUser = userRepository.findByUsername(username);
 		if (!profileUser.isPresent()) {

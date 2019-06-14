@@ -9,13 +9,14 @@ spring:
 site.settings.uniqueId: 1
 
 mixednutz:
+  aws.photosBucket: andrewfesta-com-photos
   network-info:
     id: andrewfestadotcom
     host-name: andrewfesta.com
     display-name: AndrewFesta.com
-    base-url: https://${HOST_AND_PORT}
     base-oembed-url: https://${HOST_AND_PORT}/oembed
     
+photoDirectory: ${PHOTO_DIRECTORY}
 
 ---
 # Optionally link up with other Mixednutz instance
@@ -100,3 +101,13 @@ spring:
 spring:
   profiles: db-local-mysql
   # This profile is for Andy's local environment
+  
+---
+spring:
+  profiles: aws-local
+  # This profile is for Andy's local environment
+  
+cloud:
+  aws:
+    region.static: us-east-1
+    stack.auto: false

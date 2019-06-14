@@ -93,8 +93,8 @@ page.updateTimelineInput = function() {
 		//TODO we want to show this publicly if settings allow it
 		var template = page.homeTimelineTemplate.clone();
   		template.attr("id","homeTimeline"+app.user.username); 
-  		if (app.user.imageUrl) {
-			template.find(".defaultPicture").attr("src", app.user.imageUrl.href);	
+  		if (app.user.avatar!=null && app.user.avatar.src!=null) {
+			template.find(".defaultPicture").attr("src", app.user.avatar.src);	
 		} else {
 			template.find(".defaultPicture").attr("src", defaultPicture);
 		}
@@ -127,9 +127,9 @@ page.setupForms = function() {
 }
 
 page.setupProfile = function() {
-	if (page.owner.imageUrl!=null) {
+	if (page.owner.avatar!=null && page.owner.avatar.src!=null) {
 		$('.profile .avatar img')
-			.attr("src", page.owner.imageUrl.href);
+			.attr("src", page.owner.avatar.src);
 	}
 	$('.profile .displayName').text(page.owner.displayName);
 	$('.profile .username').text(page.owner.username);
@@ -161,46 +161,54 @@ page.setupProfile = function() {
 			$('#requestFriend-btn').on('click', requestFriendBtnClick);
 		}
 	}
-	if (page.ownerBundle.profile!=null) {
-		if (page.ownerBundle.page.aboutMe!=null) {
-			$('.profile .aboutme').html(page.ownerBundle.page.aboutMe);
+	console.log(page.ownerBundle);
+	if (page.ownerBundle.user.profileData !=null) {
+		if (page.ownerBundle.user.profileData.bio!=null) {
+			$('.profile .bio').html(page.ownerBundle.user.profileData.bio);
 		} else {
-			$('.profile .aboutme').remove();
+			$('.profile .bio').remove();
 		}
-		if (page.ownerBundle.page.location!=null) {
-			$('.profile .location').text(page.ownerBundle.page.location.city+", "+
-					page.ownerBundle.page.location.state+" "+page.ownerBundle.page.location.country);
+		if (page.ownerBundle.user.profileData.pronouns!=null) {
+			$('.profile .pronouns').html(page.ownerBundle.user.profileData.pronouns);
+		} else {
+			$('.profile .pronouns').remove();
+		}
+		if (page.ownerBundle.user.profileData.location!=null) {
+			$('.profile .location').text(page.ownerBundle.user.profileData.location);
 		} else {
 			$('.profile .location').remove();
 		}
-		if (page.ownerBundle.page.memberSince!=null) {
+		if (page.ownerBundle.user.memberSince!=null) {
 			$('.profile .membersince time') 
-				.attr('datetime', page.ownerBundle.page.memberSince)
-				.text(new Date(page.ownerBundle.page.memberSince).toLocaleDateString());
+				.attr('datetime', page.ownerBundle.user.memberSince)
+				.text(new Date(page.ownerBundle.user.memberSince).toLocaleDateString());
 		} else {
 			$('.profile .membersince').remove();
 		}
-		if (page.ownerBundle.page.lastlogin!=null) {
+		/*if (page.ownerBundle.page.lastlogin!=null) {
 			$('.profile .lastlogin time') 
 				.attr('datetime', page.ownerBundle.page.lastlogin)
 				.text(new Date(page.ownerBundle.page.lastlogin).toLocaleDateString());
 		} else {
 			$('.profile .lastlogin').remove();
-		}
+		}*/
 		
 		$('.profile .followers .followingCount').text(page.ownerBundle.followingCount);
 		$('.profile .followers .followerCount').text(page.ownerBundle.followerCount);
 		$('.profile .followers').attr('href',page.owner.url+'/friends');
-		if (page.ownerBundle.page.twitterAccount!=null) {
-			$('.socmed-author-twitter a').attr('href',page.ownerBundle.page.twitterAccount.userProfileUrl.href);
+		
+		if (page.ownerBundle.user.profileData.twitterAccount!=null) {
+			$('.socmed-author-twitter a').attr('href','https://twitter.com/'+page.ownerBundle.user.profileData.twitterAccount.username);
 		} else {
 			$('.socmed-author-twitter').remove();
 		}
-		if (page.ownerBundle.page.instagramAccount!=null) {
-			$('.socmed-author-instagram a').attr('href',page.ownerBundle.page.instagramAccount.userProfileUrl.href);
-		} else {
+		//if (page.ownerBundle.page.instagramAccount!=null) {
+		//	$('.socmed-author-instagram a').attr('href',page.ownerBundle.page.instagramAccount.userProfileUrl.href);
+		//} else {
 			$('.socmed-author-instagram').remove();
-		}
+		//}
+	} else {
+		$('.extended-profile').remove();
 	}
 	
 };
@@ -210,11 +218,11 @@ page.postLoad = function() {
 	$('.userpath').removeAttr("hidden");
 	$('.extended-profile').removeAttr("hidden");
 	$('#requestFriend-status').remove();
-	if (app.user!=null && app.user.id==page.owner.id) {
-		$('#viewusermenu a').attr('href',app.user.url+'/edit');
-		$('#viewusermenu a').removeAttr("hidden");
+	if (app.user!=null && app.user.providerId==page.owner.providerId) {
+		$('#viewusermenu a').attr('href',getRelativePath(app.user.uri+'/edit'));
+		$('#viewusermenu').removeAttr("hidden");
 	} else {
-		$('#viewusermenu a').remove();
+		$('#viewusermenu').remove();
 	}
 }
 

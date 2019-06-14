@@ -16,7 +16,9 @@ import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.manager.ApiManager;
+import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
 @Controller
@@ -27,10 +29,13 @@ public class ApiUserController {
 			"/loggedin/user";
 	
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 	
 	@Autowired
-	ExternalFeedApiController externalFeedApi;
+	private UserProfileRepository profileRepository;
+	
+	@Autowired
+	private ExternalFeedApiController externalFeedApi;
 	
 	@Autowired
 	private ApiManager apiManager;
@@ -46,9 +51,11 @@ public class ApiUserController {
 					public UserNotFoundException get() {
 						throw new UserNotFoundException("User "+username+" not found");
 					}});
+		
+		UserProfile profileData = profileRepository.findById(profileUser.getUserId()).orElse(null);
 				
 		UserProfileBundle bundle = new UserProfileBundle()
-				.addUser(apiManager.toUser(profileUser))
+				.addUser(apiManager.toUser(profileUser, profileData))
 				.addExternalFeedsList(externalFeedApi.externalFeeds(username));
 //				.addFollowerCount(friendManager.countFollowers(account, false))
 //				.addFollowingCount(friendManager.countFollowing(account, false));
@@ -109,10 +116,6 @@ public class ApiUserController {
 		UserProfileBundle addExternalFeedsList(ExternalFeedsList feeds) {
 			return addBundle(feeds);
 		}
-//		UserProfileBundle addProfile(IUserProfile profile) {
-//			this.put("profile", profile);
-//			return this;
-//		}
 //		UserProfileBundle addFriendStatus(Friend friendStatus) {
 //			if (friendStatus!=null) {
 //				//status whether current user has permission to follow this account

@@ -12,3 +12,80 @@ footer .copyright {
   margin-bottom: 0;
   text-align: center;
 }
+
+/** Author box **/
+.author-bio{
+    border-top: 2px solid    #404040;
+    border-bottom: 2px solid    #404040;
+    margin: 5px;
+    margin-top: 35px;
+    padding: 10px;
+    padding-left: 5px;
+}
+.author-bio p{
+margin-bottom: 0px;
+}
+.author-bio .avatar-photo{
+    margin-bottom: 5px;
+    padding-right: 0px;
+    padding-left: 0px;
+ 
+}
+.author-bio .avatar{
+    border-radius: 50px;
+    border:1px solid #404040;
+    padding: 3px;
+}
+.author-title{
+    margin-top:0px; 
+    margin-left: 0px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+.author-title a{
+    color: #404040;
+}
+.socmed-author{
+    padding-bottom: 5px;
+}
+.content-socmed-author{
+        margin-bottom: 10px;
+ 
+}
+.socmed-author{
+    margin-right: 3px;
+}
+.socmed-author  a:hover{
+    color: #404040;
+}
+.socmed-author-email a{
+    color:#ffa500;
+}
+.socmed-author-rss a{
+    color:#ff6600;
+}
+.socmed-author-yahoo a{
+    color:#780099
+}
+.socmed-author-twitter a{
+    color:#00aced
+}
+.socmed-author-facebook a{
+    color :#3b5998;
+}
+.socmed-author-gplus a{
+    color :#d34836
+}
+.socmed-author-instagram a{
+    color :#517fa4;
+}
+.socmed-author-linkedin a{
+    color: #007bb6;
+}
+.socmed-author-pinterest a{
+    color: #cb2027;
+}
+.socmed-author-youtube a{
+    color: #bb0000;
+}

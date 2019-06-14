@@ -38,8 +38,7 @@
         <div class="row">
 	  		<div class="col-lg-3"> 
 	  			<div th:replace="profile/fragments_profile :: viewuser_picture">viewuser_picture</div>
-	  			
-	  			<div if="${myprofile!=null}"><div replace="profile/modules_profile_new :: viewuser_profile">viewuser_profile</div></div>
+	  			<div th:replace="profile/fragments_profile :: viewuser_profile">viewuser_profile</div>
 	  		</div>
 	  		<div class="col-lg-9">
       			<div th:replace="profile/fragments_profile :: timeline">timeline</div>

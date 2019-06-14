@@ -23,7 +23,6 @@ public class NetworkInfoConfig {
 		networkInfo.setId(id);
 		networkInfo.setHostName(hostName);
 		networkInfo.setDisplayName(displayName);
-		networkInfo.setBaseUrl(baseUrl);
 		networkInfo.setBaseOembedUrl(baseOembedUrl);
 		return networkInfo;
 	}
