@@ -1,6 +1,6 @@
 spring: 
   
-  profiles.active: jpa-dev, mixednutz_base, twitter, aws, aws-local
+  profiles.active: jpa-dev, uploads-dev, mixednutz_base, twitter, aws-local
   
   data:
     rest:
@@ -9,7 +9,6 @@ spring:
 site.settings.uniqueId: 1
 
 mixednutz:
-  aws.photosBucket: andrewfesta-com-photos
   network-info:
     id: andrewfestadotcom
     host-name: andrewfesta.com
@@ -17,9 +16,16 @@ mixednutz:
     
 ---
 spring:
-  profiles: aws
+  profiles: uploads-dev
+  
+---
+spring:
+  profiles: uploads-prod
+  
+photoDirectory: ${PHOTO_DIRECTORY}
 
-server.port: 5000
+mixednutz:
+  aws.photosBucket: andrewfesta-com-photos
 
 ---
 # Optionally link up with other Mixednutz instance
