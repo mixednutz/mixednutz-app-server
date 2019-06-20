@@ -1,7 +1,7 @@
 package net.mixednutz.app.server.controller.api;
 
 import java.time.Instant;
-import java.util.Collections;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.mixednutz.api.core.model.ApiList;
-import net.mixednutz.api.core.model.Page;
+import net.mixednutz.api.core.model.PageBuilder;
 import net.mixednutz.api.core.model.PageRequest;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest.Direction;
@@ -148,20 +148,34 @@ public class ApiTimelineController {
 				.orElse(new UserSettings());
 		
 		//Get local data
-		
+		final IPage<? extends ITimelineElement,Instant> internalContent = 
+				timelineManager.getUserTimeline(profileUser.get(), user, prevPage);
 		
 		if (settings.isShowCombinedExternalFeedsOnProfile()) {
-			//TODO combine this with local content
-			return externalFeedApi.apiCombinedExternalFeedsUserTimeline(username, hashtag, pageSize, 
+			
+			//Get external data
+			final IPage<? extends ITimelineElement,Instant> externalContent = externalFeedApi.apiCombinedExternalFeedsUserTimeline(username, hashtag, pageSize, 
 					prevPage, user);
+			
+			PageRequest<Instant> pageRequest = PageRequest.convert(prevPage, Instant.class,
+					(str) -> {
+						return ZonedDateTime.parse(str).toInstant();
+					});
+
+			return new PageBuilder<ITimelineElement, Instant>()
+					.addItems(internalContent.getItems())
+					.addItems(externalContent.getItems())
+					.setPageRequest(pageRequest)
+					.setTrimToPageSize(true)
+					.setReSortComparator((o1, o2) -> {
+							return -o1.getPostedOnDate().compareTo(o2.getPostedOnDate());
+						})
+					.setTokenCallback((item) -> {
+							return item.getPostedOnDate().toInstant();
+						})
+					.build();
 		} 
-		return stubData();
-	}
-	
-	private static IPage<? extends ITimelineElement,Instant> stubData() {
-		Page<? extends ITimelineElement,Instant> stubData = new Page<>();
-		stubData.setItems(Collections.emptyList());
-		return stubData;
+		return internalContent;
 	}
 	
 	public static class TimelineBundle extends TreeMap<String, Object> {

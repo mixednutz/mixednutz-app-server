@@ -40,16 +40,15 @@ public abstract class PostManagerImpl<P extends Post<C>, C extends PostComment, 
 			User owner, IPageRequest<String> paging) {
 			
 		List<P> contents = null;
-		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
+		final net.mixednutz.api.core.model.PageRequest<Instant> pageRequest = net.mixednutz.api.core.model.PageRequest
+				.convert(paging, Instant.class, (str) -> {
+					return ZonedDateTime.parse(str).toInstant();
+				});
 		if (paging.getStart()==null) {
-			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
-					paging.getPageSize(), paging.getDirection(), Instant.class);
 			contents = postRepository.getMyPostsLessThan(owner, ZonedDateTime.now(), 
 					PageRequest.of(0, paging.getPageSize()));
 		} else {
-			ZonedDateTime start = ZonedDateTime.parse(paging.getStart());
-			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
-					start.toInstant(), paging.getPageSize(), paging.getDirection());
+			ZonedDateTime start = ZonedDateTime.from(pageRequest.getStart());
 			if (paging.getDirection()==Direction.LESS_THAN) {
 				contents = postRepository.getMyPostsLessThan(owner, start, 
 						PageRequest.of(0, paging.getPageSize()));
@@ -78,17 +77,16 @@ public abstract class PostManagerImpl<P extends Post<C>, C extends PostComment, 
 			User owner, User viewer, IPageRequest<String> paging) {
 			
 		List<P> contents = null;
-		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
+		final net.mixednutz.api.core.model.PageRequest<Instant> pageRequest = net.mixednutz.api.core.model.PageRequest
+				.convert(paging, Instant.class, (str) -> {
+					return ZonedDateTime.parse(str).toInstant();
+				});
 		if (paging.getStart()==null) {
-			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
-					paging.getPageSize(), paging.getDirection(), Instant.class);
 			contents = postRepository.getUsersPostsByDateCreatedLessThanEquals(
 					owner, viewer, ZonedDateTime.now(), 
 					PageRequest.of(0, paging.getPageSize()));
 		} else {
-			ZonedDateTime start = ZonedDateTime.parse(paging.getStart());
-			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
-					start.toInstant(), paging.getPageSize(), paging.getDirection());
+			ZonedDateTime start = ZonedDateTime.from(pageRequest.getStart());
 			if (paging.getDirection()==Direction.LESS_THAN) {
 				contents = postRepository.getUsersPostsByDateCreatedLessThanEquals(
 						owner, viewer, start, 

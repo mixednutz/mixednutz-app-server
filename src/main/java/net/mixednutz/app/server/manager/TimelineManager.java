@@ -17,5 +17,15 @@ public interface TimelineManager {
 	 * @return
 	 */
 	public IPage<? extends ITimelineElement,Instant> getHomeTimeline(User user, PageRequest<String> paging);
+	
+	/**
+	 * Return objects from a user's friends-timeline
+	 * @param profileUser owner of the timeline 
+	 * @param viewer authenticated user viewing this
+	 * @param pageSize
+	 * @param paging
+	 * @return
+	 */
+	public IPage<? extends ITimelineElement,Instant> getUserTimeline(User profileUser, User viewer, PageRequest<String> paging);
 
 }

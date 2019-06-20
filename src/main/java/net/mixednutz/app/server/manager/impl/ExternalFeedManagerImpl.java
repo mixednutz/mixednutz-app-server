@@ -144,16 +144,15 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		}
 		
 		List<ExternalFeedContent> contents = null;
-		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
+		final net.mixednutz.api.core.model.PageRequest<Instant> pageRequest = net.mixednutz.api.core.model.PageRequest
+				.convert(paging, Instant.class, (str) -> {
+					return ZonedDateTime.parse(str).toInstant();
+				});
 		if (paging.getStart()==null) {
-			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
-					paging.getPageSize(), paging.getDirection(), Instant.class);
 			contents = externalFeedContentRepository.findTimeline(feed.getFeedId(), 
 					timelineType, PageRequest.of(0, paging.getPageSize()));
 		} else {
-			ZonedDateTime start = ZonedDateTime.parse(paging.getStart());
-			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
-					start.toInstant(), paging.getPageSize(), paging.getDirection());
+			ZonedDateTime start = ZonedDateTime.from(pageRequest.getStart());
 			if (paging.getDirection()==Direction.LESS_THAN) {
 				contents = externalFeedContentRepository.findTimelineMore(feed.getFeedId(), 
 						timelineType, start, PageRequest.of(0, paging.getPageSize()));
@@ -170,11 +169,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		return new PageBuilder<ExternalFeedTimelineElement, Instant>()
 			.setItems(elements)
 			.setPageRequest(pageRequest)
-			.setTokenCallback(new GetTokenCallback<ExternalFeedTimelineElement, Instant>(){
-				@Override
-				public Instant getToken(ExternalFeedTimelineElement item) {
+			.setTokenCallback((item) -> {
 					return item.getProviderPostedOnDate().toInstant();
-				}})
+				})
 			.build();
 	}
 	
@@ -191,16 +188,15 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		feedIdList.toArray(feedIdArray);
 				
 		List<ExternalFeedContent> contents = null;
-		net.mixednutz.api.core.model.PageRequest<Instant> pageRequest;
+		final net.mixednutz.api.core.model.PageRequest<Instant> pageRequest = net.mixednutz.api.core.model.PageRequest
+				.convert(paging, Instant.class, (str) -> {
+					return ZonedDateTime.parse(str).toInstant();
+				});
 		if (paging.getStart()==null) {
-			pageRequest = net.mixednutz.api.core.model.PageRequest.first(
-					paging.getPageSize(), paging.getDirection(), Instant.class);
 			contents = externalFeedContentRepository.findTimeline(feedIdArray, 
 					timelineType, PageRequest.of(0, paging.getPageSize()));
 		} else {
-			ZonedDateTime start = ZonedDateTime.parse(paging.getStart());
-			pageRequest = net.mixednutz.api.core.model.PageRequest.next(
-					start.toInstant(), paging.getPageSize(), paging.getDirection());
+			ZonedDateTime start = ZonedDateTime.from(pageRequest.getStart());
 			if (paging.getDirection()==Direction.LESS_THAN) {
 				contents = externalFeedContentRepository.findTimelineMore(feedIdArray, 
 						timelineType, start, PageRequest.of(0, paging.getPageSize()));
