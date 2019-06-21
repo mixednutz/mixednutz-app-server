@@ -1,6 +1,7 @@
 var app = {
   			externalFeeds: [],
   			user: {},
+  			networkInfo: {},
   			friends: [],
   			fgroups: [],
   			settings: {},
@@ -65,6 +66,7 @@ var app = {
   					app.bundle = data;
   					app.externalFeeds = data.externalFeeds;
   					app.user = data.user;
+  					app.networkInfo = data.networkInfo;
   					app.friends = data.following;
   					app.fgroups = data.categories;
   					app.settings = data.settings;
@@ -90,6 +92,7 @@ var app = {
   	  			app.externalFeeds = data.externalFeeds;
   				app.user = data.user;
   				app.owner = data.user;
+  				app.networkInfo = data.networkInfo;
   				app.friends = data.following;
   				app.fgroups = data.categories;
   				app.settings = data.settings;

@@ -1,9 +1,5 @@
 package net.mixednutz.app.server.controller.api;
 
-import java.net.MalformedURLException;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.mixednutz.api.core.model.NetworkInfo;
+import net.mixednutz.api.core.model.NetworkInfoSmall;
 
 @Controller
 public class ApiNetworkInfoController {
@@ -20,7 +17,11 @@ public class ApiNetworkInfoController {
 		
 	@RequestMapping(value={"/social-network-info","/network-info","/mixednutz-info"}, 
 			method = RequestMethod.GET)
-	public @ResponseBody NetworkInfo networkInfo(HttpServletRequest request) throws MalformedURLException {
+	public @ResponseBody NetworkInfo networkInfo() {
 		return networkInfo;
+	}
+	
+	public NetworkInfoSmall networkInfoSmall() {
+		return new NetworkInfoSmall(networkInfo);
 	}
 }

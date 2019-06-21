@@ -85,7 +85,13 @@
   		/*direction is "prepend" or "append"*/
   		var loopFunction = function (index, element) {
   			var builtElement = null;
-  			builtElement = buildInternalTimelineElement(element);
+  			if (element.type.namespace==app.networkInfo.hostName) {
+  				console.log("Internal");
+  				builtElement = buildInternalTimelineElement(element);
+  			} else {
+  				console.log("External");
+  				builtElement = buildExternalFeedTimelineElement(element);
+  			}
   			if (builtElement!=null) {
   				if (direction=='prepend') {
   					builtElement.prependTo("#elements");

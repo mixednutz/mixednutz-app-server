@@ -291,7 +291,7 @@ function buildExternalFeedTimelineElement(element, feedId) {
 	return template;
 }
 
-function buildInternalTimelineElement(element, feedId) {
+function buildInternalTimelineElement(element) {
 	var type = element.type.id;
 	var id = type+"_"+element.providerId;
 	if ($("#"+id).length>0) {
@@ -299,7 +299,6 @@ function buildInternalTimelineElement(element, feedId) {
 		return null;
 	}
 	
-	console.log('#template_'+element.type.name); 
 	var template = $('#template_'+element.type.name).clone();
 	template.attr("id",id); 	
 	
@@ -309,7 +308,6 @@ function buildInternalTimelineElement(element, feedId) {
 		'title':element.postedByUser.avatar.title});
 	template.find(".avatar a").attr({
 		'href':element.postedByUser.url});
-	console.log(element.postedByUser);
 	template.find(".username .name").text(
 			element.postedByUser.displayName!=null?element.postedByUser.displayName:element.postedByUser.username);
 	template.find(".username a")

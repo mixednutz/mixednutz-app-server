@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import net.mixednutz.api.core.model.ApiList;
 import net.mixednutz.api.core.model.PageBuilder;
 import net.mixednutz.api.core.model.PageRequest;
+import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
@@ -50,6 +51,9 @@ public class ApiTimelineController {
 	public static final int PAGE_SIZE = Integer.parseInt(PAGE_SIZE_STR);
 	
 	@Autowired
+	private ApiNetworkInfoController networkInfoApi;
+	
+	@Autowired
 	private ExternalFeedApiController externalFeedApi;
 	
 	@Autowired
@@ -71,6 +75,7 @@ public class ApiTimelineController {
 		}
 		
 		return new TimelineBundle()
+				.addNetworkInfo(networkInfoApi.networkInfoSmall())
 //				.addFollowingList(friendsApi.apiGetFollowing(user))
 				.addExternalFeedsList(externalFeedApi.externalFeeds(user))
 //				.addFriendgroups(friendsApi.apiGetCategories(user))
@@ -212,6 +217,10 @@ public class ApiTimelineController {
 //		}
 		TimelineBundle addSettings(UserSettings settings) {
 			this.put("settings", settings);
+			return this;
+		}
+		TimelineBundle addNetworkInfo(INetworkInfoSmall networkInfo) {
+			this.put("networkInfo", networkInfo);
 			return this;
 		}
 	}
