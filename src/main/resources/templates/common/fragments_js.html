@@ -86,10 +86,8 @@
   		var loopFunction = function (index, element) {
   			var builtElement = null;
   			if (element.type.namespace==app.networkInfo.hostName) {
-  				console.log("Internal");
   				builtElement = buildInternalTimelineElement(element);
   			} else {
-  				console.log("External");
   				builtElement = buildExternalFeedTimelineElement(element);
   			}
   			if (builtElement!=null) {

@@ -82,6 +82,26 @@ var app = {
   		});
   		
   	};
+  	
+  	/*
+  	 * Loads only the networkInfo for instances when the user is not authenticated
+  	 */
+  	app.loadNetworkInfo = function() {
+  		return new Promise(function(resolve, reject){
+  			$.ajax({
+  				type: 'GET', 
+  				url: getRelativePath('/network-info'),
+  				dataType: "json",
+  				success: function(data){
+  					console.log("networkInfo");
+  					console.log(data);
+  					app.networkInfo = data;
+  					resolve(data);
+  				}
+  			});
+  		});
+  		
+  	};
 	
 	app.loadBundleFromStorage = function() {
   		return idbKeyval.get('bundle').then(function(data){
@@ -147,8 +167,12 @@ var app = {
   			function(){
   				console.log("Not Authenticated");
   				app.removeBundleFromStorage();
-  				//load other components not related to the current user:
-  				page.setup();
+  				
+  				app.loadNetworkInfo().then(function(){
+  					//load other components not related to the current user:
+  	  				page.setup();
+  				});
+  				
   			});
   	
   	
