@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
@@ -38,6 +39,8 @@ public abstract class AbstractComment implements Comment{
 	/**
 	 * @return Returns the body.
 	 */
+	@Lob
+	@Column(name="body")
 //	@Column(name="body", columnDefinition="LONGTEXT")
 	public String getBody() {
 		return body;

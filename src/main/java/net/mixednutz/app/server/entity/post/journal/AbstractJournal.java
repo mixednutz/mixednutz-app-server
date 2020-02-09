@@ -1,6 +1,7 @@
 package net.mixednutz.app.server.entity.post.journal;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
@@ -32,6 +33,8 @@ public abstract class AbstractJournal<C extends AbstractPostComment> extends Abs
 	public String getSubjectKey() {
 		return subjectKey;
 	}
+	@Lob
+	@Column(name="body")
 //	@Column(name="body", columnDefinition="LONGTEXT")
 	public String getBody() {
 		return body;

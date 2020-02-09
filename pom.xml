@@ -22,15 +22,15 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		
 		<mixednutz-java-api-core.version>2.0.0-SNAPSHOT</mixednutz-java-api-core.version>
 		<mixednutz-java-api-twitter.version>2.0.0-SNAPSHOT</mixednutz-java-api-twitter.version>
 		<io-utils.version>0.2.2</io-utils.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
-		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
+		
 		<version.commons-codec>1.4</version.commons-codec>
-	
 		<version.webjars-locator>0.30</version.webjars-locator>
 		<version.bootstrap>3.3.7-1</version.bootstrap>
 		<version.bootstrap-modal>2.2.5</version.bootstrap-modal>
@@ -42,7 +42,7 @@
 		<version.jQuery.Hotkeys>0.2.0</version.jQuery.Hotkeys>
 		<version.snackbarjs>1.1.0</version.snackbarjs>
 		
-		<docker.image.prefix>mixednutz</docker.image.prefix>
+		<docker.image.prefix>apfesta</docker.image.prefix>
 	</properties>
 
 	<dependencies>
@@ -88,11 +88,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -101,13 +101,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
 		
 		<!-- Thymeleaf -->
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity4</artifactId>	
+			<artifactId>thymeleaf-extras-springsecurity5</artifactId>	
   		</dependency>
   		<!-- Commons Codec for the Base64 authorization -->
   		<dependency>
@@ -221,7 +222,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>  
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
@@ -254,37 +255,7 @@
         			<excludedGroups>net.mixednutz.app.server.IntegrationTest</excludedGroups>
     			</configuration>
 			 </plugin>
-			 
-			 <plugin>
-			 	<groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                	<includes>
-				      <include>**/*.java</include>
-				    </includes>
-                    <groups>net.mixednutz.app.server.IntegrationTest</groups>
-                </configuration>
-             </plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>1.3.4</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<!-- The 'push' didn't work for me, so I push manually instead. 
-							<goal>push</goal> 
-							-->
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<repository>${docker.image.prefix}/${project.artifactId}</repository>
-					<tag>${project.version}</tag>
-				</configuration>
-			</plugin>
+			 			
 		</plugins>
 	</build>
 	
@@ -295,6 +266,32 @@
 			<activation>
 				<property><name>prod</name></property>
 			</activation>
+			
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.spotify</groupId>
+						<artifactId>dockerfile-maven-plugin</artifactId>
+						<version>1.3.4</version>
+						<executions>
+							<execution>
+								<id>default</id>
+								<goals>
+									<goal>build</goal>
+									<!-- The 'push' didn't work for me, so I push manually instead. 
+									<goal>push</goal> 
+									-->
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<repository>${docker.image.prefix}/${project.artifactId}</repository>
+							<tag>${project.version}</tag>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			
 			<dependencies>
 				<!-- MySQL -->
 				<dependency>
@@ -303,12 +300,29 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
 		<profile>
 			<!-- In Memory Database for Development and Automated Testing -->
 			<id>dev-hsqldb</id>
 			<activation>
 				<property><name>!prod</name></property>
 			</activation>
+			
+			<build>
+				<plugins>
+					<plugin>
+					 	<groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-failsafe-plugin</artifactId>
+		                <configuration>
+		                	<includes>
+						      <include>**/*.java</include>
+						    </includes>
+		                    <groups>net.mixednutz.app.server.IntegrationTest</groups>
+		                </configuration>
+		             </plugin>
+				</plugins>
+			</build>
+			
 			<dependencies>
 				<!-- HSQLDB -->
 				<dependency>

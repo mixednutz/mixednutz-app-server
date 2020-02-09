@@ -75,7 +75,8 @@ public class ExternalFeedTimelineElement implements ITimelineElement {
 		this.element = element;
 	}
 	@Lob
-	@Column(name="element_json", columnDefinition="clob")
+	@Column(name="element_json")
+//	@Column(name="element_json", columnDefinition="clob")
 	public String getElementJson() {
 		return elementJson;
 	}

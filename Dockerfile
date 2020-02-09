@@ -1,9 +1,15 @@
 FROM openjdk:8-jdk-alpine
 
+#ENV VERSION=@project.version@
+
+#LABEL version="@project.version@"\
+#    maintainer="apfes1@gmail.com"
+
 # Copy the Spring Boot "uberjar" that is built by Maven into the Docker image
 COPY target/*.jar app.jar
+ADD start.sh .
 
-# Add any JVM parameters here
-ENV JAVA_OPTS=""
+# Install prereq's
+RUN chmod +x start.sh
 
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+CMD ["./start.sh"]

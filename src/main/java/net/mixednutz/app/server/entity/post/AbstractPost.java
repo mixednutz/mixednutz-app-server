@@ -12,6 +12,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
@@ -66,6 +67,8 @@ public abstract class AbstractPost<C extends AbstractPostComment> implements Pos
 		this.id = id;
 	}
 
+	@Lob
+	@Column(name="description")
 	//	@Column(name="description", columnDefinition="LONGTEXT")
 	public String getDescription() {
 		return description;
