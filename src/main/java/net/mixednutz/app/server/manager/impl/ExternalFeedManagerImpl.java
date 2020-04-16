@@ -4,6 +4,7 @@ import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credenti
 import static net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials.OAUTH2;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,7 +153,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			contents = externalFeedContentRepository.findTimeline(feed.getFeedId(), 
 					timelineType, PageRequest.of(0, paging.getPageSize()));
 		} else {
-			ZonedDateTime start = ZonedDateTime.from(pageRequest.getStart());
+			ZonedDateTime start = pageRequest.getStart().atZone(ZoneId.systemDefault());
 			if (paging.getDirection()==Direction.LESS_THAN) {
 				contents = externalFeedContentRepository.findTimelineMore(feed.getFeedId(), 
 						timelineType, start, PageRequest.of(0, paging.getPageSize()));
@@ -196,7 +197,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			contents = externalFeedContentRepository.findTimeline(feedIdArray, 
 					timelineType, PageRequest.of(0, paging.getPageSize()));
 		} else {
-			ZonedDateTime start = ZonedDateTime.from(pageRequest.getStart());
+			ZonedDateTime start = pageRequest.getStart().atZone(ZoneId.systemDefault());
 			if (paging.getDirection()==Direction.LESS_THAN) {
 				contents = externalFeedContentRepository.findTimelineMore(feedIdArray, 
 						timelineType, start, PageRequest.of(0, paging.getPageSize()));
