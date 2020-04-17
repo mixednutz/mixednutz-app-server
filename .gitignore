@@ -33,3 +33,4 @@ buildNumber.properties
 /dist/
 /nbdist/
 /.nb-gradle/
+/logs/

@@ -69,7 +69,7 @@ public abstract class AbstractPost<C extends AbstractPostComment> implements Pos
 
 	@Lob
 	@Column(name="description")
-	//	@Column(name="description", columnDefinition="LONGTEXT")
+//	@Column(name="description", columnDefinition="LONGTEXT")
 	public String getDescription() {
 		return description;
 	}

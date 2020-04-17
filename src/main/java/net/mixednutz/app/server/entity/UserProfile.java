@@ -48,6 +48,8 @@ public class UserProfile implements IUserProfile {
 	}
 
 	@Lob
+	@Column(name="bio")
+//	@Column(name="bio", columnDefinition="LONGTEXT")
 	public String getBio() {
 		return bio;
 	}

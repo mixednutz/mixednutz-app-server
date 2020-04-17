@@ -1,6 +1,6 @@
 spring: 
   
-  profiles.active: jpa-dev, uploads-dev, mixednutz_base, twitter, aws-local
+  profiles.active: jpa-dev, db-local-hsqldb, uploads-dev, mixednutz_base, twitter, aws-local
   
   data:
     rest:
@@ -13,6 +13,15 @@ mixednutz:
     id: andrewfestadotcom
     host-name: andrewfesta.com
     display-name: AndrewFesta.com
+    
+logging:
+  level: 
+    root: WARN
+    org.springframework.web: INFO
+#    org.hibernate.SQL: DEBUG
+    net.mixednutz.app.server: INFO
+  file: logs/mixednutz-app-server.log
+
     
 ---
 spring:
@@ -78,7 +87,9 @@ spring:
     show-sql: true
     hibernate:
       naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
-      ddl-auto: create
+    properties: 
+      hibernate:
+        hbm2ddl.auto: create-only
       
 ---
 spring:
@@ -112,6 +123,15 @@ spring:
   profiles: db-local-mysql
   # This profile is for Andy's local environment
   
+---
+spring:
+  profiles: db-local-hsqldb
+  # This profile is for in-memory database
+  
+  jpa: 
+    properties: 
+      hibernate: 
+        dialect: net.mixednutz.app.server.extensions.hibernate.CustomHsqlDialect
 ---
 spring:
   profiles: aws-local
