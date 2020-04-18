@@ -105,6 +105,9 @@ public class ExternalFeedApiController {
 		if (!feed.isPresent()) {
 			throw new ResourceNotFoundException("Feed not found");
 		}
+		/*
+		 * Only the feed's owner can see the Home Timeline
+		 */
 		if (!feed.get().getUser().equals(user)) {
 			throw new NotAuthorizedException("User "+user.getUsername()+" is not authorized to view this feed.");
 		}
@@ -148,6 +151,11 @@ public class ExternalFeedApiController {
 			throw new ResourceNotFoundException("Feed not found");
 		}
 
+		/*
+		 * Other users can see the user time line only if Visibility is set to WORLD
+		 * Feed owner can see it if set to PRIVATE
+		 * TODO - add other VisibilityTypes
+		 */
 		if ((user==null && !VisibilityType.WORLD.equals(feed.get().getVisibility())) ||
 				VisibilityType.PRIVATE.equals(feed.get().getVisibility()) && user!=null && 
 				!user.getUsername().equals(feed.get().getUser().getUsername())) {
