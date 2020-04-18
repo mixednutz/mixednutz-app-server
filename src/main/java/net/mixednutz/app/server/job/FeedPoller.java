@@ -48,45 +48,41 @@ public class FeedPoller {
 		 * 
 		 */
 		for (AbstractFeed feed: getActiveFeeds()) {
-			if (!VisibilityType.PRIVATE.equals(feed.getVisibility())) {
-				try {
-					if (!nextPages.containsKey(feed)) {
-						LOG.info("Polling Feed:{}", feed.getFeedId());
-						IPage<?,Object> page = externalFeedManager.pollTimeline(feed);
-						LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
-						if (!page.getItems().isEmpty()) {
-							LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
-							LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
-							nextPages.put(feed, page.getNextPage());
-						}
-					} else {
-						IPageRequest<Object> nextPage = nextPages.get(feed);
-						IPageRequest<String> nextPageStr;
-						if (nextPage.getStart()!=null) {
-							nextPageStr = PageRequest.next(nextPage.getStart().toString(), nextPage.getPageSize(), 
-									nextPage.getDirection());
-						} else {
-							nextPageStr = PageRequest.first(nextPage.getPageSize(), 
-									nextPage.getDirection(), String.class);
-						}
-						LOG.info("Polling Feed:{} With Page:{}", feed.getFeedId(), nextPageStr);
-						IPage<?,Object> page = externalFeedManager.pollTimeline(feed, nextPageStr);
-						LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
-						if (!page.getItems().isEmpty()) {
-							LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
-							LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
-							nextPages.put(feed, page.getNextPage());	
-						}
+			try {
+				if (!nextPages.containsKey(feed)) {
+					LOG.info("Polling Feed:{}", feed.getFeedId());
+					IPage<?,Object> page = externalFeedManager.pollTimeline(feed);
+					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
+					if (!page.getItems().isEmpty()) {
+						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
+						LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
+						nextPages.put(feed, page.getNextPage());
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					LOG.debug("Clearing JPA session");
-					em.flush();
-					em.clear();
+				} else {
+					IPageRequest<Object> nextPage = nextPages.get(feed);
+					IPageRequest<String> nextPageStr;
+					if (nextPage.getStart()!=null) {
+						nextPageStr = PageRequest.next(nextPage.getStart().toString(), nextPage.getPageSize(), 
+								nextPage.getDirection());
+					} else {
+						nextPageStr = PageRequest.first(nextPage.getPageSize(), 
+								nextPage.getDirection(), String.class);
+					}
+					LOG.info("Polling Feed:{} With Page:{}", feed.getFeedId(), nextPageStr);
+					IPage<?,Object> page = externalFeedManager.pollTimeline(feed, nextPageStr);
+					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
+					if (!page.getItems().isEmpty()) {
+						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
+						LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());
+						nextPages.put(feed, page.getNextPage());	
+					}
 				}
-			} else {
-				LOG.info("Skipping Private Feed:{}", feed.getFeedId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				LOG.debug("Clearing JPA session");
+				em.flush();
+				em.clear();
 			}
 		}
 	}
@@ -141,6 +137,7 @@ public class FeedPoller {
 			} else {
 				LOG.info("Skipping Private Feed:{}", feed.getFeedId());
 			}
+
 		}
 	}
 	

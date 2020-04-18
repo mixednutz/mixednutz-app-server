@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import net.mixednutz.api.client.MixednutzClient;
 import net.mixednutz.api.client.TimelineClient;
 import net.mixednutz.api.client.UserClient;
-import net.mixednutz.api.core.model.Page;
 import net.mixednutz.api.core.model.PageBuilder;
 import net.mixednutz.api.core.model.PageBuilder.GetTokenCallback;
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
@@ -138,12 +137,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 
 	protected IPage<? extends ITimelineElement,Instant> getTimelineInternal(AbstractFeed feed, 
 			String hashtag, ExternalFeedContent.TimelineType timelineType, IPageRequest<String> paging) {
-			
-		if (VisibilityType.PRIVATE.equals(feed.getVisibility())) {
-			//Return live feed instead
-			return new Page<ITimelineElement,Instant>();
-		}
-		
+					
 		List<ExternalFeedContent> contents = null;
 		final net.mixednutz.api.core.model.PageRequest<Instant> pageRequest = net.mixednutz.api.core.model.PageRequest
 				.convert(paging, Instant.class, (str) -> {

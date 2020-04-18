@@ -136,10 +136,8 @@ public class NewExternalCredentialsController {
 		}
 		void crawlNewFeed(AbstractAuthenticatedFeed<?> feed) {
 			try {
-				if (!VisibilityType.PRIVATE.equals(feed.getVisibility())) {
-					feedManager.pollTimeline(feed);
-					feedManager.pollUserTimeline(feed);
-				}
+				feedManager.pollTimeline(feed);
+				feedManager.pollUserTimeline(feed);
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw e;
