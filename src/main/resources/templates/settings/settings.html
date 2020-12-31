@@ -23,6 +23,8 @@
 	<meta rel="icon" sizes="192x192" th:href="@{|img/icon-192x192.png|}" href="img/icon-192x192.png" />
 	<meta name="theme-color" content="#222222"/>
 	
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/
 </head>
 <body>
 
@@ -62,6 +64,9 @@
  	<script th:include="header :: navbar_js" th:inline="javascript"></script>
     <script type="text/javascript" th:src="@{|/js/pwa_settings.js|}" src="../js/pwa_settings.js"></script>
     <script type="text/javascript" th:src="@{|/js/pwa.js|}" src="../js/pwa.js"></script>
+    <div th:each="fragmentName : ${componentScriptFragments}">
+		<script th:include="__${fragmentName}__" th:inline="javascript"></script>
+	</div>
         
     
   	<!-- Google Analytics JavaScript 

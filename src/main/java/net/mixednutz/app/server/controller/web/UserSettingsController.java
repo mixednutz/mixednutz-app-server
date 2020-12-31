@@ -1,8 +1,10 @@
 package net.mixednutz.app.server.controller.web;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import net.mixednutz.app.server.entity.ComponentSettings;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
@@ -34,6 +37,9 @@ public class UserSettingsController {
 	
 	@Autowired
 	SiteSettingsManager siteSettingsManager;
+	
+	@Autowired(required=false)
+	List<ComponentSettings> componentSettings;
 		
 	private String settingsForm(Model model) {
 		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
@@ -41,6 +47,23 @@ public class UserSettingsController {
 		SettingsForm form = new SettingsForm();
 		form.setIndexPage(siteSettings.getIndexPage());
 		model.addAttribute("form", form);
+		
+		//Additional Settings not found here
+		List<String> fragments = new ArrayList<>();
+		List<String> scriptFragments = new ArrayList<>();
+		for (ComponentSettings compSettings: componentSettings) {
+			for (Entry<String,?> entry: compSettings.getSettings().entrySet()) {
+				model.addAttribute(entry.getKey(), entry.getValue());
+			}
+			if (compSettings.includeHtmlFragment()) {
+				fragments.add(compSettings.includeHtmlFragmentName());
+			}
+			if (compSettings.includeScriptFragment()) {
+				scriptFragments.add(compSettings.includeScriptFragmentName());
+			}
+		}
+		model.addAttribute("componentFragments", fragments);
+		model.addAttribute("componentScriptFragments", scriptFragments);
 		
 		return "settings/settings";
 	}

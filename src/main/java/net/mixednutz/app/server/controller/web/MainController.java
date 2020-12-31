@@ -1,5 +1,6 @@
 package net.mixednutz.app.server.controller.web;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -19,8 +20,8 @@ import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
-import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.post.NewPostFactory;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.UserRepository;
@@ -45,6 +46,9 @@ public class MainController {
 	
 	@Autowired
 	SiteSettingsManager siteSettingsManager;
+	
+	@Autowired
+	protected List<NewPostFactory<?>> newPostFactories;
 	
 	@RequestMapping(value="/", method = RequestMethod.GET)
 	public String root(@AuthenticationPrincipal User user, Model model) {
@@ -80,10 +84,10 @@ public class MainController {
 	}
 	
 	private void addNewPostForms(Model model, User owner) {
-		//New Journal post
-		final Journal journal = new Journal();
-		model.addAttribute("newpost", journal);
-		journal.setOwnerId(owner!=null?owner.getUserId():null);
+		for (NewPostFactory<?> factory: newPostFactories) {
+			factory.newPostForm(model, owner);
+		}
+				
 		//New External Feed
 		final ExternalAccountCredentials credentials = new ExternalAccountCredentials();
 		model.addAttribute(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME, credentials);

@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,6 @@ import net.mixednutz.api.core.model.Action;
 import net.mixednutz.api.core.model.AlternateLink;
 import net.mixednutz.api.core.model.Image;
 import net.mixednutz.api.core.model.Link;
-import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.api.core.model.ReactionCount;
 import net.mixednutz.api.core.model.TagCount;
 import net.mixednutz.api.model.IAction;
@@ -29,22 +29,20 @@ import net.mixednutz.app.server.controller.BasePhotoController;
 import net.mixednutz.app.server.controller.api.OembedController;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
-import net.mixednutz.app.server.entity.InternalTimelineElement.Type;
 import net.mixednutz.app.server.entity.ReactionScore;
+import net.mixednutz.app.server.entity.ReactionsAware;
 import net.mixednutz.app.server.entity.TagScore;
+import net.mixednutz.app.server.entity.TagsAware;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.entity.post.Post;
-import net.mixednutz.app.server.entity.post.journal.Journal;
+import net.mixednutz.app.server.manager.ApiElementConverter;
 import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
 
 @Service
 public class ApiManagerImpl implements ApiManager{
-
-	@Autowired
-	private NetworkInfo networkInfo;
 	
 	@Autowired
 	private HttpServletRequest request;
@@ -54,6 +52,9 @@ public class ApiManagerImpl implements ApiManager{
 	
 	@Autowired
 	private ReactionManager reactionManager;
+	
+	@Autowired
+	private Collection<ApiElementConverter<?>> apiElementConverters;
 	
 	private static final String APPLICATION_JSON_OEMBED = "application/json+oembed";
 	
@@ -96,18 +97,29 @@ public class ApiManagerImpl implements ApiManager{
 		return toUser(entity).addProfile(profile);
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private <E> void copyWithApiElementConverters(InternalTimelineElement api, E entity, User viewer) {
+		for (ApiElementConverter<?> converter: apiElementConverters) {
+			if (converter.canConvert(entity.getClass())) {
+				((ApiElementConverter)converter).toTimelineElement(api, entity, viewer);
+			}
+		}
+	}
+	
 	@Override
-	public InternalTimelineElement toTimelineElement(Journal entity, User viewer) {
+	public <E> InternalTimelineElement toTimelineElement(E entity, User viewer) {
 		InternalTimelineElement api = toTimelineElement((Post<?>)entity);
-		api.setType(new Type("Journal",
-				networkInfo.getHostName(),
-				networkInfo.getId()+"_Journal"));
-		api.setId(entity.getId());
-		api.setTitle(entity.getSubject());
-		setTagCounts(api, tagManager.getTagScores(
-				entity.getTags(), entity.getAuthor(), viewer));
-		setReactionCounts(api, reactionManager.getReactionScores(
-				entity.getReactions(), entity.getAuthor(), viewer));
+		if (entity instanceof TagsAware) {
+			TagsAware<?> hasTags = (TagsAware<?>) entity;
+			setTagCounts(api, tagManager.getTagScores(
+					hasTags.getTags(), ((Post<?>)entity).getAuthor(), viewer));
+		}
+		if (entity instanceof ReactionsAware) {
+			ReactionsAware<?> hasReactions = (ReactionsAware<?>) entity;
+			setReactionCounts(api, reactionManager.getReactionScores(
+					hasReactions.getReactions(), ((Post<?>)entity).getAuthor(), viewer));
+		}
+		this.copyWithApiElementConverters(api, entity, viewer);
 		return api;
 	}
 

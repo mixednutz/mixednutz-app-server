@@ -154,7 +154,7 @@ public class TagManagerImpl implements TagManager{
 	 * @return
 	 */
 	protected boolean userOwnsTag(AbstractTag tag, User author, User currentUser) {
-		return (author!=null && author.equals(currentUser) && (tag.getTaggerId()==null || tag.getTaggerId().equals(0))) ||
+		return (author!=null && author.equals(currentUser) && (tag.getTaggerId()==null || tag.getTaggerId().equals(0L))) ||
 				(currentUser!=null && currentUser.getUserId().equals(tag.getTaggerId()));
 	}
 }

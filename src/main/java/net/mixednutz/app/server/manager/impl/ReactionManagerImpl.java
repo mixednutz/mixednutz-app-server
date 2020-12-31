@@ -98,7 +98,7 @@ public class ReactionManagerImpl implements ReactionManager{
 	 * @return
 	 */
 	protected boolean userOwnsReaction(AbstractReaction reaction, User author, User currentUser) {
-		return (author!=null && author.equals(currentUser) && (reaction.getReactorId()==null || reaction.getReactorId().equals(0))) ||
+		return (author!=null && author.equals(currentUser) && (reaction.getReactorId()==null || reaction.getReactorId().equals(0L))) ||
 				(currentUser!=null && currentUser.getUserId().equals(reaction.getReactorId()));
 	}
 }
