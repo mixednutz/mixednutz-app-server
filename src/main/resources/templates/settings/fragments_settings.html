@@ -22,11 +22,7 @@
 					<small class="form-text text-muted">First page visiters will see</small>
 				</div>
 			</div>
-			
-		<div th:each="fragmentName : ${componentFragments}">
-			<div th:include="__${fragmentName}__"></div>
-		</div>
-		
+					
 		<h2>Profile Settings</h2>
 		
 			<div class="showCombinedExternalFeedsOnProfile form-check">
@@ -42,6 +38,10 @@
 			<input class="btn btn-primary" type="submit" value="Update"/>
 		
 		</form>
+		
+		<div th:each="fragmentName : ${componentFragments}">
+			<div th:include="__${fragmentName}__"></div>
+		</div>
 		
 		<div id="feed_visibility_templates" class="hidden">
 			<div id="feed_visibility_template" class="form-inline">
