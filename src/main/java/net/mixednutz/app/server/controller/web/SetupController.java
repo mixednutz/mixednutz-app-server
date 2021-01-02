@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 
+import net.mixednutz.app.server.entity.Role;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
@@ -30,6 +31,7 @@ import net.mixednutz.app.server.repository.UserRepository;
 public class SetupController {
 
 	private static final String ADMIN_SIGNUP_FORM_VIEW = "signup/admin_new";
+	private static final String ADMIN_ROLE = "ROLE_ADMIN";
 	
 	@Autowired
 	UserRepository userRepository;
@@ -78,9 +80,10 @@ public class SetupController {
 		if (isFirstTime()) {
 			userService.encryptPassword(user);
 			user.setEnabled(true);
+			user.getRoles().add(new Role(user, ADMIN_ROLE));
 			user = userRepository.save(user);
 			
-			SiteSettings siteSettings = siteSettingsManager.createSiteSettings(user);;
+			SiteSettings siteSettings = siteSettingsManager.createSiteSettings(user);
 			siteSettingsManager.save(siteSettings);
 			
 			//login(user, request);
