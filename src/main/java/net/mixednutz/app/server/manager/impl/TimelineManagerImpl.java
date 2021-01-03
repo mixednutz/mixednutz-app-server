@@ -16,31 +16,38 @@ import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.TimelineManager;
-import net.mixednutz.app.server.manager.post.journal.JournalManager;
+import net.mixednutz.app.server.manager.post.PostManager;
 
 @Transactional
 @Service
 public class TimelineManagerImpl implements TimelineManager {
 	
 	@Autowired
-	private JournalManager journalManager;
+	private List<PostManager<?,?>> postManagers;
 
 	@Override
 	public IPage<? extends ITimelineElement, Instant> getHomeTimeline(User user, 
 			PageRequest<String> paging) {
+		
+		List<InternalTimelineElement> timeline = new ArrayList<>();
 		
 		PageRequest<Instant> pageRequest = PageRequest.convert(paging, Instant.class,
 				(str) -> {
 					return ZonedDateTime.parse(str).toInstant();
 				});
 		
-		// Query Journals
-		final IPage<InternalTimelineElement, Instant> journals = journalManager.getTimelineInternal(
-				user, paging);
+		// Query Posts
 		
-		
+		for (PostManager<?,?> postManager: postManagers) {
+			final IPage<InternalTimelineElement, Instant> posts = postManager.getTimelineInternal(
+					user, paging);
+			if (!posts.getItems().isEmpty()) {
+				timeline.addAll(posts.getItems());
+			}
+		}
+				
 		return new PageBuilder<InternalTimelineElement, Instant>()
-				.addItems(journals.getItems())
+				.addItems(timeline)
 				.setPageRequest(pageRequest)
 				.setTrimToPageSize(true)
 				.setReSortComparator((o1, o2) -> {
@@ -62,11 +69,13 @@ public class TimelineManagerImpl implements TimelineManager {
 					return ZonedDateTime.parse(str).toInstant();
 				});
 				
-		// Query Journals
-		final IPage<InternalTimelineElement, Instant> journals = journalManager.getUserTimelineInternal(
-				profileUser, viewer, paging);
-		for (InternalTimelineElement journal : journals.getItems()) {
-			timeline.add(journal);
+		// Query Posts
+		for (PostManager<?,?> postManager: postManagers) {
+			final IPage<InternalTimelineElement, Instant> journals = 
+					postManager.getUserTimelineInternal(profileUser, viewer, paging);
+			for (InternalTimelineElement journal : journals.getItems()) {
+				timeline.add(journal);
+			}
 		}
 		
 		return new PageBuilder<InternalTimelineElement, Instant>()
