@@ -15,15 +15,15 @@ import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.manager.TimelineElementManager;
 import net.mixednutz.app.server.manager.TimelineManager;
-import net.mixednutz.app.server.manager.post.PostManager;
 
 @Transactional
 @Service
 public class TimelineManagerImpl implements TimelineManager {
 	
 	@Autowired
-	private List<PostManager<?,?>> postManagers;
+	private List<TimelineElementManager> timelineElementManagers;
 
 	@Override
 	public IPage<? extends ITimelineElement, Instant> getHomeTimeline(User user, 
@@ -38,7 +38,7 @@ public class TimelineManagerImpl implements TimelineManager {
 		
 		// Query Posts
 		
-		for (PostManager<?,?> postManager: postManagers) {
+		for (TimelineElementManager postManager: timelineElementManagers) {
 			final IPage<InternalTimelineElement, Instant> posts = postManager.getTimelineInternal(
 					user, paging);
 			if (!posts.getItems().isEmpty()) {
@@ -70,7 +70,7 @@ public class TimelineManagerImpl implements TimelineManager {
 				});
 				
 		// Query Posts
-		for (PostManager<?,?> postManager: postManagers) {
+		for (TimelineElementManager postManager: timelineElementManagers) {
 			final IPage<InternalTimelineElement, Instant> journals = 
 					postManager.getUserTimelineInternal(profileUser, viewer, paging);
 			for (InternalTimelineElement journal : journals.getItems()) {

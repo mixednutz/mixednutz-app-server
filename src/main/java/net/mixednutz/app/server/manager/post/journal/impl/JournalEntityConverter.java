@@ -29,7 +29,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 
 	@Override
 	public boolean canConvert(Class<?> entityClazz) {
-		return Journal.class.isInstance(entityClazz);
+		return Journal.class.isAssignableFrom(entityClazz);
 	}
 
 }

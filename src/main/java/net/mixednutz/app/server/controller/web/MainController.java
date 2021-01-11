@@ -1,5 +1,6 @@
 package net.mixednutz.app.server.controller.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
+import net.mixednutz.app.server.entity.ComponentSettings;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
 import net.mixednutz.app.server.entity.User;
@@ -46,6 +48,9 @@ public class MainController {
 	
 	@Autowired
 	SiteSettingsManager siteSettingsManager;
+	
+	@Autowired(required=false)
+	protected List<ComponentSettings> componentSettings;
 	
 	@Autowired
 	protected List<NewPostFactory<?>> newPostFactories;
@@ -93,6 +98,16 @@ public class MainController {
 		model.addAttribute(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME, credentials);
 	}
 	
+	private void addTemplates(Model model) {
+		List<String> fragments = new ArrayList<>();
+		for (ComponentSettings compSettings: componentSettings) {
+			if (compSettings.includeTimelineTemplateHtmlFragment()) {
+				fragments.add(compSettings.includeTimelineTemplateHtmlFragmentName());
+			}
+		}
+		model.addAttribute("componentTemplates", fragments);
+	}
+	
 	@RequestMapping(value="/main", method = RequestMethod.GET)
 	public String main(
 			Model model
@@ -108,6 +123,11 @@ public class MainController {
 		 * Only non-user reference data can be in the model
 		 */
 		addNewPostForms(model, null);	
+		
+		/*
+		 * Add component templates
+		 */
+		addTemplates(model);
 				
 		return MAIN_TEMPLATE;
 	}
@@ -133,6 +153,11 @@ public class MainController {
 		 * Only non-user reference data can be in the model
 		 */
 		addNewPostForms(model, profileUser.get());	
+		
+		/*
+		 * Add component templates
+		 */
+		addTemplates(model);
 		
 		return PROFILE_TEMPLATE;
 	}

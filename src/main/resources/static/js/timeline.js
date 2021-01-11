@@ -300,6 +300,7 @@ function buildInternalTimelineElement(element) {
 	}
 	
 	var template = $('#template_'+element.type.name).clone();
+	console.log('looking for '+'#template_'+element.type.name);
 	template.attr("id",id); 	
 	
 	//Default stuff (avatar/username/date)
@@ -324,12 +325,13 @@ function buildInternalTimelineElement(element) {
 		template.find(".owner").remove();
 	}
 	template.find(".createdAt span").text(new Date(element.postedOnDate).toLocaleString());
-	template.find(".subject a")
+	template.find(".subject a, .title a")
 		.attr('href',element.url)
 		.text(element.title);
 	template.find(".preview a.readmore").attr('href',getRelativePath(element.uri));
 	//Preview
 	var preview = template.find(".preview");
+	preview.find(".description").html(element.description);
 	//preview.css('display','none');
 	var paneBody = preview.find(".pane-body");
 	var oembedDiv = preview.find(".oembed").remove();

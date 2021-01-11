@@ -7,10 +7,12 @@ import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalComment;
+import net.mixednutz.app.server.manager.TimelineElementManager;
 import net.mixednutz.app.server.manager.post.PostManager;
 
 
-public interface JournalManager extends PostManager<Journal, JournalComment>{
+public interface JournalManager extends PostManager<Journal, JournalComment>, 
+	TimelineElementManager {
 
 	/**
 	 * Returns public Journals from any user.

@@ -41,6 +41,9 @@
 		<div id="templates" class="hidden">
 			<div th:include="common/fragments_timeline_templates :: native_templates"></div>
 			<div th:include="common/fragments_timeline_templates :: feed_templates"></div>
+			<div class="componentTemplates" th:each="fragmentName : ${componentTemplates}">
+				<div th:include="__${fragmentName}__"></div>
+			</div>
 		</div>
 	</div>
 
