@@ -39,6 +39,8 @@
 		
 		</form>
 		
+		<hr/>
+		
 		<div th:each="fragmentName : ${componentFragments}">
 			<div th:include="__${fragmentName}__"></div>
 		</div>
