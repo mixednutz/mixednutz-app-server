@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+  <body>
+  
+  
+  	<div th:fragment="reactions (reactions, reactionScores, uri, divClass)"
+		th:class="${divClass}">
+		<i class="fa fa-smile-o"></i> Reactions: <span
+			sec:authorize="!isAuthenticated()" class="reactions-list"> <span
+			th:each="reactionScore, iterStat : ${reactionScores}"> <span
+				th:class="@{|reaction emoji_${reactionScore.emoji.id}|}"> <span
+					th:utext="${reactionScore.emoji.htmlCode}"
+					th:title="${reactionScore.emoji.description}">&x#x601a;</span> <span
+					th:class="@{|label ${reactionScore.userIncluded?'label-info':'label-primary'} score|}"
+					th:text="${reactionScore.score}">4</span><span
+					th:if="${!iterStat.last}">, </span>
+			</span>
+		</span>
+		</span> <span sec:authorize="isAuthenticated()" class="btn-group"
+			role="group"
+			th:attr="data-entity-uri=${uri!=null?uri:''}, data-parent-div=${divClass!=null?'.'+divClass:''}">
+			<button th:each="reactionScore, iterStat : ${reactionScores}"
+				th:class="@{|btn btn-xs ${reactionScore.userIncluded?'btn-info':'btn-default'} reaction reaction_${reactionScore.emoji.id} toggleReaction|}"
+				th:attr="data-emoji=${reactionScore.emoji.id}" type="button">
+				<span class="emoji" th:utext="${reactionScore.emoji.htmlCode}"
+					th:title="${reactionScore.emoji.description}">&x#x601a;</span> <span
+					class="badge score" th:text="${reactionScore.score}">4</span>
+			</button>
+			<button class="btn btn-xs btn-default newReaction" type="button"
+				data-toggle="modal" data-target="#reactModal">
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				New Reaction
+			</button>
+			<button class="btn btn-xs btn-default viewReactions" type="button"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				View <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				<li th:each="reaction, iterStat: ${reactions}"
+					th:id="${'reaction_'+reaction.id}"><span class="emoji"
+					th:utext="${reaction.emoji.htmlCode}">&x#x601a;</span> <span
+					th:if="${reaction.reactor!=null}"
+					th:text="${reaction.reactor.username}">username</span> <span
+					th:if="${reaction.reactor==null}">Non-MixedNutz Member</span></li>
+			</ul>
+
+		</span>
+	</div>
+	
+	<div th:fragment="newReaction_modal">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">
+				<span>&times;</span>
+			</button>
+			<h4>React!</h4>
+		</div>
+		<div class="modal-body">
+			<input type="hidden" class="currentEntityUri" /> <input type="hidden"
+				class="parentSelector" value="" />
+
+			<div class="panel-group" id="emojiAccordion" role="tablist"
+				aria-multiselectable="true">
+				<div class="panel panel-default"
+					th:each="emojiCategory, iterStat : ${emojiByCategory}">
+					<div class="panel-heading" role="tab"
+						th:id="@{|heading${emojiCategory.key.id}|}">
+						<h4 class="panel-title">
+							<a th:class="${!iterStat.first?'collapsed':''}" role="button"
+								data-toggle="collapse" data-parent="#emojiAccordion"
+								th:href="@{|#collapse${emojiCategory.key.id}|}"
+								aria-expanded="false"
+								th:aria-controls="@{|collapse${emojiCategory.key.id}|}"
+								th:text="${emojiCategory.key.name}"> Collapsible Group Item
+								#3 </a>
+						</h4>
+					</div>
+					<div th:id="@{|collapse${emojiCategory.key.id}|}"
+						th:class="@{|panel-collapse collapse ${iterStat.first?'in':''}|}"
+						role="tabpanel"
+						th:aria-labelledby="@{|heading${emojiCategory.key.id}|}">
+						<div class="panel-body">
+							<button th:each="emoji: ${emojiCategory.value}"
+								class="emoji btn addReaction-btn"
+								th:attr="data-emoji-id=${emoji.id}" data-dismiss="modal"
+								th:title="${emoji.description}" th:utext="${emoji.htmlCode}">&x#x601a;</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="modal-footer">
+			<button class="btn" type="button" data-dismiss="modal">Close</button>
+		</div>
+	</div>
+	<script th:fragment="reactions_JS" th:inline="javascript">
+		var apiurl = /*[[@{|/api|}]]*/"/api";
+
+		$('.newReaction').on(
+				'click',
+				function(e) {
+					if ($(this).parent().data('entity-uri') != null) {
+						$('#reactModal .currentEntityUri').val(
+								$(this).parent().data('entity-uri'));
+					}
+					if ($(this).parent().data('parent-div') != null) {
+						$('#reactModal .parentSelector').val(
+								$(this).parent().data('parent-div'));
+					}
+				});
+
+		$('.toggleReaction').on(
+				'click',
+				function(e) {
+					var entityUrl = $(this).parent().data('entity-uri');
+					var toggleUrl = entityUrl + '/reaction/toggle';
+					var emojiId = $(this).data('emoji');
+					var posturl = apiurl + toggleUrl + '?emojiId=' + emojiId;
+					var parent = $(this).parent();
+					$.post(posturl, function(data, status) {
+						var score = parseInt(parent.find(
+								'.reaction_' + emojiId + ' .score').first()
+								.text(), 10);
+						if (data != null) {
+							parent.find('button.reaction_' + emojiId)
+									.removeClass('btn-default').addClass(
+											'btn-info');
+							score++;
+							//$('<li id="reaction_'+data.id+'"><span class="emoji">'+data.emojiCode+'</span><span>'+data.reactorId+'</span></li>').appendTo(parent);
+						} else {
+							parent.find('button.reaction_' + emojiId)
+									.removeClass('btn-info').addClass(
+											'btn-default');
+							score--;
+						}
+						parent.find('.reaction_' + emojiId + ' .score').text(
+								score);
+					});
+				});
+
+		$('.addReaction-btn')
+				.on(
+						'click',
+						function() {
+							var entityUrl = $('#reactModal .currentEntityUri')
+									.val();
+							var parentSelector = $(
+									'#reactModal .parentSelector').val();
+							var reactionUrl = entityUrl + '/reaction';
+							var emojiId = $(this).data('emoji-id');
+							var posturl = apiurl + reactionUrl + '?emojiId='
+									+ emojiId;
+							$
+									.post(
+											posturl,
+											function(data, status) {
+												for (i in data) {
+													var emojiId = data[i].emojiId;
+													if ($(parentSelector
+															+ ' button.reaction_'
+															+ emojiId).length > 0) {
+														var score = parseInt(
+																$(
+																		'.reaction_'
+																				+ emojiId
+																				+ ' .score')
+																		.first()
+																		.text(),
+																10);
+														$(
+																parentSelector
+																		+ ' button.reaction_'
+																		+ emojiId)
+																.removeClass(
+																		'btn-default')
+																.addClass(
+																		'btn-info');
+														score++;
+														$(
+																parentSelector
+																		+ ' button.reaction_'
+																		+ emojiId
+																		+ ' .score')
+																.text(score);
+													} else {
+														$(
+																'<button class="btn btn-xs btn-info reaction reaction_'+emojiId+' toggleReaction" data-emoji="'+emojiId+'" type="button">'
+																		+ '<span class="emoji">'
+																		+ data[i].emojiCode
+																		+ '</span> <span class="badge score">1</span>')
+																.insertBefore(
+																		parentSelector
+																				+ ' button.newReaction');
+													}
+												}
+											});
+						});
+	</script>
+
+	<div th:fragment="viewReactions_modal">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">
+				<span>&times;</span>
+			</button>
+			<h4>Reactions</h4>
+		</div>
+		<div class="modal-body"></div>
+		<div class="modal-footer">
+			<button class="btn" type="button" data-dismiss="modal">Close</button>
+		</div>
+	</div>
+  
+  
+  </body>
+</html>
