@@ -98,7 +98,13 @@
 		</div>
 	</div>
 	<script th:fragment="reactions_JS" th:inline="javascript">
-		var apiurl = /*[[@{|/api|}]]*/"/api";
+		var csrfToken = $("meta[name='_csrf']").attr("content");
+	  	var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+	  	$(document).ajaxSend(function(e,xhr,options){
+	  		xhr.setRequestHeader(csrfHeader, csrfToken);
+	  	});	
+  	
+		var apiurl = /*[[@{|/internal|}]]*/"/internal";
 
 		$('.newReaction').on(
 				'click',
@@ -125,7 +131,7 @@
 						var score = parseInt(parent.find(
 								'.reaction_' + emojiId + ' .score').first()
 								.text(), 10);
-						if (data != null) {
+						if ($.trim(data)) {
 							parent.find('button.reaction_' + emojiId)
 									.removeClass('btn-default').addClass(
 											'btn-info');
