@@ -7,9 +7,9 @@
   <body>
   
   	<div th:fragment="post_comments (post)">
-		<div class="media" th:each="comment : ${post.comments}">
+		<div class="media" th:each="comment : ${post.comments}" th:id="${comment.commentId}">
 			<!-- Comment -->
-			<a th:if="${comment.author!=null and authors[comment.author.userId]!=null}" class="pull-left"
+			<a th:if="${comment.author!=null and authors[comment.author.userId]!=null}" class="pull-left" 
 				th:href='@{|/${authors[comment.author.userId].username}|}' href="#">
 				<img class="media-object"
 				th:if="${authors[comment.author.userId].avatarFilename!=null}"
