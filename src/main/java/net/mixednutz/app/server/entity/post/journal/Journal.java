@@ -18,13 +18,15 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import net.mixednutz.app.server.entity.CommentsAware;
 import net.mixednutz.app.server.entity.ReactionsAware;
 import net.mixednutz.app.server.entity.TagsAware;
 
 
 @Entity
 @Table(name="Journal")
-public class Journal extends AbstractJournal<JournalComment> implements TagsAware<JournalTag>, ReactionsAware<JournalReaction> {
+public class Journal extends AbstractJournal<JournalComment> implements 
+	CommentsAware<JournalComment>, TagsAware<JournalTag>, ReactionsAware<JournalReaction> {
 	
 	private ZonedDateTime publishDate; //date to be published
 	private LocalDate publishDateKey; //For URL lookups

@@ -230,5 +230,10 @@ public class ExternalFeedTimelineElement implements ITimelineElement {
 	public List<? extends IReshareCount> getReshares() {
 		return element.getReshares();
 	}
+
+	@Transient
+	public List<? extends ITimelineElement> getComments() {
+		return element.getComments();
+	}
 	
 }

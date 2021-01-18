@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+  <body>
+  
+  	<div th:fragment="post_comments (post)">
+		<div class="media" th:each="comment : ${post.comments}">
+			<!-- Comment -->
+			<a th:if="${comment.author!=null and authors[comment.author.userId]!=null}" class="pull-left"
+				th:href='@{|/${authors[comment.author.userId].username}|}' href="#">
+				<img class="media-object"
+				th:if="${authors[comment.author.userId].avatarFilename!=null}"
+				th:src="@{|/photos-storage/${authors[comment.author.userId].avatarFilename}?size=avatar|}"
+				src="../../img/nophoto.gif" width="64" alt="" /> <img
+				class="media-object"
+				th:if="${authors[comment.author.userId].avatarFilename==null}"
+				th:src="@{|/img/nophoto.gif|}" src="../../img/nophoto.gif"
+				width="64" alt="" />
+			</a> <span th:if="${comment.author==null or authors[comment.author.userId]==null}" class="pull-left">
+				<img class="media-object" th:src="@{|/img/nophoto.gif|}"
+				src="../../img/nophoto.gif" width="64" alt="" />
+			</span>
+			<div class="media-body">
+				<h4 class="media-heading">
+					<a th:if="${comment.author!=null and authors[comment.author.userId]!=null}"
+						th:href='@{|/${authors[comment.author.userId].username}|}' href="#"><span
+						th:text="${authors[comment.author.userId].username}">username</span></a> <span
+						th:if="${comment.author==null or authors[comment.author.userId]==null}">Non-MixedNutz
+						Member</span> <small><time
+							th:datetime="${#temporals.format(comment.dateCreated, #messages.msg('datetime.format.iso'))}"
+							th:text="${#temporals.format(comment.dateCreated, #messages.msg('datetime.format.full'))}">August
+							25, 2014 at 9:30 PM</time></small>
+				</h4>
+				<div th:if="${comment.body!=null}" th:text="${comment.body}">Cras
+					sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
+					ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate
+					at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate
+					fringilla. Donec lacinia congue felis in faucibus.</div>
+				<div th:if="${comment.body==null and comment.shared!=null}">
+					<small><span
+						th:text="${authors[comment.author.userId].username}">author</span>
+						reshared this album</small>
+				</div>
+			</div>
+		</div>
+	</div>
+  
+  
+  </body>
+</html>

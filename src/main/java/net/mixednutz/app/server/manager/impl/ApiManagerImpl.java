@@ -27,6 +27,7 @@ import net.mixednutz.api.model.IUser;
 import net.mixednutz.api.model.IUserProfile;
 import net.mixednutz.app.server.controller.BasePhotoController;
 import net.mixednutz.app.server.controller.api.OembedController;
+import net.mixednutz.app.server.entity.CommentsAware;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.ReactionScore;
@@ -36,6 +37,7 @@ import net.mixednutz.app.server.entity.TagsAware;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.entity.post.Post;
+import net.mixednutz.app.server.entity.post.PostComment;
 import net.mixednutz.app.server.manager.ApiElementConverter;
 import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.ReactionManager;
@@ -90,7 +92,11 @@ public class ApiManagerImpl implements ApiManager{
 	
 	@Override
 	public UserWrapper toUser(User entity) {
-		return new UserWrapper(entity);
+		if (entity!=null) {
+			return new UserWrapper(entity);
+		}
+		return null;
+		
 	}
 	
 	public IUser toUser(User entity, UserProfile profile) {
@@ -109,6 +115,10 @@ public class ApiManagerImpl implements ApiManager{
 	@Override
 	public <E> InternalTimelineElement toTimelineElement(E entity, User viewer) {
 		InternalTimelineElement api = toTimelineElement((Post<?>)entity);
+		if (entity instanceof CommentsAware) {
+			CommentsAware<?> hasComments = (CommentsAware<?>)entity;
+			setComments(api, hasComments.getComments());
+		}
 		if (entity instanceof TagsAware) {
 			TagsAware<?> hasTags = (TagsAware<?>) entity;
 			setTagCounts(api, tagManager.getTagScores(
@@ -134,6 +144,27 @@ public class ApiManagerImpl implements ApiManager{
 		api.getAlternateLinks().add(new AlternateLink(
 				getOembedUri(api.getUrl()), APPLICATION_JSON_OEMBED));
 		return api;
+	}
+	
+	protected InternalTimelineElement toTimelineElement(PostComment entity) {
+		InternalTimelineElement api = new InternalTimelineElement();
+		api.setUri(entity.getUri());
+		api.setUrl(getBaseUrl()+entity.getUri());
+		api.setPostedByUser(toUser(entity.getAuthor()));
+		api.setPostedOnDate(entity.getDateCreated());
+		api.setDescription(entity.getBody());
+		api.setAlternateLinks(new ArrayList<>());
+		api.getAlternateLinks().add(new AlternateLink(
+				getOembedUri(api.getUrl()), APPLICATION_JSON_OEMBED));
+		return api;
+	}
+	
+	protected void setComments(InternalTimelineElement api, Iterable<? extends PostComment> comments) {
+		List<InternalTimelineElement> apiComments = new ArrayList<>();
+		for (PostComment comment : comments) {
+			apiComments.add(toTimelineElement(comment));
+		}
+		api.setComments(apiComments);
 	}
 	
 	protected void setTagCounts(InternalTimelineElement api, Iterable<TagScore> tagScores) {

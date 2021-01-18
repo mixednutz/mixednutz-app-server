@@ -325,6 +325,9 @@ function buildInternalTimelineElement(element) {
 		template.find(".owner").remove();
 	}
 	template.find(".createdAt span").text(new Date(element.postedOnDate).toLocaleString());
+	if (element.comments!=null) {
+		template.find(".sizeOfComments span").text(element.comments.length);
+	}
 	template.find(".subject a, .title a")
 		.attr('href',element.url)
 		.text(element.title);
