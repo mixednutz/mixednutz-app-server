@@ -41,7 +41,9 @@
 		<version.idb-keyval>3.0.5</version.idb-keyval>
 		<version.jquery>3.1.1</version.jquery>
 		<version.jquery-easing>1.3</version.jquery-easing>
+		<version.jquery-ui>1.12.1</version.jquery-ui>
 		<version.jQuery.Hotkeys>0.2.0</version.jQuery.Hotkeys>
+		<version.modernizr>2.8.3-1</version.modernizr>
 		<version.snackbarjs>1.1.0</version.snackbarjs>
 		
 		<docker.image.prefix>apfesta</docker.image.prefix>
@@ -194,6 +196,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.webjars.bower</groupId>
+			<artifactId>jquery-ui</artifactId>
+			<version>${version.jquery-ui}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
 			<artifactId>snackbarjs</artifactId>
 			<version>${version.snackbarjs}</version>
 			<exclusions>
@@ -226,6 +239,11 @@
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>idb-keyval</artifactId>
 			<version>${version.idb-keyval}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>modernizr</artifactId>
+			<version>${version.modernizr}</version>
 		</dependency>
 	    
 

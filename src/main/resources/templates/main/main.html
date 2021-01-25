@@ -77,6 +77,10 @@
 	================================================== -->
 	<script th:src="@{|/webjars/jQuery.Hotkeys/jquery.hotkeys.js|}"></script>
 	
+	<!-- JQuery UI JavaScript
+	================================================== -->
+	<script th:src="@{|/webjars/jquery-ui/jquery-ui.min.js|}"></script>
+	
 	<!-- Bootstrap WYSIWYG
 	================================================== -->
 	<script th:src="@{|/webjars/bootstrap-wysiwyg-steveathon/js/bootstrap-wysiwyg.min.js|}"></script>
@@ -89,6 +93,10 @@
     ================================================== -->
     <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modalmanager.js|}"></script>
     <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modal.js|}"></script>
+    
+    <!-- Modernizr JavaScript
+	================================================== -->
+	<script th:src="@{|/webjars/modernizr/modernizr.min.js|}"></script>
     
     <!-- IDB-Keyval -->
     <script th:src="@{|/webjars/idb-keyval/dist/idb-keyval-iife.js|}"></script>
@@ -107,6 +115,7 @@
  	<script th:replace="common/fragments_js :: common"></script>
  	<script th:replace="common/fragments_js :: feed_timeline"></script>
  	<script th:replace="common/fragments_js :: timeline"></script>
+ 	<script th:replace="common/fragments_forms :: post_options_JS"></script>
  	<script th:replace="feeds/fragments_feed :: newAccountForm_JS"></script>
  	<script th:include="journal/fragments_journal :: newJournalForm_JS"></script>
  	<script type="text/javascript" th:src="@{|/js/journal.js|}" src="../js/journal.js"></script>

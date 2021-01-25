@@ -76,7 +76,7 @@
 						<input id="newjournal_summary" class="form-control" th:field="*{description}" size="50" type="text" placeholder="Short summary of your journal..."/>
 					</div>
 				</div>
-				<div class="journal-options col-xs-12 col-md-4" th:include="common/fragments_forms :: post_options (${newpost}, ${ {'Journal':journalCrosspostFeeds} }, true, false)">
+				<div class="journal-options col-xs-12 col-md-4" th:include="common/fragments_forms :: post_options (${newpost}, ${ {'Journal':journalCrosspostFeeds} }, true, true, false)">
 					journal-options
 				</div>
 			</div>
