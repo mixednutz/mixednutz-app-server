@@ -45,9 +45,9 @@
 
 		<div class="form-group" th:if="${showPublishDate}">
 			<label>Publish:</label> <label class="radio-inline"> <input
-				type='radio' name="publishDateFlag" value='0' th:checked="${post.publishDate==null}"/> Immediately
+				type='radio' name="publishDateFlag" value='0' th:checked="${post.scheduled==null}"/> Immediately
 			</label> <label class="radio-inline"> <input type='radio'
-				name="publishDateFlag" value='1' th:checked="${post.publishDate!=null}"/> Pick a time
+				name="publishDateFlag" value='1' th:checked="${post.scheduled!=null}"/> Pick a time
 			</label>
 			<div id="localPublishDate">
 				<input class="form-control" name="localPublishDate" type="datetime-local" th:value="${localPublishDate}"/>

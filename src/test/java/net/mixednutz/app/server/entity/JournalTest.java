@@ -238,7 +238,7 @@ public class JournalTest {
 		em.clear();
 		
 		System.out.println(ZonedDateTime.now());
-		List<Journal> results = repository.getUsersPostsByDateCreatedLessThanEquals(
+		List<Journal> results = repository.getUsersPostsByDatePublishedLessThanEquals(
 				user2, user, ZonedDateTime.now(), PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(4, results.size());
@@ -246,7 +246,7 @@ public class JournalTest {
 			System.out.println(j.getSubject()+" ["+j.getUri()+"]");
 		}
 		
-		results = repository.getUsersPostsByDateCreatedGreaterThan(
+		results = repository.getUsersPostsByDatePublishedGreaterThan(
 				user2, user, beginTime, PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(4, results.size());
@@ -256,7 +256,7 @@ public class JournalTest {
 		
 		
 		//viewer not authenticated
-		results = repository.getUsersPostsByDateCreatedLessThanEquals(
+		results = repository.getUsersPostsByDatePublishedLessThanEquals(
 				user2, null, ZonedDateTime.now(), PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(1, results.size());
@@ -264,7 +264,7 @@ public class JournalTest {
 			System.out.println(j.getSubject());
 		}
 		
-		results = repository.getUsersPostsByDateCreatedGreaterThan(
+		results = repository.getUsersPostsByDatePublishedGreaterThan(
 				user2, null, beginTime, PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(1, results.size());

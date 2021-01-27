@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -28,7 +29,8 @@ import net.mixednutz.app.server.entity.TagsAware;
 public class Journal extends AbstractJournal<JournalComment> implements 
 	CommentsAware<JournalComment>, TagsAware<JournalTag>, ReactionsAware<JournalReaction> {
 	
-	private ZonedDateTime publishDate; //date to be published
+	private ScheduledJournal scheduled;
+	
 	private LocalDate publishDateKey; //For URL lookups
 	private List<JournalComment> comments;
 	private Set<JournalTag> tags;
@@ -36,24 +38,37 @@ public class Journal extends AbstractJournal<JournalComment> implements
 	private Set<JournalView> views;
 	private String filteredBody;
 	
+	@OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="scheduled_id")
+	public ScheduledJournal getScheduled() {
+		return scheduled;
+	}
+
+	public void setScheduled(ScheduledJournal scheduled) {
+		this.scheduled = scheduled;
+	}
+
 	@Override
 	public void onPersist() {
 		super.onPersist();
-		if (publishDate!=null) {
-			publishDateKey = publishDate.toLocalDate();
+		if (scheduled!=null) {
+			publishDateKey = scheduled.getPublishDate().toLocalDate();
 		} else {
 			//TODO Grab the current user's timezone and do LocalDate.now(zoneId)
 			publishDateKey = LocalDate.now();
 		}
 	}
 
-	@Column(name="publish_date")
-	public ZonedDateTime getPublishDate() {
-		return publishDate;
-	}
-
 	public LocalDate getPublishDateKey() {
 		return publishDateKey;
+	}
+
+	@Override
+	public void setDatePublished(ZonedDateTime datePublished) {
+		super.setDatePublished(datePublished);
+		if (datePublished!=null) {
+			publishDateKey = scheduled.getPublishDate().toLocalDate();
+		}	
 	}
 
 	@OneToMany(mappedBy="journal", fetch=FetchType.EAGER, cascade={CascadeType.REMOVE})
@@ -84,10 +99,6 @@ public class Journal extends AbstractJournal<JournalComment> implements
 		return filteredBody;
 	}
 
-	public void setPublishDate(ZonedDateTime publishDate) {
-		this.publishDate = publishDate;
-	}
-	
 	public void setComments(List<JournalComment> comments) {
 		this.comments = comments;
 	}
