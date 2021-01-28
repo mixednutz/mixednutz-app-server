@@ -1,5 +1,9 @@
 package net.mixednutz.app.server.controller.web;
 
+import java.time.LocalDateTime;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.mixednutz.app.server.controller.BaseJournalController;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
+import net.mixednutz.app.server.entity.post.journal.JournalFactory;
 
 
 @Controller
@@ -39,15 +44,16 @@ public class JournalController extends BaseJournalController {
 	}
 	
 	@RequestMapping(value="/journal/new", method = RequestMethod.POST, params="submit")
-	public String saveNew(@ModelAttribute("newpost") Journal journal, 
+	public String saveNew(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE) Journal journal, 
 //			@RequestParam("fgroup_id") Integer friendGroupId, 
 			@RequestParam("group_id") Long groupId,
 			@RequestParam(value="externalFeedId", required=false) Integer[] externalFeedId,
 			@RequestParam(value="tagsString", defaultValue="") String tagsString,
 			@RequestParam(value="email_fgroup", defaultValue="false") boolean emailFriendGroup,
+			@DateTimeFormat(iso=ISO.DATE_TIME) @RequestParam(value="localPublishDate", required=false) LocalDateTime localPublishDate,
 			@AuthenticationPrincipal User user, Model model, Errors errors) {
 		journal = save(journal, groupId, externalFeedId, 
-				tagsString, emailFriendGroup, user);
+				tagsString, emailFriendGroup, localPublishDate, user);
 
 		return "redirect:"+journal.getUri();
 	}	

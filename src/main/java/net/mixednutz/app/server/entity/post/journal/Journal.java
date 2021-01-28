@@ -67,7 +67,7 @@ public class Journal extends AbstractJournal<JournalComment> implements
 	public void setDatePublished(ZonedDateTime datePublished) {
 		super.setDatePublished(datePublished);
 		if (datePublished!=null) {
-			publishDateKey = scheduled.getPublishDate().toLocalDate();
+			publishDateKey = datePublished.toLocalDate();
 		}	
 	}
 

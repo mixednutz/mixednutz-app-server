@@ -1,6 +1,9 @@
 package net.mixednutz.app.server.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
@@ -16,8 +19,9 @@ import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.entity.post.journal.Journal;
-import net.mixednutz.app.server.entity.post.journal.JournalComment;
+import net.mixednutz.app.server.entity.post.journal.JournalFactory;
 import net.mixednutz.app.server.entity.post.journal.JournalTag;
+import net.mixednutz.app.server.entity.post.journal.ScheduledJournal;
 import net.mixednutz.app.server.format.HtmlFilter;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
@@ -48,6 +52,9 @@ public class BaseJournalController {
 	
 	@Autowired
 	protected ReactionManager reactionManager;
+	
+	@Autowired
+	protected JournalFactory journalFactory;
 	
 	
 	protected Journal get(String username, int year, int month, int day, @PathVariable String subjectKey) {
@@ -104,7 +111,7 @@ public class BaseJournalController {
 		if (journal.getOwner()!=null) {
 			model.addAttribute("profile", profileRepository.findById(journal.getOwner().getUserId()).orElse(null));
 		}
-//		model.addAttribute("authors", accountManager.loadCommentAuthorsById(journal));
+		model.addAttribute("authors", journalManager.loadCommentAuthors(journal.getComments()));
 		
 		//Side bar stuff
 		model.addAttribute("recentPosts", journalManager.getUserJournals(
@@ -114,8 +121,8 @@ public class BaseJournalController {
 					tagManager.getTagsArray(journal.getTags()), journal.getId()));
 		}
 		
-		//New Comment
-		model.addAttribute("newComment", new JournalComment());
+		//New Comment Form
+		journalFactory.newCommentForm(model);
 		
 		//Tags String
 		model.addAttribute("tagsString", tagManager.getTagsString(journal.getTags()));
@@ -136,6 +143,12 @@ public class BaseJournalController {
 //		
 //		//Stuff for javascript editing
 //		journal.calculateVisibility();
+		
+		// Publish Date
+		if (journal.getScheduled()!=null) {
+			model.addAttribute("localPublishDate", 
+					journal.getScheduled().getPublishDate().toLocalDateTime());
+		}	
 				
 		return "journal/view";
 	}
@@ -143,7 +156,9 @@ public class BaseJournalController {
 	protected Journal save(Journal journal, 
 //			Integer friendGroupId, 
 			Long groupId, 
-			Integer[] externalFeedId, String tagsString, boolean emailFriendGroup, User user) {
+			Integer[] externalFeedId, String tagsString, boolean emailFriendGroup, 
+			LocalDateTime localPublishDate,
+			User user) {
 		if (user==null) {
 			throw new AuthenticationCredentialsNotFoundException("You have to be logged in to do that");
 		}
@@ -153,6 +168,15 @@ public class BaseJournalController {
 		journal.setTags(new HashSet<>());
 		if (journal.getSubject()==null || journal.getSubject().trim().length()==0) {
 			journal.setSubject("(No Subject)");
+		}
+		if (localPublishDate!=null) {
+			journal.setScheduled(new ScheduledJournal());
+			journal.getScheduled()
+				.setPublishDate(ZonedDateTime.of(localPublishDate, ZoneId.systemDefault()));
+			journal.getScheduled().setExternalFeedId(externalFeedId);
+			journal.getScheduled().setEmailFriendGroup(emailFriendGroup);
+		} else {
+			journal.setDatePublished(ZonedDateTime.now());
 		}
 		String[] tagArray = tagManager.splitTags(tagsString);
 		for (String tagString : tagArray) {
