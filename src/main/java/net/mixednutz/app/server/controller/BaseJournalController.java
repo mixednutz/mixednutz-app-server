@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
@@ -33,7 +34,7 @@ import net.mixednutz.app.server.repository.UserRepository;
 public class BaseJournalController {
 	
 	@Autowired
-	private JournalRepository journalRepository;
+	protected JournalRepository journalRepository;
 	
 	@Autowired
 	private JournalManager journalManager;
@@ -236,6 +237,44 @@ public class BaseJournalController {
 //		}
 		
 		return journal;
+	}
+	
+	protected Journal update(Journal form, Long journalId, 
+//			Integer friendGroupId, 
+			Integer groupId, String tagsString, 
+			LocalDateTime localPublishDate,
+			User user) {
+		if (user==null) {
+			throw new AuthenticationCredentialsNotFoundException("You have to be logged in to do that");
+		}
+		Journal entity = journalRepository.findById(journalId).orElseThrow(()->{
+			return new ResourceNotFoundException("");
+		});
+		if (!entity.getAuthor().equals(user)) {
+			throw new AccessDeniedException("Journal #"+journalId+" - That's not yours to edit!");
+		}
+		
+		entity.setSubject(form.getSubject());
+		if (form.getSubject()==null || form.getSubject().trim().length()==0) {
+			entity.setSubject("(No Subject)");
+		}
+		if (localPublishDate!=null) {
+			if (entity.getScheduled()==null) {
+				entity.setScheduled(new ScheduledJournal());
+			}
+			entity.getScheduled()
+				.setPublishDate(ZonedDateTime.of(localPublishDate, ZoneId.systemDefault()));
+		} 
+		entity.setSubjectKey(form.getSubjectKey());
+		entity.setDescription(form.getDescription());
+		entity.setBody(form.getBody());
+		
+//		journal.parseVisibility(user, friendGroupId, groupId);
+		
+//		String[] tagArray = tagManager.splitTags(tagsString);
+//		mergeTags(tagArray, journal);
+		
+		return journalRepository.save(entity);
 	}
 
 }

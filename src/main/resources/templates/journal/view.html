@@ -36,6 +36,7 @@
 	<link th:href="@{|/webjars/github-com-skywalkapps-bootstrap-notifications/1.0.3/dist/stylesheets/bootstrap-notifications.min.css|}" rel="stylesheet" type="text/css" />
 	
 	<!-- Mixednutz CSS -->
+	<link th:href="@{|/css/forms.css|}" href="../css/forms.css" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/css/default_theme.css|}" href="../css/default_theme.css" rel="stylesheet" type="text/css" />
 	
 	<!-- Custom Fonts -->
@@ -57,7 +58,7 @@
 		<!-- Edit Journal Form -->
 		<div id="editJournalModal" class="modal container fade" tabindex="-1" role="dialog">
 			<div>
-				<div class="modal-content" include="journal/modules_journal :: editJournalForm_model">
+				<div class="modal-content" th:include="journal/fragments_journal :: editJournalForm_model">
 				</div>
 			</div>
 		</div>
@@ -154,11 +155,11 @@
     
     <!-- My JavaScript 
     ================================================== -->
-    <script include="common/modules_common :: post_options_JS" th:inline="javascript"></script>
-    <script include="journal/modules_journal :: editJournalForm_JS" th:inline="javascript"></script>
+	<script th:replace="common/fragments_forms :: post_options_JS" th:inline="javascript"></script>
+    <script th:include="journal/fragments_journal :: editJournalForm_JS" th:inline="javascript"></script>
     <script include="common/modules_common :: tags_JS" th:inline="javascript"></script>
     <script include="common/modules_common :: reactions_JS" th:inline="javascript"></script>
-    
+    <script type="text/javascript" th:src="@{|/js/journal.js|}" src="../js/journal.js"></script>
 	
 	<!-- Google Analytics JavaScript 
  	================================================== -->

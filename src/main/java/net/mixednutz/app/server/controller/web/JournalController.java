@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.mixednutz.app.server.controller.BaseJournalController;
+import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalFactory;
@@ -24,6 +25,19 @@ import net.mixednutz.app.server.entity.post.journal.JournalFactory;
 @Controller
 public class JournalController extends BaseJournalController {
 	
+
+	//------------
+	// View Mappings
+	//------------
+	
+	@RequestMapping(value="/journal/id/{journalId}", method = {RequestMethod.GET,RequestMethod.HEAD})
+	public String getJournal(@PathVariable Long journalId, Authentication auth, Model model) {
+		Journal journal = journalRepository.findById(journalId).orElseThrow(()->{
+			return new ResourceNotFoundException("");
+		});
+		getJournal(journal, auth,model);
+		return "journal/view";
+	}
 
 	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}", method = {RequestMethod.GET,RequestMethod.HEAD})
 	public String getJournal(@PathVariable String username, 
@@ -42,6 +56,10 @@ public class JournalController extends BaseJournalController {
 		model.addAttribute("journal", journal);
 		return "journal/embed";
 	}
+
+	//------------
+	// Insert Mappings
+	//------------
 	
 	@RequestMapping(value="/journal/new", method = RequestMethod.POST, params="submit")
 	public String saveNew(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE) Journal journal, 
@@ -57,5 +75,25 @@ public class JournalController extends BaseJournalController {
 
 		return "redirect:"+journal.getUri();
 	}	
+	
+	
+	//------------
+	// Update Mappings
+	//------------
+			
+	@RequestMapping(value="/journal/id/{journalId}/edit", method = RequestMethod.POST, params="submit")
+	public String updateModal(@ModelAttribute("journal") Journal journal, 
+			@PathVariable Long journalId, 
+//			@RequestParam("fgroup_id") Integer friendGroupId, 
+			@RequestParam("group_id") Integer groupId,
+			@RequestParam(value="tagsString", defaultValue="") String tagsString,
+			@DateTimeFormat(iso=ISO.DATE_TIME) @RequestParam(value="localPublishDate", required=false) LocalDateTime localPublishDate,
+			@AuthenticationPrincipal User user, Model model, Errors errors) {
+		
+		Journal savedJournal = update(journal, journalId, groupId, 
+				tagsString, localPublishDate, user);
+		
+		return "redirect:"+savedJournal.getUri();
+	}
 	
 }
