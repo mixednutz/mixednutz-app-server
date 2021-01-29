@@ -228,7 +228,7 @@
 		<!-- Tags -->
   		<div include="common/modules_common :: tags (${journal.uri})">tags</div>
 		<!-- Reactions -->
-		<div include="common/modules_common :: reactions (${journal.reactions}, ${reactionScores}, ${journal.uri}, null)">reactions</div>
+		<div th:include="common/fragments_reactions :: reactions (${journal.reactions}, ${reactionScores}, ${journal.uri}, null)">reactions</div>
         
   		
 		<hr sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${journal.author.userId}" />

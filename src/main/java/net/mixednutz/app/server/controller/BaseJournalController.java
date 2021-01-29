@@ -27,7 +27,9 @@ import net.mixednutz.app.server.format.HtmlFilter;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
 import net.mixednutz.app.server.manager.post.journal.JournalManager;
+import net.mixednutz.app.server.repository.EmojiRepository;
 import net.mixednutz.app.server.repository.JournalRepository;
+import net.mixednutz.app.server.repository.ReactionRepository;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -55,7 +57,13 @@ public class BaseJournalController {
 	protected ReactionManager reactionManager;
 	
 	@Autowired
+	protected ReactionRepository reactionRepository;
+	
+	@Autowired
 	protected JournalFactory journalFactory;
+	
+	@Autowired
+	protected EmojiRepository emojiRepository;
 	
 	
 	protected Journal get(String username, int year, int month, int day, @PathVariable String subjectKey) {

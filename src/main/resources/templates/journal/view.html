@@ -47,6 +47,9 @@
 		th:with="journalUrl=@{|${formatter.formatAbsoluteUrl(journal.uri)}|}"
 		th:href="|${formatter.formatAbsoluteUrl('/oembed?url=' + journalUrl)}|"
   		th:title="@{|${journal.subject} : #{site.title}|}"/>
+  		
+  	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 
@@ -82,7 +85,7 @@
 		<!-- React Modal -->
 		<div id="reactModal" class="modal fade" tabindex="-1" role="dialog">
 			<div>
-				<div class="modal-content" include="common/modules_common :: newReaction_modal">
+				<div class="modal-content" th:include="common/fragments_reactions :: newReaction_modal">
 				</div>
 			</div>
 		</div>
@@ -158,7 +161,7 @@
 	<script th:replace="common/fragments_forms :: post_options_JS" th:inline="javascript"></script>
     <script th:include="journal/fragments_journal :: editJournalForm_JS" th:inline="javascript"></script>
     <script include="common/modules_common :: tags_JS" th:inline="javascript"></script>
-    <script include="common/modules_common :: reactions_JS" th:inline="javascript"></script>
+    <script th:include="common/fragments_reactions :: reactions_JS" th:inline="javascript"></script>
     <script type="text/javascript" th:src="@{|/js/journal.js|}" src="../js/journal.js"></script>
 	
 	<!-- Google Analytics JavaScript 
