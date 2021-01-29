@@ -20,7 +20,7 @@
 					th:if="${!iterStat.last}">, </span>
 			</span>
 		</span>
-		</span> <span sec:authorize="isAuthenticated()" class="btn-group"
+		</span> <span sec:authorize="isAuthenticated()" class="btn-group reaction-btn-group"
 			role="group"
 			th:attr="data-entity-uri=${uri!=null?uri:''}, data-parent-div=${divClass!=null?'.'+divClass:''}">
 			<button th:each="reactionScore, iterStat : ${reactionScores}"
@@ -119,8 +119,8 @@
 					}
 				});
 
-		$('.toggleReaction').on(
-				'click',
+		$('.reaction-btn-group').on(
+				'click', '.toggleReaction',
 				function(e) {
 					var entityUrl = $(this).parent().data('entity-uri');
 					var toggleUrl = entityUrl + '/reaction/toggle';
