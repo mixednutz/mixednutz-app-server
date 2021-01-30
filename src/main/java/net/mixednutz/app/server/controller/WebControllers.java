@@ -15,8 +15,9 @@ import net.mixednutz.api.core.model.Notification;
 import net.mixednutz.app.server.entity.Emoji;
 import net.mixednutz.app.server.entity.EmojiCategory;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.format.FormattingUtils;
+import net.mixednutz.app.server.format.FormattingUtilsImpl;
 import net.mixednutz.app.server.manager.EmojiManager;
-import net.mixednutz.app.server.util.FormattingUtils;
 
 @ControllerAdvice(basePackages={"net.mixednutz.app.server.controller.web"})
 public class WebControllers {
@@ -38,7 +39,7 @@ public class WebControllers {
 	
 	@ModelAttribute("formatter")
 	public FormattingUtils formatter(HttpServletRequest request) {
-		return new FormattingUtils(request);
+		return new FormattingUtilsImpl(request);
 	}
 	
 	@ModelAttribute("emojiByCategory")
