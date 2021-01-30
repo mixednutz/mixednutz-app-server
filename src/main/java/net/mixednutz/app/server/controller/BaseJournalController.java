@@ -13,13 +13,16 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import net.mixednutz.app.server.controller.exception.ResourceMovedPermanentlyException;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.entity.post.journal.Journal;
+import net.mixednutz.app.server.entity.post.journal.JournalComment;
 import net.mixednutz.app.server.entity.post.journal.JournalFactory;
 import net.mixednutz.app.server.entity.post.journal.JournalTag;
 import net.mixednutz.app.server.entity.post.journal.ScheduledJournal;
@@ -28,6 +31,7 @@ import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
 import net.mixednutz.app.server.manager.post.journal.JournalManager;
 import net.mixednutz.app.server.repository.EmojiRepository;
+import net.mixednutz.app.server.repository.JournalCommentRepository;
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.ReactionRepository;
 import net.mixednutz.app.server.repository.UserProfileRepository;
@@ -40,6 +44,9 @@ public class BaseJournalController {
 	
 	@Autowired
 	private JournalManager journalManager;
+	
+	@Autowired
+	protected JournalCommentRepository journalCommentRepository;
 	
 	@Autowired
 	private UserProfileRepository profileRepository;
@@ -283,6 +290,21 @@ public class BaseJournalController {
 //		mergeTags(tagArray, journal);
 		
 		return journalRepository.save(entity);
+	}
+	
+	protected JournalComment saveComment(JournalComment form, Journal journal, User user) {
+		form.setJournal(journal);
+		form.setAuthor(user);
+		
+		JournalComment review = journalCommentRepository.save(form);
+//		notificationManager.notifyNewComment(journal, comment);
+		
+		return review;
+	}
+	
+	@ExceptionHandler(ResourceMovedPermanentlyException.class)
+	public String handleException(final ResourceMovedPermanentlyException e) {
+	    return "redirect:"+e.getRedirectUri();
 	}
 
 }

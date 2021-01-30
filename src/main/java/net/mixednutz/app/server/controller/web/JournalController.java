@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,9 @@ import net.mixednutz.app.server.controller.BaseJournalController;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
+import net.mixednutz.app.server.entity.post.journal.JournalComment;
 import net.mixednutz.app.server.entity.post.journal.JournalFactory;
+import net.mixednutz.app.server.entity.post.series.ChapterFactory;
 
 
 @Controller
@@ -94,6 +97,28 @@ public class JournalController extends BaseJournalController {
 				tagsString, localPublishDate, user);
 		
 		return "redirect:"+savedJournal.getUri();
+	}
+	
+
+	//------------
+	// Comments Mappings
+	//------------
+	
+	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/new", method = RequestMethod.POST, params="submit")
+	public String comment(@ModelAttribute(ChapterFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@RequestParam(value="externalFeedId", required=false) Integer externalFeedId,
+			@AuthenticationPrincipal User user, Model model, Errors errors) {
+		if (user==null) {
+			throw new AuthenticationCredentialsNotFoundException("You have to be logged in to do that");
+		}
+		
+		Journal journal = get(username, year, month, day, subjectKey);
+		comment = saveComment(comment, journal, user);
+				
+		return "redirect:"+comment.getUri();
 	}
 	
 }
