@@ -27,6 +27,7 @@ import net.mixednutz.app.server.entity.post.journal.JournalFactory;
 import net.mixednutz.app.server.entity.post.journal.JournalTag;
 import net.mixednutz.app.server.entity.post.journal.ScheduledJournal;
 import net.mixednutz.app.server.format.HtmlFilter;
+import net.mixednutz.app.server.manager.NotificationManager;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
 import net.mixednutz.app.server.manager.post.journal.JournalManager;
@@ -71,6 +72,9 @@ public class BaseJournalController {
 	
 	@Autowired
 	protected EmojiRepository emojiRepository;
+	
+	@Autowired
+	protected NotificationManager notificationManager;
 	
 	
 	protected Journal get(String username, int year, int month, int day, @PathVariable String subjectKey) {
@@ -119,7 +123,7 @@ public class BaseJournalController {
 		
 		if (user!=null) {
 			journalManager.incrementViewCount(journal, user);
-//			notificationManager.markAsRead(user, journal);
+			notificationManager.markAsRead(user, journal);
 		} 
 		
 		model.addAttribute("tagScores", tagManager.getTagScores(journal.getTags(), journal.getAuthor(), user));
@@ -296,10 +300,10 @@ public class BaseJournalController {
 		form.setJournal(journal);
 		form.setAuthor(user);
 		
-		JournalComment review = journalCommentRepository.save(form);
-//		notificationManager.notifyNewComment(journal, comment);
+		JournalComment comment = journalCommentRepository.save(form);
+		notificationManager.notifyNewComment(journal, comment);
 		
-		return review;
+		return comment;
 	}
 	
 	@ExceptionHandler(ResourceMovedPermanentlyException.class)

@@ -37,7 +37,7 @@ public class JournalApiController extends BaseJournalController {
 		if (reaction!=null) {
 			reaction = reactionRepository.save(reaction);
 			journalRepository.save(journal);
-//			notificationManager.notifyNewReaction(journal, reaction);
+			notificationManager.notifyNewReaction(journal, reaction);
 		} else {
 //			notificationManager.unnotifiyReaction(diff.missing(journal.getReactions()));
 			journalRepository.save(journal);
@@ -58,7 +58,7 @@ public class JournalApiController extends BaseJournalController {
 				user, new NewJournalReaction(emojiRepository, journal, user));
 		for (JournalReaction reaction: addedReactions) {
 			reaction = reactionRepository.save(reaction);
-//			notificationManager.notifyNewReaction(journal, reaction);
+			notificationManager.notifyNewReaction(journal, reaction);
 		}
 		journalRepository.save(journal);
 		return addedReactions;

@@ -57,6 +57,7 @@
             <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/settings|}" href="/settings">Settings</a></li>
             <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/logout|}" href="/logout">Log Out</a></li>
           	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/login|}" href="/login">Log in</a></li>
+          	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/signup|}" href="/signup">Register</a></li>
           	<li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" class="hidden-xs dropdown dropdown-notifications">
 	            <a href="#notifications-panel" class="dropdown-toggle" data-toggle="dropdown">
 	              <i th:attr="data-count=${notifications.size()}" class="glyphicon glyphicon-bell" th:classappend="${notifications.size()>0} ? notification-icon : no-notification"></i>
