@@ -17,10 +17,12 @@ import net.mixednutz.api.model.IPage;
 import net.mixednutz.app.server.controller.api.NotificationApiController;
 import net.mixednutz.app.server.entity.Emoji;
 import net.mixednutz.app.server.entity.EmojiCategory;
+import net.mixednutz.app.server.entity.MenuItem;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.format.FormattingUtils;
 import net.mixednutz.app.server.format.FormattingUtilsImpl;
 import net.mixednutz.app.server.manager.EmojiManager;
+import net.mixednutz.app.server.repository.MenuItemRepository;
 
 @ControllerAdvice(basePackages={"net.mixednutz.app.server.controller.web"})
 public class WebControllers {
@@ -30,6 +32,9 @@ public class WebControllers {
 	
 	@Autowired
 	private EmojiManager emojiManager;
+	
+	@Autowired
+	private MenuItemRepository menuItemRepository;
 	
 	@ModelAttribute("notifications")
 	public List<? extends INotification> getNotificationItems(@AuthenticationPrincipal User user) {
@@ -49,6 +54,11 @@ public class WebControllers {
 	@ModelAttribute("emojiByCategory")
 	public Map<EmojiCategory, List<Emoji>> emojiByCategory() {
 		return emojiManager.findOrganizeByCategory();
+	}
+	
+	@ModelAttribute("customMenu")
+	public Iterable<MenuItem> customMenu() {
+		return menuItemRepository.getTopMenu();
 	}
 
 }
