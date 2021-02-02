@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.mixednutz.app.server.entity.ComponentSettings;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
+import net.mixednutz.app.server.entity.MenuItem;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
 import net.mixednutz.app.server.entity.User;
@@ -24,6 +25,7 @@ import net.mixednutz.app.server.entity.UserSettings;
 import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
+import net.mixednutz.app.server.repository.MenuItemRepository;
 import net.mixednutz.app.server.repository.UserSettingsRepository;
 
 @Controller
@@ -38,6 +40,9 @@ public class UserSettingsController {
 	@Autowired
 	SiteSettingsManager siteSettingsManager;
 	
+	@Autowired
+	MenuItemRepository menuItemRepository;
+	
 	@Autowired(required=false)
 	List<ComponentSettings> componentSettings;
 		
@@ -47,6 +52,12 @@ public class UserSettingsController {
 		SettingsForm form = new SettingsForm();
 		form.setIndexPage(siteSettings.getIndexPage());
 		model.addAttribute("form", form);
+		
+		// Menu
+		MenuForm menuForm = new MenuForm();
+		menuItemRepository.findAll().forEach(menuForm.menuItems::add);
+		model.addAttribute("menuForm", menuForm);
+		model.addAttribute("newMenuItem", new MenuItem());
 		
 		//Additional Settings not found here
 		List<String> fragments = new ArrayList<>();
@@ -101,6 +112,32 @@ public class UserSettingsController {
 			}
 		}
 		externalFeedRepository.saveAll(feeds);		
+		
+		return "redirect:/settings";
+	}
+	
+	@RequestMapping(value="/settings/menu/new", method=RequestMethod.POST)
+	public String addMenuItem(MenuItem form, Errors errors,
+			@AuthenticationPrincipal User user, Model model) {
+		
+		if (errors.hasErrors()) {
+			return settingsForm(model);
+		}
+		
+		menuItemRepository.save(form);
+		
+		return "redirect:/settings";
+	}
+	
+	@RequestMapping(value="/settings/menu/update", method=RequestMethod.POST)
+	public String updateMenuItems(MenuForm form, Errors errors,
+			@AuthenticationPrincipal User user, Model model) {
+		
+		if (errors.hasErrors()) {
+			return settingsForm(model);
+		}
+		
+		menuItemRepository.saveAll(form.getMenuItems());
 		
 		return "redirect:/settings";
 	}
@@ -160,5 +197,18 @@ public class UserSettingsController {
 		public void setVisibility(VisibilityType[] visibility) {
 			this.visibility = visibility;
 		}
+	}
+	
+	public static class MenuForm {
+		List<MenuItem> menuItems = new ArrayList<>();
+
+		public List<MenuItem> getMenuItems() {
+			return menuItems;
+		}
+
+		public void setMenuItems(List<MenuItem> menuItems) {
+			this.menuItems = menuItems;
+		}
+		
 	}
 }

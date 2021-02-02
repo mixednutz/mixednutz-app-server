@@ -8,3 +8,7 @@
 textarea.replyBody {
 	width: 100%;
 }
+
+#newMenuItem_id, #newMenuItem_parentId, #editMenuItem_id, #editMenuItem_parentId {
+	width: 6ch;
+}

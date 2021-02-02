@@ -22,6 +22,8 @@
 					<small class="form-text text-muted">First page visiters will see</small>
 				</div>
 			</div>
+			
+		
 					
 		<h2>Profile Settings</h2>
 		
@@ -39,6 +41,68 @@
 		
 		</form>
 		
+		
+		<h3>Custom Menu</h3>
+		
+		<form class="form-inline" th:action="@{|/settings/menu/update|}" th:object="${menuForm}" method="post">
+		
+			<div th:each="menuItem, itemStat : *{menuItems}">
+			
+			<div class="form-group required">
+				<label>ID</label>
+				<p class="form-control-static" th:text="*{menuItems[__${itemStat.index}__].id}"/>
+				<input type="hidden" th:field="*{menuItems[__${itemStat.index}__].id}" />
+			</div>
+			<div class="form-group required">
+				<label for="editMenuItem_parentId">Parent ID</label>
+				<input id="editMenuItem_parentId" type="text" th:field="*{menuItems[__${itemStat.index}__].parentId}" class="form-control"/>
+			</div>
+			<div class="form-group required has-feedback">
+				<label for="editMenuItem_name">Name</label>
+				<input id="editMenuItem_name" type="text" th:field="*{menuItems[__${itemStat.index}__].name}" class="form-control" required="required"/>
+			</div>
+			<div class="form-group required has-feedback">
+				<label for="editMenuItem_uri">URI</label>
+				<input id="editMenuItem_uri" type="text" th:field="*{menuItems[__${itemStat.index}__].uri}" class="form-control" placeholder="/ (blank if has submenu)"/>
+			</div>
+			<div class="checkbox">
+				<label>
+			    	<input type="checkbox" th:field="*{menuItems[__${itemStat.index}__].authenticated}"> Authenticated
+			    </label>
+			</div>
+			
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Update</button>
+		</form>
+		
+		<h4>New Menu Item</h4>
+		
+		<form class="form-inline" th:action="@{|/settings/menu/new|}" th:object="${newMenuItem}" method="post">
+		
+			<div class="form-group required">
+				<label for="newMenuItem_id">ID</label>
+				<input id="newMenuItem_id" type="text" th:field="*{id}" class="form-control" required="required"/>
+			</div>
+			<div class="form-group required">
+				<label for="newMenuItem_parentId">Parent ID</label>
+				<input id="newMenuItem_parentId" type="text" th:field="*{parentId}" class="form-control"/>
+			</div>
+			<div class="form-group required has-feedback">
+				<label for="newMenuItem_name">Name</label>
+				<input id="newMenuItem_name" type="text" th:field="*{name}" class="form-control" required="required"/>
+			</div>
+			<div class="form-group required has-feedback">
+				<label for="newMenuItem_uri">URI</label>
+				<input id="newMenuItem_uri" type="text" th:field="*{uri}" class="form-control" placeholder="/ (blank if has submenu)"/>
+			</div>
+			<div class="checkbox">
+				<label>
+			    	<input type="checkbox" th:field="*{authenticated}"> Authenticated
+			    </label>
+			</div>
+			<button type="submit" class="btn btn-primary">Add</button>
+		</form>
 		<hr/>
 		
 		<div th:each="fragmentName : ${componentFragments}">
