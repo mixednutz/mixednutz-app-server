@@ -65,7 +65,7 @@ public class ApiManagerImpl implements ApiManager{
 	private static final String DEFAULT_AVATAR_URI = "/img/nophoto.gif";
 	private static final String OEMBED_DIR = OembedController.OEMBED_DIR;
 	
-	private static String getAvatarUri(String avatarFilename) {
+	public String getAvatarUri(String avatarFilename) {
 		if (avatarFilename!=null && !"".equals(avatarFilename.trim())) {
 			return AVATARS_DIR + "/"
 					+ avatarFilename + "?"+ AVATARS_QUERY;

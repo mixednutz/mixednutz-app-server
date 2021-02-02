@@ -15,6 +15,7 @@ import net.mixednutz.app.server.entity.post.PostNotification;
 import net.mixednutz.app.server.entity.post.PostReaction;
 import net.mixednutz.app.server.manager.NotificationManager;
 import net.mixednutz.app.server.repository.PostNotificationRepository;
+import net.mixednutz.app.server.repository.UserRepository;
 
 @Service
 public class NotificationManagerImpl implements NotificationManager {
@@ -24,6 +25,9 @@ public class NotificationManagerImpl implements NotificationManager {
 	
 	@Autowired
 	PostNotificationRepository notificationRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 
 	@Override
 	public <P extends Post<C>, C extends PostComment> void notifyNewComment(P replyTo, 
@@ -96,5 +100,5 @@ public class NotificationManagerImpl implements NotificationManager {
 		//TODO this requires subscriptions 
 		
 	}
-
+		
 }

@@ -34,7 +34,7 @@ public class UserController extends BaseUserController {
 		
 		user = save(user);
 		
-		return "redirect:/main"; 
+		return "redirect:/"; 
 	} 
 
 }
