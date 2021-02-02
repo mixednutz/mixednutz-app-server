@@ -90,7 +90,8 @@
   	var feedTimelineNextpageUrl = /*[[@{|/internal/${profileUser.username}/feeds/timeline/nextpage|}]]*/ "/internal/username/timeline/nextpage";
   	
   	/*]]>*/
- 	</script>
+  	</script>
+  	<script th:replace="header :: navbar_js"></script>
  	<script type="text/javascript" th:src="@{|/js/timeline.js|}" src="../js/timeline.js"></script>
  	<script th:replace="common/fragments_js :: common"></script>
  	<script th:replace="common/fragments_js :: feed_timeline"></script>
