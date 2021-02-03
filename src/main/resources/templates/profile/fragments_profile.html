@@ -95,13 +95,14 @@
 				<!-- <span class="socmed-author socmed-author-email"><a href="#" target="_blank" ><i class="fa fa-envelope fa-2x"></i></a></span> 
 				<span class="socmed-author socmed-author-rss"><a href="#" target="_blank" ><i class="fa fa-rss fa-2x"></i></a></span> 
 				<span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span> -->
-				<span class="socmed-author socmed-author-twitter"><a target="_blank" ><i class="fa fa-twitter fa-2x"></i></a></span>
-				<span class="socmed-author socmed-author-instagram"><a target="_blank" ><i class="fa fa-instagram fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-twitter"><a target="_blank" ><i class="fab fa-twitter fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-instagram"><a target="_blank" ><i class="fab fa-instagram fa-2x"></i></a></span>
 				<!-- <span class="socmed-author socmed-author-facebook"><a href="#" target="_blank" ><i class="fa fa-facebook fa-2x"></i></a></span>
 				<span class="socmed-author socmed-author-gplus"><a href="#" target="_blank" ><i class="fa fa-google-plus fa-2x"></i></a></span>
 				<span class="socmed-author socmed-author-youtube"><a href="#" target="_blank" ><i class="fa fa-youtube fa-2x"></i></a></span>
 				<span class="socmed-author socmed-author-linkedin"><a href="#" target="_blank" ><i class="fa fa-linkedin fa-2x"></i></a></span>
 				<span class="socmed-author socmed-author-pinterest"><a href="#" target="_blank" ><i class="fa fa-pinterest fa-2x"></i></a></span> -->
+				<span class="socmed-author socmed-author-discord"><a target="_blank" ><i class="fab fa-discord fa-2x"></i></a></span>
 			</div>
 		</div>
   	</div>
@@ -127,6 +128,7 @@
 						<span class="socmed-author socmed-author-youtube"><a href="#" target="_blank" ><i class="fa fa-youtube fa-2x"></i></a></span>
 						<span class="socmed-author socmed-author-linkedin"><a href="#" target="_blank" ><i class="fa fa-linkedin fa-2x"></i></a></span>
 						<span class="socmed-author socmed-author-pinterest"><a href="#" target="_blank" ><i class="fa fa-pinterest fa-2x"></i></a></span> -->
+						<span th:if="${profile.discordInviteCode!=null}" class="socmed-author socmed-author-discord"><a th:href="@{|${#messages.msg('discordInviteUrlPrefix')+profile.discordInviteCode}|}" href="#" target="_blank" ><i class="fab fa-discord fa-2x"></i></a></span>
 					</div>
 				</div>
 			</div>
@@ -162,7 +164,7 @@
 				<small id="clearAvatar_help" class="form-text text-muted" th:text="#{form.clearAvatar.help}">form.clearAvatar.help</small>
 			</div>
 			<div class="form-group">
-			    <p class="form-control-static"><img th:src="@{|#{defaultphoto.href}|}" src="../img/nophoto.gif"/></p>
+			    <p class="form-control-static"><img th:src="@{|${form.currentAvatar!=null?'/photos-storage/'+form.currentAvatar:#messages.msg('defaultphoto.href')}|}" src="../img/nophoto.gif"/></p>
 			 </div>
 			
 			
@@ -186,6 +188,16 @@
 				<label for="pronouns" th:text="#{form.pronouns.label}">form.pronouns.label</label>
 				<input id="pronouns" type="text" th:field="*{pronouns}" class="form-control" />
 				<small id="pronouns_help" class="form-text text-muted" th:text="#{form.pronouns.help}">form.pronouns.help</small>
+			</div>
+			
+			<!-- Discord Server -->
+			<div class="discord form-group">
+				<label for="discordInviteCode" th:text="#{form.discordInviteCode.label}">form.pronouns.label</label>
+				<div class="input-group">
+					<div class="input-group-addon" th:text="#{discordInviteUrlPrefix}">discordInviteUrlPrefix</div>
+					<input id="discordInviteCode" type="text" th:field="*{discordInviteCode}" class="form-control" />
+				</div>
+				<small id="discordInviteCode_help" class="form-text text-muted" th:text="#{form.discordInviteCode.help}">form.discordInviteCode.help</small>
 			</div>
 			
 			<!-- Twitter Account -->

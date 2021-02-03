@@ -116,6 +116,9 @@ public class UserProfileController {
 		if (notEquals(form.getTwitterAccountId(), profile.getTwitterAccountId())) {
 			profile.setTwitterAccountId(form.getTwitterAccountId());
 		}
+		if (notEquals(form.getDiscordInviteCode(), profile.getDiscordInviteCode())) {
+			profile.setDiscordInviteCode(form.getDiscordInviteCode());
+		}
 		profileRepository.save(profile);
 				
 		return "redirect:/"+currentUser.getUsername();
@@ -147,30 +150,40 @@ public class UserProfileController {
 	
 	public static class ProfileForm {
 		private boolean clearAvatar = false;
+		private String currentAvatar;
 		private String displayName;
 		private String location;
 		private String bio;
 		private String pronouns;
 		private String website;
 		private Integer twitterAccountId;
+		private String discordInviteCode;
 		
 		public ProfileForm() {
 			super();
 		}
 		public ProfileForm(User user, UserProfile profile) {
 			super();
+			currentAvatar = user.getAvatarFilename();
 			displayName = user.getDisplayName();
 			location = profile.getLocation();
 			bio = profile.getBio();
 			pronouns = profile.getPronouns();
 			website = profile.getWebsite();
 			twitterAccountId = profile.getTwitterAccountId();
+			discordInviteCode = profile.getDiscordInviteCode();
 		}
 		public boolean isClearAvatar() {
 			return clearAvatar;
 		}
 		public void setClearAvatar(boolean clearAvatar) {
 			this.clearAvatar = clearAvatar;
+		}
+		public String getCurrentAvatar() {
+			return currentAvatar;
+		}
+		public void setCurrentAvatar(String currentAvatar) {
+			this.currentAvatar = currentAvatar;
 		}
 		public String getDisplayName() {
 			return displayName;
@@ -207,6 +220,12 @@ public class UserProfileController {
 		}
 		public void setTwitterAccountId(Integer twitterAccountId) {
 			this.twitterAccountId = twitterAccountId;
+		}
+		public String getDiscordInviteCode() {
+			return discordInviteCode;
+		}
+		public void setDiscordInviteCode(String discordInviteCode) {
+			this.discordInviteCode = discordInviteCode;
 		}
 		
 	}

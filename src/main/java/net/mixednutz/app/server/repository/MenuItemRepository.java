@@ -8,4 +8,10 @@ import net.mixednutz.app.server.entity.MenuItem;
 @Repository
 public interface MenuItemRepository extends CrudRepository<MenuItem, Long>{
 
+	Iterable<MenuItem> findByParentIdIsNull();
+	
+	default Iterable<MenuItem> getTopMenu() {
+		return findByParentIdIsNull();
+	}
+	
 }
