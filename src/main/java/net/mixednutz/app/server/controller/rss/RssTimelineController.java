@@ -30,9 +30,11 @@ import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
+import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.format.FormattingUtils;
 import net.mixednutz.app.server.format.FormattingUtilsImpl;
+import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.manager.TimelineManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -50,7 +52,10 @@ public class RssTimelineController {
 	private TimelineManager timelineManager;
 	
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
+	
+	@Autowired
+	private SiteSettingsManager siteSettingsManager;
 	
 	@Autowired
     private MessageSource messageSource;
@@ -61,6 +66,18 @@ public class RssTimelineController {
     private void init() {
         accessor = new MessageSourceAccessor(messageSource, Locale.ENGLISH);
     }
+    
+    @RequestMapping(method = RequestMethod.GET)
+	public @ResponseBody Channel getMainTimeline(
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
+			@AuthenticationPrincipal User user, HttpServletRequest request) {
+		
+    	SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
+    	
+		return getUserTimeline(siteSettings.getAdminUser().getUsername(), 
+				PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
+				pageSize, user, request);
+	}
 
 	@RequestMapping(value={USER_TIMELINE_ENDPOINT}, 
 			method = RequestMethod.GET)

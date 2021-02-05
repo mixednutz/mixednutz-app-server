@@ -22,6 +22,8 @@
 	<link th:href="@{|/webjars/snackbarjs/themes-css/material.css|}" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/webjars/github-com-skywalkapps-bootstrap-notifications/1.0.3/dist/stylesheets/bootstrap-notifications.min.css|}" rel="stylesheet" type="text/css" />
 		
+	<link rel="alternate" type="application/rss+xml" th:title="#{site.title}" th:href="@{|/rss/${profileUser.username}|}">	
+		
 	<meta name="description" th:content="#{profile.description}" content="Welcome to your MixedNutz home.  Check out what your network is up to." />
 	<meta rel="icon" th:sizes="#{pwa.icon.sizes}" th:href="@{|#{pwa.icon.href}|}" href="/img/icon-192x192.png" />
 	<meta name="theme-color" th:content="#{pwa.theme-color}"/>

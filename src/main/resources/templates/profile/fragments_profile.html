@@ -92,9 +92,9 @@
   	
   		<div class="socialmedia">
   			<div class="content-socmed-author">
-				<!-- <span class="socmed-author socmed-author-email"><a href="#" target="_blank" ><i class="fa fa-envelope fa-2x"></i></a></span> 
+				<!-- <span class="socmed-author socmed-author-email"><a href="#" target="_blank" ><i class="fa fa-envelope fa-2x"></i></a></span>  -->
 				<span class="socmed-author socmed-author-rss"><a href="#" target="_blank" ><i class="fa fa-rss fa-2x"></i></a></span> 
-				<span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span> -->
+				<!-- <span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span>
 				<span class="socmed-author socmed-author-twitter"><a target="_blank" ><i class="fab fa-twitter fa-2x"></i></a></span>
 				<span class="socmed-author socmed-author-instagram"><a target="_blank" ><i class="fab fa-instagram fa-2x"></i></a></span>
 				<!-- <span class="socmed-author socmed-author-facebook"><a href="#" target="_blank" ><i class="fa fa-facebook fa-2x"></i></a></span>
@@ -118,9 +118,9 @@
 					<h3 class="author-title" th:text="${author.username}"><span>username</span></h3>
 					<span th:text="${profile.bio}">bio</span>
 					<div class="content-socmed-author">
-						<!-- <span class="socmed-author socmed-author-email"><a href="#" target="_blank" ><i class="fa fa-envelope fa-2x"></i></a></span> 
-						<span class="socmed-author socmed-author-rss"><a href="#" target="_blank" ><i class="fa fa-rss fa-2x"></i></a></span> 
-						<span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span> -->
+						<!-- <span class="socmed-author socmed-author-email"><a href="#" target="_blank" ><i class="fa fa-envelope fa-2x"></i></a></span> -->
+						<span class="socmed-author socmed-author-rss"><a th:href="@{|/rss/${author.username}|}" target="_blank" ><i class="fa fa-rss fa-2x"></i></a></span> 
+						<!--  <span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span> -->
 						<span th:if="${profile.twitterAccount!=null}" class="socmed-author socmed-author-twitter"><a th:href="@{|https://twitter.com/${profile.twitterAccount.username}|}" href="#" target="_blank" ><i class="fa fa-twitter fa-2x"></i></a></span>
 						<!-- <span th:if="${profile.instagramAccount!=null}" class="socmed-author socmed-author-instagram"><a th:href="@{|https://www.instagram.com/${profile.instagramAccount.instagramScreenname}|}" href="#" target="_blank" ><i class="fa fa-instagram fa-2x"></i></a></span>
 						<span class="socmed-author socmed-author-facebook"><a href="#" target="_blank" ><i class="fa fa-facebook fa-2x"></i></a></span>

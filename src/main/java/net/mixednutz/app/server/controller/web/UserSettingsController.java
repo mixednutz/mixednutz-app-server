@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -86,6 +88,7 @@ public class UserSettingsController {
 		return settingsForm(model);
 	}
 	
+	@Transactional
 	@RequestMapping(value="/settings", method=RequestMethod.POST)
 	public String saveSettings(SettingsForm form, Errors errors,
 			@AuthenticationPrincipal User user, Model model) {
@@ -97,13 +100,13 @@ public class UserSettingsController {
 		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
 		if (user.equals(siteSettings.getAdminUser())) {
 			siteSettings.setIndexPage(form.getIndexPage());
-			siteSettingsManager.save(siteSettings);
+//			siteSettingsManager.save(siteSettings);
 		}
 		
 		UserSettings settings = settingsRepository.findById(user.getUserId()).orElseGet(
 				new NewUserSettingsSupplier(user));
 		settings.setShowCombinedExternalFeedsOnProfile(form.isShowCombinedExternalFeedsOnProfile());
-		settingsRepository.save(settings);
+//		settingsRepository.save(settings);
 		
 		List<AbstractFeed> feeds = externalFeedRepository.findByUser(user);
 		for (AbstractFeed feed: feeds) {

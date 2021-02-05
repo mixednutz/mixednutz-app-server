@@ -197,6 +197,7 @@ page.setupProfile = function() {
 		$('.profile .followers .followerCount').text(page.ownerBundle.followerCount);
 		$('.profile .followers').attr('href',page.owner.url+'/friends');
 		
+		$('.socmed-author-rss a').attr('href','/rss/'+page.owner.username);
 		if (page.ownerBundle.user.profileData.twitterAccount!=null) {
 			$('.socmed-author-twitter a').attr('href','https://twitter.com/'+page.ownerBundle.user.profileData.twitterAccount.username);
 		} else {
