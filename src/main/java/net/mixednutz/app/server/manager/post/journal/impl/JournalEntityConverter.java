@@ -27,7 +27,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 			"^\\/(?<username>.*)\\/journal\\/(?<year>[0-9]*)\\/(?<month>[0-9]*)\\/(?<day>[0-9]*)\\/(?<subjectKey>.*)", 
 			Pattern.CASE_INSENSITIVE);
 	
-	private static final String EMBED_BASE_URL = "https://mixednutz.net/embed";
+	private static final String EMBED_BASE_URL = "/embed";
 	
 	@Autowired
 	private NetworkInfo networkInfo;
@@ -100,7 +100,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 		StringBuffer html = new StringBuffer();
 		html.append("<iframe");
 		html.append(" height=\""+height+"\"");
-		html.append(" src=\""+EMBED_BASE_URL+journal.getUri()+"\"");
+		html.append(" src=\""+networkInfo.getHostName()+EMBED_BASE_URL+journal.getUri()+"\"");
 		html.append(" style=\"max-width: "+width+"px; width: calc(100% - 2px);\"");
 		html.append(" frameborder=\"0\"></iframe>");
 		rich.setHtml(html.toString());
