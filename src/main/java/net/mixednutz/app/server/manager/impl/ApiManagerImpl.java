@@ -7,10 +7,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,6 +32,7 @@ import net.mixednutz.app.server.controller.api.OembedController;
 import net.mixednutz.app.server.entity.CommentsAware;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
+import net.mixednutz.app.server.entity.Oembeds.Oembed;
 import net.mixednutz.app.server.entity.ReactionScore;
 import net.mixednutz.app.server.entity.ReactionsAware;
 import net.mixednutz.app.server.entity.TagScore;
@@ -110,6 +113,17 @@ public class ApiManagerImpl implements ApiManager{
 				((ApiElementConverter)converter).toTimelineElement(api, entity, viewer);
 			}
 		}
+	}
+	
+	public Optional<Oembed> toOembed(String path, Integer maxwidth, Integer maxheight, String format, 
+			Authentication auth) {
+		for (ApiElementConverter<?> converter: apiElementConverters) {
+			if (converter.canConvertOembed(path)) {
+				return Optional.of(converter.toOembed(path, maxwidth, maxheight, 
+						format, auth));
+			}
+		}
+		return Optional.empty();
 	}
 	
 	@Override
