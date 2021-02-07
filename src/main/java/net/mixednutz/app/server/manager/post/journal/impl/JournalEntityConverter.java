@@ -1,11 +1,16 @@
 package net.mixednutz.app.server.manager.post.journal.impl;
 
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +42,16 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+    private MessageSource messageSource;
+	
+	private MessageSourceAccessor accessor;
+	
+	@PostConstruct
+    private void init() {
+        accessor = new MessageSourceAccessor(messageSource, Locale.ENGLISH);
+    }
 	
 	@Override
 	public InternalTimelineElement toTimelineElement(
@@ -93,7 +108,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 		int width = (maxwidth > 658 || maxwidth <= 0) ? 658 : maxwidth;
 				
 		OembedRich rich = new OembedRich();
-		rich.setTitle(journal.getSubject());
+		rich.setTitle(journal.getSubject()+" : "+accessor.getMessage("site.title"));
 		rich.setAuthorName(journal.getAuthor().getUsername());
 		rich.setWidth(width);
 		rich.setHeight(height);
