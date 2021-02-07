@@ -9,7 +9,7 @@
   
   	<div th:fragment="reactions (reactions, reactionScores, uri, divClass)"
 		th:class="${divClass}">
-		<i class="fa fa-smile-o"></i> Reactions: <span
+		<i class="far fa-smile"></i> Reactions: <span
 			sec:authorize="!isAuthenticated()" class="reactions-list"> <span
 			th:each="reactionScore, iterStat : ${reactionScores}"> <span
 				th:class="@{|reaction emoji_${reactionScore.emoji.id}|}"> <span

@@ -183,6 +183,10 @@
 					<groupId>org.webjars.bower</groupId>
 					<artifactId>github-com-jeresig-jquery-hotkeys</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>fontawesome</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency> 
 		<dependency>
@@ -251,6 +255,11 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>modernizr</artifactId>
 			<version>${version.modernizr}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>font-awesome</artifactId>
+			<version>5.15.2</version>
 		</dependency>
 	    
 
