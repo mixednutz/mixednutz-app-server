@@ -12,9 +12,9 @@
 			<label>To Timeline:</label>
 			<select name='group_id' class="form-control">
 				<option value=''>Your own</option>
-				<optgroup label="Communities">
+				<optgroup th:label="#{form.group_id.optgroup.groups.label}" label="groups.label">
 				</optgroup>
-				<optgroup label="Nutsterz Timelines" class="friends">
+				<optgroup th:label="#{form.group_id.optgroup.friends.label}" label="friends.label" class="friends">
 				</optgroup>
 			</select>
 		</div>
@@ -22,24 +22,29 @@
 			<label>Privacy:</label>
 			<div class="radio">
 				<label><input tabindex='1' type='radio'
-					th:field="*{visibility.visibilityType}" value='PRIVATE' /> Only Me</label>
+					th:field="*{visibility.visibilityType}" value='PRIVATE' /> 
+					<span th:text="#{form.visibility.visibilityType.PRIVATE.label}">PRIVATE.label</span></label>
 			</div>
 			<div class="radio">
 				<label><input tabindex='1' type='radio'
-					th:field="*{visibility.visibilityType}" value='ALL_FRIENDS' /> All Friends</label>
+					th:field="*{visibility.visibilityType}" value='ALL_FRIENDS' /> 
+					<span th:text="#{form.visibility.visibilityType.ALL_FRIENDS.label}">ALL_FRIENDS.label</span></label>
 			</div>
 			<div class="radio">
 				<label><input tabindex='1' type='radio'
-					th:field="*{visibility.visibilityType}" value='ALL_FOLLOWERS' /> All Followers</label>
+					th:field="*{visibility.visibilityType}" value='ALL_FOLLOWERS' /> 
+					<span th:text="#{form.visibility.visibilityType.ALL_FOLLOWERS.label}">ALL_FOLLOWERS.label</span></label>
 			</div>
 			
 			<div class="radio">
 				<label><input tabindex='1' type='radio'
-					th:field="*{visibility.visibilityType}" value='ALL_USERS' /> All MixedNutz</label>
+					th:field="*{visibility.visibilityType}" value='ALL_USERS' /> 
+					<span th:text="#{form.visibility.visibilityType.ALL_USERS.label}">ALL_USERS.label</span></label>
 			</div>
 			<div class="radio">
 				<label><input tabindex='1' type='radio'
-					th:field="*{visibility.visibilityType}" value='WORLD' /> World</label>
+					th:field="*{visibility.visibilityType}" value='WORLD' /> 
+					<span th:text="#{form.visibility.visibilityType.WORLD.label}">WORLD.label</span></label>
 			</div>
 		</div>
 
