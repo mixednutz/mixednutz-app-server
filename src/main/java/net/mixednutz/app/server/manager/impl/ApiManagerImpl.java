@@ -324,6 +324,10 @@ public class ApiManagerImpl implements ApiManager{
 		public Oauth1AuthenticatedFeed getTwitterAccount() {
 			return userProfile.getTwitterAccount();
 		}
+		
+		public String getDiscordInviteCode() {
+			return userProfile.getDiscordInviteCode();
+		}
 				
 	}
 
