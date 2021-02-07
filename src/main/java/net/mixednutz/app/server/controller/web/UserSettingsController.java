@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -28,6 +26,7 @@ import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.MenuItemRepository;
+import net.mixednutz.app.server.repository.SiteSettingsRepository;
 import net.mixednutz.app.server.repository.UserSettingsRepository;
 
 @Controller
@@ -38,6 +37,9 @@ public class UserSettingsController {
 	
 	@Autowired
 	private ExternalFeedRepository externalFeedRepository;
+	
+	@Autowired
+	SiteSettingsRepository siteSettingsRepository;
 	
 	@Autowired
 	SiteSettingsManager siteSettingsManager;
@@ -88,7 +90,6 @@ public class UserSettingsController {
 		return settingsForm(model);
 	}
 	
-	@Transactional
 	@RequestMapping(value="/settings", method=RequestMethod.POST)
 	public String saveSettings(SettingsForm form, Errors errors,
 			@AuthenticationPrincipal User user, Model model) {
@@ -97,16 +98,19 @@ public class UserSettingsController {
 			return settingsForm(model);
 		}
 		
+		//This siteSettings is from the cache
 		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
 		if (user.equals(siteSettings.getAdminUser())) {
+			//Get the non-cached version so we can save it
+			siteSettings = siteSettingsRepository.findById(user.getUserId()).get();
 			siteSettings.setIndexPage(form.getIndexPage());
-//			siteSettingsManager.save(siteSettings);
+			siteSettingsManager.save(siteSettings);
 		}
 		
 		UserSettings settings = settingsRepository.findById(user.getUserId()).orElseGet(
 				new NewUserSettingsSupplier(user));
 		settings.setShowCombinedExternalFeedsOnProfile(form.isShowCombinedExternalFeedsOnProfile());
-//		settingsRepository.save(settings);
+		settingsRepository.save(settings);
 		
 		List<AbstractFeed> feeds = externalFeedRepository.findByUser(user);
 		for (AbstractFeed feed: feeds) {
