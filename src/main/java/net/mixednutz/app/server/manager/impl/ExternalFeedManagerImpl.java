@@ -112,7 +112,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	}
 	
 	@Cacheable(value="externalHomeFeed", 
-			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feed, #hashtag, #paging)")
+			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feed, #hashtag, #paging, T(net.mixednutz.app.server.entity.ExternalFeedContent.TimelineType).HOME)")
 	public IPage<? extends ITimelineElement,Instant> getTimeline(AbstractFeed feed, 
 			String hashtag, IPageRequest<String> paging) {
 		return this.getTimelineInternal(feed, hashtag, 
@@ -120,7 +120,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	}
 	
 	@Cacheable(value="externalUserFeed", 
-			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feed, #hashtag, #paging)")
+			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feed, #hashtag, #paging, T(net.mixednutz.app.server.entity.ExternalFeedContent.TimelineType).USER)")
 	public IPage<? extends ITimelineElement, Instant> getUserTimeline(AbstractFeed feed, String hashtag,
 			IPageRequest<String> paging) {
 		return this.getTimelineInternal(feed, hashtag, 
@@ -128,7 +128,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	}
 
 	@Cacheable(value="externalUserFeeds", 
-			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feeds, #hashtag, #paging)")
+			key="T(net.mixednutz.app.server.manager.impl.ExternalFeedManagerImpl).getTimelineHash(#feeds, #hashtag, #paging, T(net.mixednutz.app.server.entity.ExternalFeedContent.TimelineType).USER)")
 	public IPage<? extends ITimelineElement, Instant> getUserTimeline(Iterable<AbstractFeed> feeds, String hashtag,
 			IPageRequest<String> paging) {
 		return this.getTimelineInternal(feeds, hashtag, 
