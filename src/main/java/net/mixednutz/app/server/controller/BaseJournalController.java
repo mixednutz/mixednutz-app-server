@@ -296,6 +296,16 @@ public class BaseJournalController {
 		return journalRepository.save(entity);
 	}
 	
+	protected JournalComment getComment(Long commentId) {
+		return journalCommentRepository.findById(commentId)
+			.orElseThrow(new Supplier<ResourceNotFoundException>() {
+				@Override
+				public ResourceNotFoundException get() {
+					throw new ResourceNotFoundException("Journal not found");
+				}
+			});
+	}
+	
 	protected JournalComment saveComment(JournalComment form, Journal journal, User user) {
 		form.setJournal(journal);
 		form.setAuthor(user);

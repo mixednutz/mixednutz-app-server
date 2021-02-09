@@ -44,11 +44,13 @@
 						th:text="${authors[comment.author.userId].username}">author</span>
 						reshared this album</small>
 				</div>
-				<div th:replace="common/fragments_comments::editForm(${comment})">Edit Form</div>
-				<div th:replace="common/fragments_comments::replyForm(${comment})">Reply Form</div>
-				<!-- Replies -->
-				<div th:replace="common/fragments_comments::replies(${comment})" >Replies</div>
-									
+				<div>
+					<button type="button" class="btn btn-default btn-sm" data-toggle="collapse" th:data-target="@{|#replyForm_${comment.commentId}|}">Reply</button>
+					<div th:replace="common/fragments_comments::editForm(${comment})">Edit Form</div>
+					<div th:replace="common/fragments_comments::replyForm(${post}, ${comment})">Reply Form</div>
+					<!-- Replies -->
+					<div th:replace="common/fragments_comments::replies(${comment})" >Replies</div>
+				</div>					
 			</div>
 		</div>
 	</div>
@@ -70,7 +72,7 @@
 				<img class="media-object" th:src="@{|/img/nophoto.gif|}"
 				src="../../img/nophoto.gif" width="64" alt="" />
 			</span>
-			<div class="media-body">
+			<div class="media-body clearfix">
 				<h4 class="media-heading">
 					<a th:if="${comment.author!=null and authors[comment.author.userId]!=null}"
 						th:href='@{|/${authors[comment.author.userId].username}|}' href="#"><span
@@ -91,11 +93,13 @@
 						th:text="${authors[comment.author.userId].username}">author</span>
 						reshared this album</small>
 				</div>
-				<div th:replace="common/fragments_comments::editForm(${comment})">Edit Form</div>
-				<div th:replace="common/fragments_comments::replyForm(${comment})">Reply Form</div>
-				<!-- Replies -->				
-				<div th:replace="common/fragments_comments::replies(${comment})" >Replies</div>
-									
+				<div>
+					<button type="button" class="btn btn-default btn-sm" data-toggle="collapse" th:data-target="@{|#replyForm_${comment.commentId}|}">Reply</button>
+					<div th:replace="common/fragments_comments::editForm(${comment})">Edit Form</div>
+					<div th:replace="common/fragments_comments::replyForm(${post}, ${comment})">Reply Form</div>
+					<!-- Replies -->				
+					<div th:replace="common/fragments_comments::replies(${comment})" >Replies</div>
+				</div>					
 			</div>
 		</div>
 	  </div>
@@ -103,13 +107,27 @@
 	  <div th:fragment="editForm(comment)" style="display:none;" th:id="@{|editForm_${comment.commentId}|}">
 	  </div>
 	  
-	  <div th:fragment="replyForm(comment)" style="display:none;" th:id="@{|replyForm_${comment.commentId}|}">
-		  <!-- Reply Form -->
-		  <!-- Copy form from post fragment -->
-	  </div>
+	  <div th:fragment="replyForm(post, comment)" class="well collapse" th:id="@{|replyForm_${comment.commentId}|}">
+	  	<!-- Reply Form -->
+		<h5>Reply:</h5>
+		<form role="form" th:action="@{|${post.uri}/comment/${comment.commentId}/reply|}"
+			th:object="${newComment}" method="post">
+			<div class="form-group">
+				<textarea class="form-control" th:field="*{body}" rows="3"></textarea>
+			</div>
+			<button type="button" class="btn btn-danger" name="submit">Cancel</button>
+			<button type="submit" class="btn btn-primary" name="submit">Submit</button>
+		</form>
+	</div>
 	  
-	  <div th:fragment="post_comment_form(post)" th:id="@{|commentForm_${comment.commentId}|}">
-		  <!-- Cut form from post fragment -->
+	  <div th:fragment="post_comment_form(post)" class="well">
+		  <h4>Leave a Comment:</h4>
+          <form role="form" th:action="@{|${post.uri}/comment/new|}" th:object="${newComment}" method="post">
+              <div class="form-group">
+                  <textarea class="form-control" th:field="*{body}" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+          </form>
 	  </div>
   
   </body>
