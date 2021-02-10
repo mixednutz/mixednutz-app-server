@@ -301,7 +301,7 @@ public class BaseJournalController {
 			.orElseThrow(new Supplier<ResourceNotFoundException>() {
 				@Override
 				public ResourceNotFoundException get() {
-					throw new ResourceNotFoundException("Journal not found");
+					throw new ResourceNotFoundException("Comment not found");
 				}
 			});
 	}
