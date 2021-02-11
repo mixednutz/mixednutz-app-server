@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.AbstractNotification;
+import net.mixednutz.app.server.entity.post.AbstractPostComment;
+import net.mixednutz.app.server.entity.post.CommentReplyNotification;
 import net.mixednutz.app.server.entity.post.GroupedPosts;
 import net.mixednutz.app.server.entity.post.Post;
 import net.mixednutz.app.server.entity.post.PostComment;
@@ -50,7 +52,28 @@ public class NotificationManagerImpl implements NotificationManager {
 //			webPushService.send(notification.getAccountId(), getCommentNotificationItem(
 //					dequeEntry(replyTo, notification)));
 		}
+		if (comment instanceof AbstractPostComment) {
+			AbstractPostComment apComment = (AbstractPostComment) comment;
+			if (apComment.getInReplyTo()!=null) {
+				notifyNewCommentReply(apComment.getInReplyTo(), apComment);
+			}
+		}
 	}
+	
+	@Override
+	public void notifyNewCommentReply(AbstractPostComment replyTo, AbstractPostComment comment) {
+		if (!replyTo.getAuthor().getUserId().equals(comment.getAuthor().getUserId())) {
+			//Don't make notification when author replies to own post
+			
+			PostNotification notification = new CommentReplyNotification(replyTo.getAuthor().getUserId(), replyTo, comment);
+			notificationRepository.save((AbstractNotification) notification);
+//			commentManager.sendEmail(comment);
+//			webPushService.send(notification.getAccountId(), getCommentNotificationItem(
+//					dequeEntry(replyTo, notification)));
+		}
+	}
+
+
 
 	@Override
 	public <P extends Post<C>, C extends PostComment, R extends PostReaction> void notifyNewReaction(P reactedTo,

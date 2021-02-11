@@ -25,7 +25,9 @@ import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.AbstractCommentNotification;
 import net.mixednutz.app.server.entity.post.AbstractNotification;
+import net.mixednutz.app.server.entity.post.AbstractPostComment;
 import net.mixednutz.app.server.entity.post.AbstractReactionNotification;
+import net.mixednutz.app.server.entity.post.CommentReplyNotification;
 import net.mixednutz.app.server.entity.post.Post;
 import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.NotificationTimelineManager;
@@ -82,6 +84,15 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 					
 					return getCommentNotificationItems(notifications);
 				}
+				if (CommentReplyNotification.class.isAssignableFrom(e.getKey())) {
+					
+					List<CommentReplyNotification> notifications = e.getValue().stream()
+						.map((n)->{
+							return (CommentReplyNotification)n;
+						}).collect(Collectors.toList());
+					
+					return getCommentReplyNotificationItems(notifications);
+				}
 				if (AbstractReactionNotification.class.isAssignableFrom(e.getKey())) {
 									
 					List<AbstractReactionNotification<?,?,?>> notifications = e.getValue().stream()
@@ -127,7 +138,7 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 		}
 		return items;
 	}
-	
+		
 	protected Notification getCommentNotificationItem(Entry<Post<?>, List<AbstractCommentNotification<?, ?>>> entry) {
 		
 		Set<Long> authors = new LinkedHashSet<>();
@@ -179,6 +190,75 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 				lastNotification.getCommentDateCreated(),
 				notificationIds);
 	}
+	
+	protected List<Notification> getCommentReplyNotificationItems(List<CommentReplyNotification> notifications) {
+		if (notifications==null) {
+			return Collections.emptyList();
+		}
+		
+		Map<AbstractPostComment, List<CommentReplyNotification>> groupByPost = 
+			notifications.stream()
+				.collect(Collectors.groupingBy(CommentReplyNotification::getInReplyTo));
+		
+		//create NotificationItems
+		final List<Notification> items = new ArrayList<>();
+		for (Entry<AbstractPostComment, List<CommentReplyNotification>> entry: groupByPost.entrySet()) {
+			items.add(getCommentReplyNotificationItem(entry));
+		}
+		return items;
+	}
+	
+	protected Notification getCommentReplyNotificationItem(Entry<AbstractPostComment, List<CommentReplyNotification>> entry) {
+		
+		Set<Long> authors = new LinkedHashSet<>();
+		for (CommentReplyNotification notification: entry.getValue()) {
+			authors.add(notification.getAuthorId());
+		}
+		final String firstAuthor = this.getAuthorName(authors.iterator().next() 
+	//			entry.getKey().getPrivateGroupId()
+				);
+		final String firstAuthorPicture = this.getAuthorPicture(authors.iterator().next());
+		final CommentReplyNotification firstNotification = entry.getValue().get(0);
+		final CommentReplyNotification lastNotification = entry.getValue().get(entry.getValue().size()-1);
+		HtmlStringBuffer buffer = new HtmlStringBuffer();
+		buffer.html("<span class=\"author\">")
+			.append(firstAuthor);
+		if (authors.size()>1) {
+			buffer.append(" and ")
+				.append(authors.size()-1);
+			if (authors.size()>2) {
+				buffer.append(" others");
+			} else {
+				buffer.append(" other");
+			}
+		}
+		buffer.html("</span>")
+			.append(" replied to your comment.");
+					
+//		.append("you made on ");
+//		if (firstNotification.getPostSubject()!=null) {
+//			buffer.html("<span class=\"title\">")
+//				.append(firstNotification.getPostSubject())
+//				.html("</span> ");
+//		}
+		
+		//Collection notification IDs
+		List<Long> notificationIds = entry.getValue().stream()
+			.map((i)->{
+				return i.getId();
+			})
+			.collect(Collectors.toList());
+		
+		return new Notification(
+				firstNotification.getType(),
+				firstAuthorPicture,
+				buffer.toPlainString(),
+				buffer.toHtmlString(),
+				firstNotification.getUri(), 
+				lastNotification.getCommentDateCreated(),
+				notificationIds);
+	}
+	
 	
 	protected List<Notification> getReactionNotificationItems(List<AbstractReactionNotification<?, ?, ?>> notifications) {
 		if (notifications==null) {
