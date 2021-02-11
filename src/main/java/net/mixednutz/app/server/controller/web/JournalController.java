@@ -121,4 +121,24 @@ public class JournalController extends BaseJournalController {
 		return "redirect:"+comment.getUri();
 	}
 	
+	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{inReplyToId}/reply", method = RequestMethod.POST, params="submit")
+	public String commentReply(@ModelAttribute(ChapterFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@PathVariable Long inReplyToId,
+			@RequestParam(value="externalFeedId", required=false) Integer externalFeedId,
+			@AuthenticationPrincipal User user, Model model, Errors errors) {
+		if (user==null) {
+			throw new AuthenticationCredentialsNotFoundException("You have to be logged in to do that");
+		}
+		
+		Journal journal = get(username, year, month, day, subjectKey);
+		
+		comment.setInReplyTo(getComment(inReplyToId));
+		comment = saveComment(comment, journal, user);
+				
+		return "redirect:"+comment.getUri();
+	}
+	
 }

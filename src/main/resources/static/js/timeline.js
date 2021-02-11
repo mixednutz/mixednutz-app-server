@@ -344,6 +344,22 @@ function buildInternalTimelineElement(element) {
 			"href":element.url});
  	//TODO re-implement resharing
  	template.find(".reshared").remove();
+ 	
+ 	if (element.reactions!=null) {
+ 		populateReactions(template.find(".reactions-list"), element.reactions);
+ 	}
+ 	
 	
 	return template;
+}
+
+function populateReactions(appendTo, reactions) {
+	if (reactions.length==0) {
+		appendTo.parent().remove();
+	}
+	$.each(reactions, function(index, reaction) {
+		var emojiCode = reaction.unicode;
+		var spacer = index+1<reactions.length ? ' ' : '';
+		$("<span class='emoji reaction'>"+emojiCode+spacer+"</span>").appendTo(appendTo);
+	});	
 }
