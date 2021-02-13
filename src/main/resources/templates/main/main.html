@@ -51,10 +51,12 @@
 			</div>
 		</div>
 		
-		<!-- New Series Form -->
-		<div id="newSeriesModal" class="modal container fade" tabindex="-1" role="dialog">
+		<!-- Other Component Forms -->
+		<div th:each="fragment : ${newFormModalTemplates}"
+			th:id="${fragment[0]}" 
+			class="modal container fade" tabindex="-1" role="dialog">
 			<div>
-				<div class="modal-content" th:include="series/fragments_series :: newSeriesForm_model">
+				<div class="modal-content" th:include="__${fragment[1]}__">
 				</div>
 			</div>
 		</div>

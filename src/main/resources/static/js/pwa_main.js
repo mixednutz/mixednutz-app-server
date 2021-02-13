@@ -22,6 +22,7 @@ page.updateExternalFeeds = function() {
 		template.attr("id","externalFeed_"+feed.name); 
 		template.find(".iconName").addClass("fa-"+feed.feedInfo.fontAwesomeIconName);
 		template.find(".displayName").text(feed.feedInfo.displayName);
+		var composeFormDropdown = $('#'+feed.name+'ComposeForm').find("select[name=externalFeedId]");
 		for (var ii=0; ii<feed.accounts.length; ii++) {
 			var account = feed.accounts[ii];
 			var item = $("<li><a></a></li>");
@@ -42,31 +43,10 @@ page.updateExternalFeeds = function() {
 			reshareItem.find("input").val(account.id);
 			reshareItem.find("span").text(account.name);
 			var accountOptItem = $('<option></option>');
-			accountOptItem.val(account.id).text(account.nativeUsername);
+			accountOptItem.val(account.feedId).text(account.username);
 			
-			if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("Msg")) {
-				$("#newpost_form .externalFeedId").append(crosspostItem.clone());	
-			}
-			if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("Journal")) {
-				$("#newjournal_form .externalFeedId").append(crosspostItem.clone());	
-			}
-  			if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("Album")) {
-				$("#newphotos_form .Album_Crosspost .externalFeedId").append(crosspostItem.clone());	
-			}
-  	  		if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("Photo")) {
-				$("#newphotos_form .Photo_Crosspost .externalFeedId").append(crosspostItem.clone());	
-			}
-  	  		//TODO
-	  	  	//if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("Poll")) {
-			//	$("#newpoll_form .externalFeedId").append(crosspostItem.clone());	
-			//}
-  	  		
-  	  		$("#reshareFeedForm .externalFeedId").append(reshareItem.clone());	
-  	  		if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("twitter")) {
-  	  			$("#twitterComposeForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
-  	  			$("#twitterReplyForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
-  	  		}
-  	  		
+			composeFormDropdown.append(accountOptItem.clone());
+			
 			//clear memory
 			crosspostItem.remove();
 			reshareItem.remove();

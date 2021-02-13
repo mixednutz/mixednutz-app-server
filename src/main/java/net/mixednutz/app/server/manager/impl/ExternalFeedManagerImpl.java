@@ -15,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.mixednutz.api.client.MixednutzClient;
+import net.mixednutz.api.client.PostClient;
 import net.mixednutz.api.client.TimelineClient;
 import net.mixednutz.api.client.UserClient;
 import net.mixednutz.api.core.model.PageBuilder;
@@ -34,6 +37,7 @@ import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
 import net.mixednutz.api.model.IPageRequest.Direction;
+import net.mixednutz.api.model.IPost;
 import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.api.provider.ApiProvider;
@@ -416,6 +420,38 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		return timeline;
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <P extends IPost> Optional<P> instantiatePost(AbstractFeed feed) {
+		if (OAUTH1.equals(feed.getType())) {
+			return instantiatePost((Oauth1AuthenticatedFeed)feed, (api) -> {
+				if (api.getPostClient()!=null) {
+					return Optional.of((P)api.getPostClient().create());
+				}
+				return Optional.empty();
+			});
+		} else if (OAUTH2.equals(feed.getType())) {
+			return instantiatePost((Oauth2AuthenticatedFeed)feed, (api) -> {
+				if (api.getPostClient()!=null) {
+					return Optional.of((P)api.getPostClient().create());
+				}
+				return Optional.empty();
+			});
+		} else {
+			throw new RuntimeException("Invalid feed type: "+feed.getType());
+		}
+	}
+	
+	public <P extends IPost> void post(AbstractFeed feed, P post) {
+		if (OAUTH1.equals(feed.getType())) {
+			postOauth1((Oauth1AuthenticatedFeed)feed, post, new DefaultPostCallback());
+		} else if (OAUTH2.equals(feed.getType())) {
+			postOauth2((Oauth2AuthenticatedFeed)feed, post, new DefaultPostCallback());
+		} else {
+			throw new RuntimeException("Invalid feed type: "+feed.getType());
+		}
+	}
+	
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
 			Oauth1AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage,
 			GetTimelineCallback callback) {
@@ -552,6 +588,68 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		return page;
 	}
 	
+	protected <P extends IPost> Optional<P> instantiatePost(Oauth1AuthenticatedFeed feed, 
+			Function<MixednutzClient, Optional<P>> function) {
+		Oauth1Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
+
+		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
+				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
+		
+		MixednutzClient api = provider.getApi(creds);
+		return function.apply(api);
+	}
+	
+	protected <P extends IPost> Optional<P> instantiatePost(Oauth2AuthenticatedFeed feed, 
+			Function<MixednutzClient, Optional<P>> function) {
+		Oauth2Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
+
+		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
+				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);
+		
+		MixednutzClient api = provider.getApi(creds);
+		return function.apply(api);
+	}
+	
+	protected <P extends IPost> void postOauth1(Oauth1AuthenticatedFeed feed, P post, PostCallback callback) {
+		Oauth1Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
+
+		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
+				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
+		
+		MixednutzClient api = provider.getApi(creds);
+		@SuppressWarnings("unchecked")
+		PostClient<P> postClient = (PostClient<P>) api.getPostClient();
+		if (postClient!=null) {
+			callback.post(api, postClient, post);
+		}
+	}
+	
+	protected <P extends IPost> void postOauth2(Oauth2AuthenticatedFeed feed, P post, PostCallback callback) {
+		Oauth2Credentials creds = feed.getCredentials();
+		
+		//Ensure connection is up to date.
+		creds = externalAccountCredentialsManager.refresh(creds);
+
+		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
+				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);
+		
+		MixednutzClient api = provider.getApi(creds);
+		@SuppressWarnings("unchecked")
+		PostClient<P> postClient = (PostClient<P>) api.getPostClient();
+		if (postClient!=null) {
+			callback.post(api, postClient, post);
+		}
+	}
+	
 	@Override
 	public List<String> getCompatibleFeedsForCrossposting(INetworkInfoSmall networkInfo) {
 		return Arrays.asList(networkInfo.compatibleMimeTypes());
@@ -586,6 +684,18 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 				MixednutzClient api, String start);
 		String getLastCrawledKey(AbstractFeed feed);
 	}	
+	interface PostCallback {
+		<T extends IPost> void post(MixednutzClient api, PostClient<T> postClient, T post);
+	}
+	
+	class DefaultPostCallback implements PostCallback {
+
+		@Override
+		public <T extends IPost> void post(MixednutzClient api, PostClient<T> postClient, T post) {
+			postClient.postToTimeline(post);
+		}
+		
+	}
 	
 	class GetLiveTimelineCallback implements GetTimelineCallback {
 

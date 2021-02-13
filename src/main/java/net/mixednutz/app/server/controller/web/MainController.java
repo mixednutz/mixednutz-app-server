@@ -100,12 +100,19 @@ public class MainController {
 	
 	private void addTemplates(Model model) {
 		List<String> fragments = new ArrayList<>();
+		List<String[]> modalFragments = new ArrayList<>();
 		for (ComponentSettings compSettings: componentSettings) {
 			if (compSettings.includeTimelineTemplateHtmlFragment()) {
 				fragments.add(compSettings.includeTimelineTemplateHtmlFragmentName());
 			}
+			if (compSettings.includeNewFormModal()) {
+				modalFragments.add(new String[] {
+						compSettings.newFormModalId(),
+						compSettings.includeNewFormModalContentFragmentName()});
+			}
 		}
-		model.addAttribute("componentTemplates", fragments);
+		model.addAttribute("componentTemplates", fragments);		
+		model.addAttribute("newFormModalTemplates", modalFragments);
 	}
 	
 	@RequestMapping(value="/main", method = RequestMethod.GET)

@@ -16,7 +16,7 @@ public class JournalFactory implements NewPostFactory<Journal>, NewCommentFactor
 	@Override
 	public Journal newPostForm(Model model, User owner) {
 		final Journal journal = new Journal();
-		model.addAttribute("newpost", journal);
+		model.addAttribute(MODEL_ATTRIBUTE, journal);
 		journal.setOwnerId(owner!=null?owner.getUserId():null);
 		return journal;
 	}
