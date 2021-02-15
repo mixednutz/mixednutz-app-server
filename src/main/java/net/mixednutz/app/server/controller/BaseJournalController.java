@@ -309,6 +309,17 @@ public class BaseJournalController {
 		return journalRepository.save(entity);
 	}
 	
+	protected void doDelete(Long journalId, User user) {
+		Journal entity = journalRepository.findById(journalId).orElseThrow(()->{
+			return new ResourceNotFoundException("");
+		});
+		if (!entity.getAuthor().equals(user)) {
+			throw new AccessDeniedException("Journal #"+journalId+" - That's not yours to edit!");
+		}
+		
+		journalRepository.delete(entity);
+	}
+	
 	protected JournalComment getComment(Long commentId) {
 		return journalCommentRepository.findById(commentId)
 			.orElseThrow(new Supplier<ResourceNotFoundException>() {

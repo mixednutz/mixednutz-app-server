@@ -101,6 +101,21 @@ public class JournalController extends BaseJournalController {
 	
 
 	//------------
+	// Delete Mappings
+	//------------
+	
+
+	@RequestMapping(value="/journal/id/{journalId}/delete", method = RequestMethod.POST, params="confirm")
+	public String deleteModal(@PathVariable Long journalId, 
+			@AuthenticationPrincipal User user) {
+		
+		doDelete(journalId, user);
+		
+		return "redirect:/main";
+	}
+	
+
+	//------------
 	// Comments Mappings
 	//------------
 	
