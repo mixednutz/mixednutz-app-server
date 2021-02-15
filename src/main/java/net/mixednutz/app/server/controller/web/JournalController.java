@@ -109,7 +109,7 @@ public class JournalController extends BaseJournalController {
 	public String deleteModal(@PathVariable Long journalId, 
 			@AuthenticationPrincipal User user) {
 		
-		doDelete(journalId, user);
+		delete(journalId, user);
 		
 		return "redirect:/main";
 	}

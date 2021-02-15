@@ -309,7 +309,7 @@ public class BaseJournalController {
 		return journalRepository.save(entity);
 	}
 	
-	protected void doDelete(Long journalId, User user) {
+	protected void delete(Long journalId, User user) {
 		Journal entity = journalRepository.findById(journalId).orElseThrow(()->{
 			return new ResourceNotFoundException("");
 		});
