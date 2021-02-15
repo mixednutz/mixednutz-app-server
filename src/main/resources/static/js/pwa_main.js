@@ -37,13 +37,17 @@ page.updateExternalFeeds = function() {
 				.append(item);
 			  				
 			var crosspostItem = $('<div class="checkbox"><label><input name="externalFeedId" type="checkbox"/> <span></span></label></div>');
-			crosspostItem.find("input").val(account.id);
+			crosspostItem.find("input").val(account.feedId);
 			crosspostItem.find("span").text(account.name);
 			var reshareItem = $('<label class="checkbox-inline"><input name="externalFeedId" type="checkbox"/> <span></span></label>');
-			reshareItem.find("input").val(account.id);
+			reshareItem.find("input").val(account.feedId);
 			reshareItem.find("span").text(account.name);
 			var accountOptItem = $('<option></option>');
 			accountOptItem.val(account.feedId).text(account.username);
+			
+			if (feed.compatibleMimeTypes!=null) {
+				$(".externalFeedId").append(crosspostItem.clone());	
+			}
 			
 			composeFormDropdown.append(accountOptItem.clone());
 			

@@ -68,7 +68,7 @@ public class JournalController extends BaseJournalController {
 	public String saveNew(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE) Journal journal, 
 //			@RequestParam("fgroup_id") Integer friendGroupId, 
 			@RequestParam("group_id") Long groupId,
-			@RequestParam(value="externalFeedId", required=false) Integer[] externalFeedId,
+			@RequestParam(value="externalFeedId", required=false) Long[] externalFeedId,
 			@RequestParam(value="tagsString", defaultValue="") String tagsString,
 			@RequestParam(value="email_fgroup", defaultValue="false") boolean emailFriendGroup,
 			@DateTimeFormat(iso=ISO.DATE_TIME) @RequestParam(value="localPublishDate", required=false) LocalDateTime localPublishDate,

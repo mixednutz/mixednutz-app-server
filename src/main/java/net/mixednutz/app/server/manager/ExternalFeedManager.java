@@ -114,7 +114,8 @@ public interface ExternalFeedManager {
 	 */
 	public <P extends IPost> void post(AbstractFeed feed, P post);
 	
-	
+	public void crosspost(AbstractFeed feed, String text, String url, String[] tags);
+		
 	public Map<INetworkInfoSmall, Collection<String>> getCompatibleFeedsForCrossposting();
 	
 	public Collection<String> getCompatibleFeedsForCrossposting(INetworkInfoSmall networkInfo);

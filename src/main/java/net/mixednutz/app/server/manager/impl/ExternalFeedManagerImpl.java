@@ -452,6 +452,18 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		}
 	}
 	
+	@Override
+	public void crosspost(AbstractFeed feed, String text, String url, String[] tags) {
+		IPost ipost = instantiatePost(feed)
+				.orElseThrow(() -> new IllegalArgumentException("Feed doesn't support posting"));
+		
+		ipost.setText(text);
+		ipost.setUrl(url);
+		ipost.setTags(tags);
+		
+		post(feed, ipost);
+	}
+
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
 			Oauth1AuthenticatedFeed feed, String hashtag, IPageRequest<String> prevPage,
 			GetTimelineCallback callback) {

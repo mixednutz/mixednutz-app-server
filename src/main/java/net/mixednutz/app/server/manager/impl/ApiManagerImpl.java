@@ -135,13 +135,17 @@ public class ApiManagerImpl implements ApiManager{
 		}
 		if (entity instanceof TagsAware) {
 			TagsAware<?> hasTags = (TagsAware<?>) entity;
-			setTagCounts(api, tagManager.getTagScores(
-					hasTags.getTags(), ((Post<?>)entity).getAuthor(), viewer));
+			if (hasTags.getTags()!=null) {
+				setTagCounts(api, tagManager.getTagScores(
+						hasTags.getTags(), ((Post<?>)entity).getAuthor(), viewer));
+			}
 		}
 		if (entity instanceof ReactionsAware) {
 			ReactionsAware<?> hasReactions = (ReactionsAware<?>) entity;
-			setReactionCounts(api, reactionManager.getReactionScores(
-					hasReactions.getReactions(), ((Post<?>)entity).getAuthor(), viewer));
+			if (hasReactions.getReactions()!=null) {
+				setReactionCounts(api, reactionManager.getReactionScores(
+						hasReactions.getReactions(), ((Post<?>)entity).getAuthor(), viewer));
+			}
 		}
 		this.copyWithApiElementConverters(api, entity, viewer);
 		return api;
@@ -175,8 +179,10 @@ public class ApiManagerImpl implements ApiManager{
 	
 	protected void setComments(InternalTimelineElement api, Iterable<? extends PostComment> comments) {
 		List<InternalTimelineElement> apiComments = new ArrayList<>();
-		for (PostComment comment : comments) {
-			apiComments.add(toTimelineElement(comment));
+		if (comments!=null) {
+			for (PostComment comment : comments) {
+				apiComments.add(toTimelineElement(comment));
+			}
 		}
 		api.setComments(apiComments);
 	}

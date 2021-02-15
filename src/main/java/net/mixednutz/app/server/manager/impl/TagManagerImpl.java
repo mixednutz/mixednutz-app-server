@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.mixednutz.app.server.entity.TagScore;
+import net.mixednutz.app.server.entity.TagsAware;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.AbstractTag;
 import net.mixednutz.app.server.manager.TagManager;
@@ -137,6 +138,23 @@ public class TagManagerImpl implements TagManager{
 			if (!tagScore.isUserIncluded()) {
 				//This eliminates duplicate votes too!
 				tagScore.setUserIncluded(userOwnsTag(tag, author, currentUser));
+				tagScore.incrementScore();
+			}
+		}
+		List<TagScore> list = new ArrayList<TagScore>(tagScores.values());
+		Collections.sort(list);
+		return list;
+	}
+	
+	@Override
+	public <P extends TagsAware<T>, T extends AbstractTag> List<TagScore> getTagScores(Set<P> posts) {
+		Map<String, TagScore> tagScores = new HashMap<String, TagScore>();
+		for (P post: posts) {
+			for (T tag : post.getTags()) {
+				if (!tagScores.containsKey(tag.getTag())) {
+					tagScores.put(tag.getTag(), new TagScore(tag.getTag()));
+				}
+				TagScore tagScore = tagScores.get(tag.getTag());
 				tagScore.incrementScore();
 			}
 		}

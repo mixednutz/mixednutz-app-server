@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import net.mixednutz.app.server.controller.exception.ResourceMovedPermanentlyException;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
+import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
+import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.VisibilityType;
 import net.mixednutz.app.server.entity.post.journal.Journal;
@@ -27,11 +29,14 @@ import net.mixednutz.app.server.entity.post.journal.JournalFactory;
 import net.mixednutz.app.server.entity.post.journal.JournalTag;
 import net.mixednutz.app.server.entity.post.journal.ScheduledJournal;
 import net.mixednutz.app.server.format.HtmlFilter;
+import net.mixednutz.app.server.manager.ApiManager;
+import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.manager.NotificationManager;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
 import net.mixednutz.app.server.manager.post.journal.JournalManager;
 import net.mixednutz.app.server.repository.EmojiRepository;
+import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.JournalCommentRepository;
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.ReactionRepository;
@@ -76,6 +81,14 @@ public class BaseJournalController {
 	@Autowired
 	protected NotificationManager notificationManager;
 	
+	@Autowired
+	private ExternalFeedRepository externalFeedRepository;
+	
+	@Autowired
+	private ExternalFeedManager externalFeedManager;
+	
+	@Autowired
+	private ApiManager apiManager;
 	
 	protected Journal get(String username, int year, int month, int day, @PathVariable String subjectKey) {
 		User profileUser = userRepository.findByUsername(username)
@@ -176,7 +189,7 @@ public class BaseJournalController {
 	protected Journal save(Journal journal, 
 //			Integer friendGroupId, 
 			Long groupId, 
-			Integer[] externalFeedId, String tagsString, boolean emailFriendGroup, 
+			Long[] externalFeedId, String tagsString, boolean emailFriendGroup, 
 			LocalDateTime localPublishDate,
 			User user) {
 		if (user==null) {
@@ -221,16 +234,16 @@ public class BaseJournalController {
 		journal = journalRepository.save(journal);
 		
 		//Feed Actions
-//		if (externalFeedId!=null) {
-//			Set<ExternalContent> crossposts = new LinkedHashSet<ExternalContent>();
-//			for (Integer feedId: externalFeedId) {
-//				AbstractFeed feed= externalFeedManager.get(feedId);
-//				SocialContent content = externalFeedManager.crosspostItem(feed, journal);
-//				crossposts.add(content.toPersistableExternalContent());
-//			}
-//			journal.setCrossposts(crossposts);
-//			journalManager.save(journal);
-//		}
+		InternalTimelineElement exportableEntity = apiManager.toTimelineElement(journal, null);
+		if (externalFeedId!=null) {
+			for (Long feedId: externalFeedId) {
+				AbstractFeed feed= externalFeedRepository.findById(feedId).get();
+				externalFeedManager.crosspost(feed, 
+						exportableEntity.getTitle(), 
+						exportableEntity.getUrl(), 
+						tagArray);
+			}
+		}
 		
 //		if (journal.getPrivateGroupId()>0) {
 //			journal = journalManager.get(journalId);
