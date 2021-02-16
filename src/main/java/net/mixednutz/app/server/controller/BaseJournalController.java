@@ -234,14 +234,16 @@ public class BaseJournalController {
 		journal = journalRepository.save(journal);
 		
 		//Feed Actions
-		InternalTimelineElement exportableEntity = apiManager.toTimelineElement(journal, null);
-		if (externalFeedId!=null) {
-			for (Long feedId: externalFeedId) {
-				AbstractFeed feed= externalFeedRepository.findById(feedId).get();
-				externalFeedManager.crosspost(feed, 
-						exportableEntity.getTitle(), 
-						exportableEntity.getUrl(), 
-						tagArray);
+		if (journal.getScheduled()==null) {
+			InternalTimelineElement exportableEntity = apiManager.toTimelineElement(journal, null);
+			if (externalFeedId!=null) {
+				for (Long feedId: externalFeedId) {
+					AbstractFeed feed= externalFeedRepository.findById(feedId).get();
+					externalFeedManager.crosspost(feed, 
+							exportableEntity.getTitle(), 
+							exportableEntity.getUrl(), 
+							tagArray);
+				}
 			}
 		}
 		
