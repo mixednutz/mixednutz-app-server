@@ -7,8 +7,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.mixednutz.api.core.model.NetworkInfo;
+import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
+import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.post.AbstractScheduledPost;
 import net.mixednutz.app.server.entity.post.Post;
+import net.mixednutz.app.server.manager.ApiManager;
+import net.mixednutz.app.server.manager.ExternalFeedManager;
+import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.ScheduledPostRepository;
 
 @Component
@@ -17,6 +23,22 @@ public class PublishPostJob {
 
 	@Autowired
 	private ScheduledPostRepository scheduledPostRepository;
+	
+	@Autowired
+	private ExternalFeedRepository externalFeedRepository;
+	
+	@Autowired
+	private ExternalFeedManager externalFeedManager;
+	
+	@Autowired
+	private ApiManager apiManager;
+	
+	private static NetworkInfo networkInfo;
+	
+	@Autowired
+	public void setNetworkInfo(NetworkInfo networkInfo) {
+		PublishPostJob.networkInfo = networkInfo;
+	}
 
 	@Scheduled(cron="0 0/5 * * * ?")
 	public void publish() {
@@ -27,7 +49,18 @@ public class PublishPostJob {
 			Post<?> post = scheduledPost.post();
 			post.setDatePublished(ZonedDateTime.now());
 			scheduledPost.setPublished(true);
-			//TODO crosspost here
+			
+			InternalTimelineElement exportableEntity = 
+					apiManager.toTimelineElement(post, null, networkInfo.getBaseUrl());
+			if (scheduledPost.getExternalFeedId()!=null) {
+				for (Long feedId: scheduledPost.getExternalFeedId()) {
+					AbstractFeed feed= externalFeedRepository.findById(feedId).get();
+					externalFeedManager.crosspost(feed, 
+							exportableEntity.getTitle(), 
+							exportableEntity.getUrl(), 
+							null);
+				}
+			}
 			
 		}
 	}

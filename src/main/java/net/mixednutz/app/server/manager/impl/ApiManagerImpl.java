@@ -27,6 +27,7 @@ import net.mixednutz.api.model.IAction;
 import net.mixednutz.api.model.IImage;
 import net.mixednutz.api.model.IUser;
 import net.mixednutz.api.model.IUserProfile;
+import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.BasePhotoController;
 import net.mixednutz.app.server.controller.api.OembedController;
 import net.mixednutz.app.server.entity.CommentsAware;
@@ -93,19 +94,28 @@ public class ApiManagerImpl implements ApiManager{
 		}
 	}
 	
-	@Override
-	public UserWrapper toUser(User entity) {
+	public UserWrapper toUser(User entity, String baseUrl) {
 		if (entity!=null) {
-			return new UserWrapper(entity);
+			return new UserWrapper(entity, baseUrl);
 		}
 		return null;
 		
 	}
 	
-	public IUser toUser(User entity, UserProfile profile) {
-		return toUser(entity).addProfile(profile);
+	@Override
+	public IUserSmall toUser(User entity) {
+		return toUser(entity, getBaseUrl());
 	}
 	
+	public IUser toUser(User entity, UserProfile profile, String baseUrl) {
+		return toUser(entity, baseUrl).addProfile(profile);
+	}
+	
+	@Override
+	public IUser toUser(User entity, UserProfile profile) {
+		return toUser(entity, profile, getBaseUrl());
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private <E> void copyWithApiElementConverters(InternalTimelineElement api, E entity, User viewer) {
 		for (ApiElementConverter<?> converter: apiElementConverters) {
@@ -128,7 +138,12 @@ public class ApiManagerImpl implements ApiManager{
 	
 	@Override
 	public <E> InternalTimelineElement toTimelineElement(E entity, User viewer) {
-		InternalTimelineElement api = toTimelineElement((Post<?>)entity);
+		return toTimelineElement(entity, viewer, getBaseUrl());
+	}
+
+	@Override
+	public <E> InternalTimelineElement toTimelineElement(E entity, User viewer, String baseUrl) {
+		InternalTimelineElement api = toTimelineElement((Post<?>)entity, baseUrl);
 		if (entity instanceof CommentsAware) {
 			CommentsAware<?> hasComments = (CommentsAware<?>)entity;
 			setComments(api, hasComments.getComments());
@@ -152,10 +167,14 @@ public class ApiManagerImpl implements ApiManager{
 	}
 
 	protected InternalTimelineElement toTimelineElement(Post<?> entity) {
+		return toTimelineElement(entity, getBaseUrl());
+	}
+	
+	protected InternalTimelineElement toTimelineElement(Post<?> entity, String baseUrl) {
 		InternalTimelineElement api = new InternalTimelineElement();
 		api.setUri(entity.getUri());
-		api.setUrl(getBaseUrl()+entity.getUri());
-		api.setPostedByUser(toUser(entity.getAuthor()));
+		api.setUrl(baseUrl+entity.getUri());
+		api.setPostedByUser(toUser(entity.getAuthor(), baseUrl));
 		api.setPostedOnDate(entity.getDatePublished());
 		api.setDescription(entity.getDescription());
 		api.setAlternateLinks(new ArrayList<>());
@@ -165,10 +184,14 @@ public class ApiManagerImpl implements ApiManager{
 	}
 	
 	protected InternalTimelineElement toTimelineElement(PostComment entity) {
+		return toTimelineElement(entity, getBaseUrl());
+	}
+	
+	protected InternalTimelineElement toTimelineElement(PostComment entity, String baseUrl) {
 		InternalTimelineElement api = new InternalTimelineElement();
 		api.setUri(entity.getUri());
-		api.setUrl(getBaseUrl()+entity.getUri());
-		api.setPostedByUser(toUser(entity.getAuthor()));
+		api.setUrl(baseUrl+entity.getUri());
+		api.setPostedByUser(toUser(entity.getAuthor(), baseUrl));
 		api.setPostedOnDate(entity.getDateCreated());
 		api.setDescription(entity.getBody());
 		api.setAlternateLinks(new ArrayList<>());
@@ -236,10 +259,12 @@ public class ApiManagerImpl implements ApiManager{
 
 		final private User user;
 		private UserProfileWrapper profile;
+		private String baseUrl;
 		
-		public UserWrapper(User user) {
+		public UserWrapper(User user, String baseUrl) {
 			super();
 			this.user = user;
+			this.baseUrl = baseUrl;
 		}
 		
 		public UserWrapper addProfile(UserProfile profile) {
@@ -261,7 +286,7 @@ public class ApiManagerImpl implements ApiManager{
 
 		@Override
 		public IImage getAvatar() {
-			return new Image(getBaseUrl()+getAvatarUri(user.getAvatarFilename()), user.getUsername()+"'s avatar");
+			return new Image(baseUrl+getAvatarUri(user.getAvatarFilename()), user.getUsername()+"'s avatar");
 		}
 
 		@Override
@@ -281,7 +306,7 @@ public class ApiManagerImpl implements ApiManager{
 
 		@Override
 		public String getUrl() {
-			return getBaseUrl()+getUri();
+			return baseUrl+getUri();
 		}
 
 		@Override
