@@ -52,9 +52,10 @@
         <div id="navbar" class="collapse navbar-collapse navbar-left">
           <ul class="nav navbar-nav">
           	<li class="hidden"><a href="#page-top"></a></li>
-            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/main|}" href="/main/new">My Timeline</a></li>
+          	<li><a th:href="@{|/|}" href="/">Home</a></li>
+            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY') and hasAnyRole('ROLE_TIMELINE','ROLE_ADMIN')"><a th:href="@{|/main|}" href="/main">My Timeline</a></li>
             <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/${#authentication.principal.username}|}" href="/username">My Profile</a></li>
-            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/settings|}" href="/settings">Settings</a></li>
+            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY') and hasAnyRole('ROLE_HAS_SETTINGS','ROLE_ADMIN')"><a th:href="@{|/settings|}" href="/settings">Settings</a></li>
             
             <li th:each="menuItem : ${customMenu}" th:if="${#lists.isEmpty(menuItem.submenus)}">
             	<a th:href="@{|${menuItem.uri}|}" th:text="${menuItem.name}">menuItem.name</a>

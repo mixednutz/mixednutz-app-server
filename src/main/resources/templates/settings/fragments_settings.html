@@ -9,6 +9,7 @@
 		
 		<form th:action="@{|/settings|}" th:object="${form}" method="post">
 		
+		<div sec:authorize="hasRole('ROLE_ADMIN')">
 		<h2>Main Settings</h2>
 		
 			<div class="form-inline">
@@ -22,14 +23,14 @@
 					<small class="form-text text-muted">First page visiters will see</small>
 				</div>
 			</div>
-			
+		</div>
 		
 					
 		<h2>Profile Settings</h2>
 		
-			<div class="showCombinedExternalFeedsOnProfile form-check">
+			<div class="showCombinedExternalFeedsOnProfile form-check" sec:authorize="isAuthenticated() and hasAnyRole('ROLE_TIMELINE','ROLE_ADMIN')">
 				  <input class="form-check-input" type="checkbox" th:field="*{showCombinedExternalFeedsOnProfile}" id="showCombinedExternalFeedsOnProfile">
-				  <label class="form-check-label" for="showCombinedExternalFeedsOnProfile">Combine External Feeds for Home Tab</label>
+				  <label class="form-check-label" for="showCombinedExternalFeedsOnProfile">Combine External Feeds for Timeline</label>
 				  <small id="showCombinedExternalFeedsOnProfileHelp" class="form-text text-muted"></small>
 			</div>
 			
@@ -43,7 +44,7 @@
 		
 		<hr/>
 		
-		
+		<div sec:authorize="hasRole('ROLE_ADMIN')">
 		<h3>Custom Menu</h3>
 		
 		<form class="form-inline" th:action="@{|/settings/menu/update|}" th:object="${menuForm}" method="post">
@@ -129,6 +130,7 @@
 			</div>
 		</div>
 		
+		</div>
 	</div>
 	
    	

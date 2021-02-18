@@ -7,7 +7,7 @@
   <body>
   
   	<div th:fragment="timeline_input">
-  		
+  		<div sec:authorize="isAuthenticated() and hasAnyRole('ROLE_CAN_POST','ROLE_ADMIN')">
   		<div id="timeline_input_templates" class="hidden">
   		
   			<div id="home_input_template">
@@ -24,14 +24,14 @@
   		</div>
   		
   		<div id="timeline_inputs" class="hidden"></div>
-  		
+  		</div>
   	</div>
   
   	<div th:fragment="timeline" class="timeline">
   	  	
   		<div th:replace="main/fragments_main :: timeline_tabs">tabs</div>
 	    
-	    <div th:replace="main/fragments_main :: timeline_input">input</div>
+	    <div sec:authorize="hasRole('ROLE_ADMIN')" th:replace="main/fragments_main :: timeline_input">input</div>
 	    
 	    	  			
   		<div id="elements"></div>

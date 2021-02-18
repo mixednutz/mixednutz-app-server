@@ -7,7 +7,7 @@
   <body>
   
   	<div th:fragment="timeline_input">
-		<div sec:authorize="isAuthenticated()" >
+		<div sec:authorize="isAuthenticated() and hasAnyRole('ROLE_CAN_POST','ROLE_ADMIN')">
 		<div id="timeline_input_templates" hidden="hidden">
 
 			<div id="home_input_template">
