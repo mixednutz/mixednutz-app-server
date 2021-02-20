@@ -15,11 +15,7 @@
                     <name>GitHub MixedNutz Apache Maven Packages</name>
                     <url>https://maven.pkg.github.com/mixednutz</url>
                 </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>github</id>
-            <repositories>
+
                 <repository>
                     <id>github-apfesta-ioutils</id>
                     <name>GitHub MixedNutz Apache Maven Packages</name>
