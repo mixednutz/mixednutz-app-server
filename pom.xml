@@ -34,9 +34,14 @@
 			<id>github</id>
 			<url>https://maven.pkg.github.com/apfesta/IOUtils</url>
 			<releases><enabled>true</enabled></releases>
-       		<snapshots><enabled>false</enabled></snapshots>
+       		<snapshots><enabled>true</enabled></snapshots>
 		</repository>
-				
+		<repository>
+			<id>github-mixednutz-java-api-core</id>
+			<url>https://maven.pkg.github.com/mixednutz/mixednutz-java-api-core</url>
+			<releases><enabled>true</enabled></releases>
+       		<snapshots><enabled>true</enabled></snapshots>
+		</repository>		
 	</repositories>
 
 	<properties>
