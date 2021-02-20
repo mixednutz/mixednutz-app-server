@@ -34,7 +34,7 @@
 			<id>github-apfesta-ioutils</id>
 			<url>https://maven.pkg.github.com/apfesta/IOUtils</url>
 			<releases><enabled>true</enabled></releases>
-       		<snapshots><enabled>true</enabled></snapshots>
+       		<snapshots><enabled>false</enabled></snapshots>
 		</repository>
 		
 		<repository>
