@@ -55,6 +55,12 @@
 			<releases><enabled>true</enabled></releases>
        		<snapshots><enabled>true</enabled></snapshots>
 		</repository>
+		<repository>
+			<id>github-apfesta-ioutils</id>
+			<url>https://maven.pkg.github.com/apfesta/IOUtils</url>
+			<releases><enabled>true</enabled></releases>
+       		<snapshots><enabled>true</enabled></snapshots>
+		</repository>
 	</repositories>
 
 	<properties>
@@ -67,7 +73,7 @@
 		<mixednutz-app-series.version>2.0.0-SNAPSHOT</mixednutz-app-series.version>
 		<mixednutz-java-api-core.version>2.0.0-SNAPSHOT</mixednutz-java-api-core.version>
 		<mixednutz-java-api-twitter.version>2.0.0-SNAPSHOT</mixednutz-java-api-twitter.version>
-		<io-utils.version>0.2.2</io-utils.version>
+		<io-utils.version>0.2.3</io-utils.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
 		
