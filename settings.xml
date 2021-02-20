@@ -17,7 +17,7 @@
                 </repository>
 
                 <repository>
-                    <id>github-apfesta-ioutils</id>
+                    <id>github-apfesta</id>
                     <name>GitHub MixedNutz Apache Maven Packages</name>
                     <url>https://maven.pkg.github.com/apfesta</url>
                 </repository>
@@ -38,6 +38,11 @@
         </server>
         <server>
             <id>github-mixednutz-java-api-core</id>
+            <username>${env.GITHUB_USERNAME}</username>
+            <password>${env.GITHUB_TOKEN}</password>
+        </server>
+        <server>
+            <id>github-apfesta-ioutils</id>
             <username>${env.GITHUB_USERNAME}</username>
             <password>${env.GITHUB_TOKEN}</password>
         </server>
