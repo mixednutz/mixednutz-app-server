@@ -31,13 +31,13 @@
 	
 	<repositories>
 		<repository>
-			<id>github</id>
+			<id>github-apfesta-ioutils</id>
 			<url>https://maven.pkg.github.com/apfesta/IOUtils</url>
 			<releases><enabled>true</enabled></releases>
        		<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 		<repository>
-			<id>github-mixednutz-java-api</id>
+			<id>github</id>
         	<name>GitHub Mixednutz Apache Maven Packages</name>
 			<url>https://maven.pkg.github.com/mixednutz/mixednutz-java-api</url>
 			<releases><enabled>true</enabled></releases>
