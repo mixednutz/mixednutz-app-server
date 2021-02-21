@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -32,7 +33,7 @@ import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("jpa-dev")
-@DataJpaTest
+//@DataJpaTest
 @Category(IntegrationTest.class)
 public class ExternalFeedContentRepositoryIntegrationTest {
 	
@@ -95,6 +96,7 @@ public class ExternalFeedContentRepositoryIntegrationTest {
 		return element;
 	}
 
+	@Ignore
 	@Test
 	public void test() {
 		AbstractFeed feed = externalFeedRepository.save(createFeed());

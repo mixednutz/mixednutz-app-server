@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -32,17 +33,17 @@ import net.mixednutz.app.server.repository.UserRepository;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("jpa-dev")
-@DataJpaTest
+//@DataJpaTest
 @Category(IntegrationTest.class)
 public class JournalTest {
 	
-	@Autowired
+//	@Autowired
 	private JournalRepository repository;
 	
-	@Autowired
+//	@Autowired
 	private UserRepository userRepository;
 	
-	@PersistenceContext
+//	@PersistenceContext
 	private EntityManager em;
 	
 	User user;
@@ -59,6 +60,7 @@ public class JournalTest {
 		user2 = userRepository.save(user2);
 	}
 	
+	@Ignore
 	@Test
 	public void findById() {
 		
@@ -96,6 +98,7 @@ public class JournalTest {
 		assertTrue(result.isPresent());
 	}
 	
+	@Ignore
 	@Test
 	public void getMyPosts() {
 		
@@ -135,6 +138,7 @@ public class JournalTest {
 		
 	}
 
+	@Ignore
 	@Test
 	public void getUsersPosts() {
 		
