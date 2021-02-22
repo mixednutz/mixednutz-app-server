@@ -36,4 +36,4 @@ jobs:
         
     - name: Build Docker image with Maven just to make sure it works
       run: |
-        mvn docker:build -DpushImageTag
+        mvn docker:build
