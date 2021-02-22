@@ -54,7 +54,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		
 		<mixednutz-app-core.version>2.0.0-SNAPSHOT</mixednutz-app-core.version>
@@ -71,15 +71,22 @@
 		<version.bootstrap-modal>2.2.5</version.bootstrap-modal>
 		<version.bootstrap-notifications>1.0.3</version.bootstrap-notifications>
 		<version.bootstrap-wysiwyg>1.0.5</version.bootstrap-wysiwyg>
+		<version.font-awesome>5.15.2</version.font-awesome>
 		<version.idb-keyval>3.0.5</version.idb-keyval>
 		<version.jquery>3.1.1</version.jquery>
 		<version.jquery-easing>1.3</version.jquery-easing>
 		<version.jquery-ui>1.12.1</version.jquery-ui>
 		<version.jQuery.Hotkeys>0.2.0</version.jQuery.Hotkeys>
 		<version.modernizr>2.8.3-1</version.modernizr>
+		<version.rome>1.8.0</version.rome>
 		<version.snackbarjs>1.1.0</version.snackbarjs>
 		
-		<docker.image.prefix>apfesta</docker.image.prefix>
+		<docker.repository.name>apfesta</docker.repository.name>
+		<docker.image.name>${project.artifactId}</docker.image.name>
+		<docker.src>src/main/docker</docker.src>
+		
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
 	</properties>
 
 	<dependencies>
@@ -175,7 +182,13 @@
 	    <dependency>
 		    <groupId>com.rometools</groupId>
 		    <artifactId>rome</artifactId>
-		    <version>1.8.0</version>
+		    <version>${version.rome}</version>
+		</dependency>
+		
+		<!-- JAXB API for Java 8 compatibility -->
+		<dependency>
+		    <groupId>javax.xml.bind</groupId>
+		    <artifactId>jaxb-api</artifactId>
 		</dependency>
 						
 		<!-- WebJars -->
@@ -238,7 +251,7 @@
 		    <artifactId>jquery-easing</artifactId>
 		    <version>${version.jquery-easing}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.webjars.bower</groupId>
 			<artifactId>jquery-ui</artifactId>
 			<version>${version.jquery-ui}</version>
@@ -248,7 +261,7 @@
 					<artifactId>jquery</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.webjars.bower</groupId>
 			<artifactId>snackbarjs</artifactId>
@@ -284,18 +297,17 @@
 			<artifactId>idb-keyval</artifactId>
 			<version>${version.idb-keyval}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>modernizr</artifactId>
 			<version>${version.modernizr}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
-			<version>5.15.2</version>
+			<version>${version.font-awesome}</version>
 		</dependency>
 	    
-
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -323,10 +335,12 @@
 
 	<build>
 		<plugins>
+			<!-- Spring Boot Plugin -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId> 
@@ -334,6 +348,54 @@
         			<excludedGroups>net.mixednutz.app.server.IntegrationTest</excludedGroups>
     			</configuration>
 			 </plugin>
+			 
+			 <!-- Docker Plugin -->
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<useConfigFile>true</useConfigFile>
+					<imageName>${docker.repository.name}/${docker.image.name}</imageName>
+					<forceTags>true</forceTags>
+					<imageTags>
+						<imageTag>${project.version}</imageTag>
+						<imageTag>latest</imageTag>
+					</imageTags>
+					<dockerDirectory>${project.build.directory}/docker-ready</dockerDirectory>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+			
+			<!-- Resource filtering for docker directory -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-dockerfile</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/docker-ready</outputDirectory>
+							<escapeString>\</escapeString>
+							<resources>
+								<resource>
+									<directory>${docker.src}</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			 			
 		</plugins>
 	</build>
@@ -348,26 +410,7 @@
 			
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>com.spotify</groupId>
-						<artifactId>dockerfile-maven-plugin</artifactId>
-						<version>1.3.4</version>
-						<executions>
-							<execution>
-								<id>default</id>
-								<goals>
-									<goal>build</goal>
-									<!-- The 'push' didn't work for me, so I push manually instead. 
-									<goal>push</goal> 
-									-->
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<repository>${docker.image.prefix}/${project.artifactId}</repository>
-							<tag>${project.version}</tag>
-						</configuration>
-					</plugin>
+					
 				</plugins>
 			</build>
 			
