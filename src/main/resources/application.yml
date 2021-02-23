@@ -1,6 +1,7 @@
 spring: 
   
   profiles.active: jpa-dev, db-local-hsqldb, uploads-dev, mixednutz_base, twitter, aws-local
+#  profiles.active: jpa-dev, db-local-hsqldb-file, uploads-dev, twitter, aws-local
   
   data:
     rest:
@@ -87,6 +88,7 @@ spring:
     show-sql: true
     hibernate:
       naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
+      ddl-auto: update
     properties: 
       hibernate:
         hbm2ddl.auto: create-only
@@ -111,7 +113,6 @@ spring:
     url: jdbc:mysql://${MYSQL_DB_HOST}:${MYSQL_DB_PORT}/${MYSQL_DB_NAME}
     username: ${MYSQL_DB_USERNAME}
     password: ${MYSQL_DB_PASSWORD}
-    driverClassName: com.mysql.jdbc.Driver
     testOnBorrow: true
     testWhileIdle: true
     validationQuery: SELECT 1
@@ -127,6 +128,22 @@ spring:
 spring:
   profiles: db-local-hsqldb
   # This profile is for in-memory database
+  
+  jpa: 
+    properties: 
+      hibernate: 
+        dialect: net.mixednutz.app.server.extensions.hibernate.CustomHsqlDialect
+
+---
+spring:
+  profiles: db-local-hsqldb-file
+  # This profile is for file database
+
+  #datasource:
+  #  url: jdbc:hsqldb:file:data/mydb
+  #  username: SA
+  #  password: test
+  #  driverClassName: org.hsqldb.jdbc.JDBCDriver
   
   jpa: 
     properties: 
