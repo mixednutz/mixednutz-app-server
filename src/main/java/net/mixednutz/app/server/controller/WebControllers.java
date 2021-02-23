@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,6 +30,8 @@ import net.mixednutz.app.server.repository.MenuItemRepository;
 
 @ControllerAdvice(basePackages={"net.mixednutz.app.server.controller.web"})
 public class WebControllers {
+	
+	private static Logger LOG = LoggerFactory.getLogger(WebControllers.class);
 	
 	@Autowired
 	private NotificationApiController notificationController;
@@ -58,7 +62,12 @@ public class WebControllers {
 	
 	@ModelAttribute("emojiByCategory")
 	public Map<EmojiCategory, List<Emoji>> emojiByCategory() {
-		return emojiManager.findOrganizeByCategory();
+		try {
+			return emojiManager.findOrganizeByCategory();
+		} catch (Exception e) {
+			LOG.warn("Unable to load emoji", e);
+		}
+		return Collections.emptyMap();
 	}
 	
 	@ModelAttribute("customMenu")
