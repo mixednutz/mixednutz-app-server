@@ -29,16 +29,13 @@ jobs:
         GITHUB_USERNAME: ${{ secrets.MY_USERNAME }}
         GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
     - name: Log in to Docker Hub registry
       run: echo '${{ secrets.DOCKER_HUB_TOKEN }}' | docker login --username  ${{ secrets.DOCKER_USER_NAME }} --password-stdin
         
-    - name: Build Docker image with Maven just to make sure it works
+    - name: Build Docker image with Maven
       run: |
-        mvn docker:build
+        mvn docker:build -DpushImageTag
+
+
 
 
