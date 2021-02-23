@@ -53,6 +53,7 @@
     
      <!-- Google Analytics JavaScript 
  	================================================== --> 
+    <script async th:src="@{|https://www.googletagmanager.com/gtag/js?id=#{google.analytics.trackingId}|}"></script>
     <script th:replace="google_analytics :: tracking"></script>
 </body>
 </html>
