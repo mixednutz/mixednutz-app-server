@@ -374,10 +374,10 @@
 	color: #AAB8C2;
 }
 
-.timeline .MsgThread .fa-smile-o,
-.timeline .Journal .fa-smile-o,
-.timeline .Album .fa-smile-o,
-.timeline .Photo .fa-smile-o {
+.timeline .MsgThread .fa-smile,
+.timeline .Journal .fa-smile,
+.timeline .Album .fa-smile,
+.timeline .Photo .fa-smile {
 	color: #AAB8C2;
 }
 
@@ -387,12 +387,12 @@
 .timeline .Photo .action-group .fa-share-alt {
 	color: #FFFFFF;
 }
-.timeline .MsgThread .action-group .fa-smile-o, 
-.timeline .Journal .action-group .fa-smile-o, 
-.timeline .Album .action-group .fa-smile-o, 
-.timeline .Photo .action-group .fa-smile-o,
-.timeline .SharedContent .action-group .fa-smile-o,
-.timeline .Poll .action-group .fa-smile-o {
+.timeline .MsgThread .action-group .fa-smile, 
+.timeline .Journal .action-group .fa-smile, 
+.timeline .Album .action-group .fa-smile, 
+.timeline .Photo .action-group .fa-smile,
+.timeline .SharedContent .action-group .fa-smile,
+.timeline .Poll .action-group .fa-smile {
 	color: #FFFFFF;
 }
 .timeline .MsgThread .share_background, 
