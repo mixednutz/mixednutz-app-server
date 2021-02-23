@@ -68,4 +68,16 @@ public class TwitterComponentSettings implements ComponentSettings {
 		return null;
 	}
 
+	@Override
+	public boolean css() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String cssHref() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
