@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @Category(IntegrationTest.class)
-@SpringBootTest
+//@SpringBootTest
 public class MixednutzAppServerApplicationTests {
 
 	@Test

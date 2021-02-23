@@ -29,7 +29,7 @@ import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.ExternalFeedTimelineElementRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+//@SpringBootTest
 @Category(IntegrationTest.class)
 @Transactional
 public class FeedPollerIntegrationTest {
@@ -125,7 +125,7 @@ public class FeedPollerIntegrationTest {
 	}
 	
 	@Test
-//	@Ignore
+	@Ignore
 	public void testPollTwitter() {
 		createTwitterFeed();
 		

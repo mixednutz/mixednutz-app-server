@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -26,7 +27,7 @@ import net.mixednutz.app.server.manager.impl.EmojiManagerImpl;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("jpa-dev")
-@DataJpaTest
+//@DataJpaTest
 @Category(IntegrationTest.class)
 @Import(EmojiManagerImpl.class)
 public class EmojiCategoryRepositoryIntegrationTest {
@@ -42,6 +43,7 @@ public class EmojiCategoryRepositoryIntegrationTest {
 	@PersistenceContext
 	EntityManager em;
 	
+	@Ignore
 	@Test
 	public void test() {
 		Map<EmojiCategory, List<Emoji>> emojis = emojiManager.findOrganizeByCategory();
