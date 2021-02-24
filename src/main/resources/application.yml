@@ -108,6 +108,11 @@ spring:
   profiles: db-docker-mysql
   # This profile is for Docker containers  the database login configuration is abstracted out to the enviroment.
 
+  jpa: 
+    properties: 
+      hibernate: 
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
   datasource: 
     platform: mysql
     url: jdbc:mysql://${MYSQL_DB_HOST}:${MYSQL_DB_PORT}/${MYSQL_DB_NAME}
