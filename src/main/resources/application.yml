@@ -91,7 +91,7 @@ spring:
       ddl-auto: update
     properties: 
       hibernate:
-        hbm2ddl.auto: create-only
+        hbm2ddl.auto: update
       
 ---
 spring:
