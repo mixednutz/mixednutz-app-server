@@ -311,6 +311,11 @@ public class BaseJournalController {
 		return journalRepository.save(entity);
 	}
 	
+	protected void incrementHitCount(Journal entity) {
+		entity.incrementHitCount();
+		journalRepository.save(entity);
+	}
+	
 	protected void delete(Long journalId, User user) {
 		Journal entity = journalRepository.findById(journalId).orElseThrow(()->{
 			return new ResourceNotFoundException("");
