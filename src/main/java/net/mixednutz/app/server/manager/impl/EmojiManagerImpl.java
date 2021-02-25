@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -51,7 +52,7 @@ public class EmojiManagerImpl implements EmojiManager {
 	
 	@Cacheable("emoji")
 	public Map<EmojiCategory, List<Emoji>> findOrganizeByCategory() {
-		Map<EmojiCategory, List<Emoji>> map = new LinkedHashMap<EmojiCategory, List<Emoji>>();
+		Map<EmojiCategory, List<Emoji>> map = new HashMap<EmojiCategory, List<Emoji>>();
 		for (Emoji emoji: emojiRepository.findAllByOrderBySortId()) {
 			EmojiCategory cat = emoji.getSubCategory().getParentCategory();
 			if (!map.containsKey(cat)) {
@@ -59,7 +60,15 @@ public class EmojiManagerImpl implements EmojiManager {
 			}
 			map.get(cat).add(emoji);
 		}
-		return map;
+		//Resort the map
+		return map.entrySet().stream()
+			//sort by EmojiCategory.getId
+			.sorted((e1, e2) -> e1.getKey().getId().compareTo(e2.getKey().getId()))
+			//collect into a new LinkedHashMap
+			.collect(Collectors.toMap(
+				Map.Entry::getKey, 
+				Map.Entry::getValue, 
+				(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 	}
 
 	protected Iterable<Emoji> readEmojiData() throws IOException {
