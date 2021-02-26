@@ -103,7 +103,7 @@
 	</div>
 	
 	<div th:fragment="navbar_login">
-		<style th:replace="fragments_custom_css :: navbar"></style>
+		<style th:replace="~{fragments_custom_css :: navbar} ?: _"></style>
 		<nav class="navbar navbar-default navbar-static-top">
 	      <div class="container">
 	        <div class="navbar-header">
