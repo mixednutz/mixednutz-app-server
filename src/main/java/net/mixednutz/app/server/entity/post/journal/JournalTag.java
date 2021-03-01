@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.AbstractTag;
 
@@ -33,6 +35,7 @@ public class JournalTag extends AbstractTag {
 		super(TYPE);
 	}
 
+	@JsonIgnore
 	@ManyToOne()
 	@JoinColumn(name="journal_id")
 	@NotFound(action=NotFoundAction.IGNORE)

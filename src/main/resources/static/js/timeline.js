@@ -345,12 +345,26 @@ function buildInternalTimelineElement(element) {
  	//TODO re-implement resharing
  	template.find(".reshared").remove();
  	
+ 	if (element.tags!=null) {
+ 		populateTags(template.find(".tags-list"), element.tags);
+ 	}
  	if (element.reactions!=null) {
  		populateReactions(template.find(".reactions-list"), element.reactions);
  	}
  	
 	
 	return template;
+}
+
+function populateTags(appendTo, tags) {
+	if (tags.length==0) {
+		appendTo.parent().remove();
+	}
+	$.each(tags, function(index, tagCount) {
+		var comma = index+1<tags.length ? ', ' : '';
+		var tag = tagCount.name;
+		$("<span class='tag tag_"+tag+"'>"+tag+comma+"</span>").appendTo(appendTo);
+	});	
 }
 
 function populateReactions(appendTo, reactions) {
@@ -363,3 +377,5 @@ function populateReactions(appendTo, reactions) {
 		$("<span class='emoji reaction'>"+emojiCode+spacer+"</span>").appendTo(appendTo);
 	});	
 }
+
+

@@ -7,7 +7,7 @@
   <body>
   
   	<div
-		th:fragment="post_options (post, crosspostFeedsMap, showCommentsAllowed, showPublishDate, showCrosspostOptions, isEdit)">
+		th:fragment="post_options (post, crosspostFeedsMap, showCommentsAllowed, showPublishDate, showTags, showCrosspostOptions, isEdit)">
 		<div class="form-group">
 			<label>To Timeline:</label>
 			<select name='group_id' class="form-control">
@@ -75,7 +75,7 @@
 			</div>
 		</div>
 		
-		<div class="form-group">
+		<div class="form-group" th:if="${showTags}">
 			<label for="tagsString">Tags</label> <input class="form-control"
 				id="tagsString" name="tagsString" size="50" type="text"
 				th:value="${isEdit?tagsString:''}"

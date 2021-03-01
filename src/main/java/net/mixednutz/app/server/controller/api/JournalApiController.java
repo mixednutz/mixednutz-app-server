@@ -14,7 +14,9 @@ import net.mixednutz.app.server.controller.BaseJournalController;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalReaction;
+import net.mixednutz.app.server.entity.post.journal.JournalTag;
 import net.mixednutz.app.server.manager.ReactionManager;
+import net.mixednutz.app.server.manager.TagManager;
 import net.mixednutz.app.server.repository.EmojiRepository;
 
 @Controller
@@ -83,6 +85,66 @@ public class JournalApiController extends BaseJournalController {
 			return reaction;
 		}
 		
+	}
+	
+	//------------
+	// Tags Mappings
+	//------------
+	
+	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/tag/toggle", method = RequestMethod.POST)
+	public @ResponseBody JournalTag toggleTag(
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@RequestParam(value="tag") String tagString,
+			@AuthenticationPrincipal final User user) {
+		final Journal journal = get(username, year, month, day, subjectKey);
+		
+		JournalTag tag =  tagManager.toggleTag(tagString, journal.getTags(), journal.getAuthor(), 
+				user, new TagManager.NewTagCallback<JournalTag>(){
+			@Override
+			public JournalTag createTag(String tagString) {
+				if (user.equals(journal.getAuthor())) {
+					return new JournalTag(journal, tagString);
+				}
+				return new JournalTag(journal, tagString, user);
+			}});
+		journalRepository.save(journal);
+		return tag;
+	}
+	
+	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/tag", method = RequestMethod.POST)
+	public @ResponseBody Collection<JournalTag> apiNewTag(
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@RequestParam(value="tagsString") String tagsString,
+			@AuthenticationPrincipal final User user) {
+		final Journal journal = get(username, year, month, day, subjectKey);
+		
+		String[] tagArray = tagManager.splitTags(tagsString);
+		Collection<JournalTag> addedTags = addTags(tagArray, journal, user);
+		journalRepository.save(journal);
+		return addedTags;
+	}
+	
+	/**
+	 * Adds tags to the thread that are not already in there
+	 * 
+	 * @param tagArray
+	 * @param thread
+	 */
+	protected Collection<JournalTag> addTags(final String[] tagArray, final Journal journal, 
+			final User currentUser) {
+		return tagManager.addTags(tagArray, journal.getTags(), journal.getAuthor(), 
+				currentUser, new TagManager.NewTagCallback<JournalTag>(){
+			@Override
+			public JournalTag createTag(String tagString) {
+				if (currentUser.equals(journal.getAuthor())) {
+					return new JournalTag(journal, tagString);
+				}
+				return new JournalTag(journal, tagString, currentUser);
+			}});
 	}
 
 }

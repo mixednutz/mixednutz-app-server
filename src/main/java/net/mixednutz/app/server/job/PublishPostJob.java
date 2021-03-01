@@ -52,13 +52,18 @@ public class PublishPostJob {
 			
 			InternalTimelineElement exportableEntity = 
 					apiManager.toTimelineElement(post, null, networkInfo.getBaseUrl());
+			String[] tags = null;
+			if (exportableEntity.getTags()!=null) {
+				tags = exportableEntity.getTags().stream()
+						.map((t->t.getName())).toArray(size->new String[size]);	
+			}
 			if (scheduledPost.getExternalFeedId()!=null) {
 				for (Long feedId: scheduledPost.getExternalFeedId()) {
 					AbstractFeed feed= externalFeedRepository.findById(feedId).get();
 					externalFeedManager.crosspost(feed, 
 							exportableEntity.getTitle(), 
 							exportableEntity.getUrl(), 
-							null);
+							tags);
 				}
 			}
 			
