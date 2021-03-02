@@ -12,6 +12,10 @@
 	        <div class="copyright text-muted">
 	            <p>&copy; 2021 <span th:text="#{site.copyright.name}">site.copyright.name</span>.<br/>
 	            <span th:text="#{site.copyright.text}">site.copyright.text</span></p>
+	            
+	            <small><span th:text="#{site.title}">site.title</span> uses the MixedNutz social network platform.<br/>
+				Version <span th:text="#{version}"></span> 
+				Build date <span th:text="${#temporals.format(T(java.time.ZonedDateTime).parse(#messages.msg('build.date').trim()).toLocalDateTime(), 'E, d MMM yyyy HH:mm')}">N/A</span></small>
 	        </div>
         </div>
   	</footer>
