@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +67,7 @@ public class TagManagerImpl implements TagManager{
 	}
 	
 	public <T extends AbstractTag> void mergeTags(String[] tagArray, 
-			Set<T> tags, NewTagCallback<T> callback) {
+			Set<T> tags, Function<String, T> callback) {
 		
 		Collection<AbstractTag> tagsToRemove = new ArrayList<>(tags);
 		for (String tagString : tagArray) {
@@ -82,7 +83,7 @@ public class TagManagerImpl implements TagManager{
 			}
 			if (existingTag==null) {
 				//New tag
-				tags.add(callback.createTag(tagString));
+				tags.add(callback.apply(tagString));
 			}
 		}
 		//Removed tags
@@ -94,7 +95,7 @@ public class TagManagerImpl implements TagManager{
 	}
 	
 	public <T extends AbstractTag> Collection<T> addTags(String[] tagArray, Set<T> tags, 
-			User author, User currentUser, NewTagCallback<T> callback) {
+			User author, User currentUser, Function<String, T> callback) {
 		List<T> addedTags = new ArrayList<T>();
 		for (String tagString : tagArray) {
 			AbstractTag existingTag = null;
@@ -106,7 +107,7 @@ public class TagManagerImpl implements TagManager{
 				}
 			}
 			if (existingTag==null) {
-				final T newtag = callback.createTag(tagString);
+				final T newtag = callback.apply(tagString);
 				tags.add(newtag);
 				addedTags.add(newtag);
 			}
@@ -115,7 +116,7 @@ public class TagManagerImpl implements TagManager{
 	}
 	
 	public <T extends AbstractTag> T toggleTag(String tagString, Set<T> tags, 
-			User author, User currentUser, NewTagCallback<T> callback) {
+			User author, User currentUser, Function<String, T> callback) {
 		for (AbstractTag tag: tags) {
 			if (tag.getTag().equals(tagString)
 					&& userOwnsTag(tag, author, currentUser)) {
@@ -123,7 +124,7 @@ public class TagManagerImpl implements TagManager{
 				return null;
 			}
 		}
-		T addedTag = callback.createTag(tagString);
+		T addedTag = callback.apply(tagString);
 		tags.add(addedTag);
 		return addedTag;
 	}
