@@ -5,107 +5,113 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
   <body>
- 
-  	
-  	
- 	<nav th:fragment="navbar" class="navbar navbar-inverse navbar-static-top"> 
-      <div class="container">
-      
-      	<!-- Logo -->
-        <div class="navbar-header">
-          
-          
-          
-          <button sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" 
-          		type="button" class="navbar-toggle collapsed dropdown" data-toggle="collapse" data-target="#notificationbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle notifications</span>
-            
-            <a href="#notifications-panel" class="dropdown-toggle" data-toggle="dropdown">
-              <i th:attr="data-count=${notifications.size()}" class="glyphicon glyphicon-bell" th:classappend="${notifications.size()>0} ? notification-icon : no-notification"></i>
-            </a>
-            <div class="dropdown-container dropdown-position-bottomright">
-	
-	              <div class="dropdown-toolbar">
-	                <div class="dropdown-toolbar-actions">
-	                  <a class="markAllAsRead" href="#">Mark all as read</a>
-	                </div>
-	                <h3 class="dropdown-toolbar-title">Notifications (<span th:text="${notifications.size()}"></span>)</h3>
-	              </div><!-- /dropdown-toolbar -->
-	
-	              <ul class="dropdown-menu notifications ">						
-	              </ul>
-	            </div><!-- /dropdown-container -->
-          </button>
-          
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <!-- Menu <i class="fa fa-bars"></i>-->
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          
-          <a class="navbar-brand" th:text="#{site.title}" href="#">MixedNutz</a>
-        </div>
-        
-        <!-- Main Menu -->
-        <div id="navbar" class="collapse navbar-collapse navbar-left">
-          <ul class="nav navbar-nav">
-          	<li class="hidden"><a href="#page-top"></a></li>
-          	<li><a th:href="@{|/|}" href="/">Home</a></li>
-            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY') and hasAnyRole('ROLE_TIMELINE','ROLE_ADMIN')"><a th:href="@{|/main|}" href="/main">My Timeline</a></li>
-            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/${#authentication.principal.username}|}" href="/username">My Profile</a></li>
-            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY') and hasAnyRole('ROLE_HAS_SETTINGS','ROLE_ADMIN')"><a th:href="@{|/settings|}" href="/settings">Settings</a></li>
-            
-            <li th:each="menuItem : ${customMenu}" th:if="${#lists.isEmpty(menuItem.submenus)}">
-            	<a th:href="@{|${menuItem.uri}|}" th:text="${menuItem.name}">menuItem.name</a>
-            </li>
-           	<li th:each="menuItem : ${customMenu}" th:if="${!#lists.isEmpty(menuItem.submenus)}" class="dropdown">
-           		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span th:text="${menuItem.name}">menuItem.name</span> <span class="caret"></span></a>
-           		<ul class="dropdown-menu">
-           			<li th:each="submenu: ${menuItem.submenus}"><a th:href="@{|${submenu.uri}|}" th:text="${submenu.name}">submenu.name</a></li>
-           		</ul>
-           	</li>
-            
-            
-            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/logout|}" href="/logout">Log Out</a></li>
-          	
-          	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/signup|}" href="/signup">Register</a></li>
-          	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/login|}" href="/login">Log in</a></li>
-          	
-          	<li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" class="hidden-xs dropdown dropdown-notifications">
+   	
+   	<div th:fragment="navbar">
+	   	<style th:replace="~{fragments_custom_css :: navbar} ?: _"></style>
+	 	<nav class="navbar navbar-default navbar-static-top"> 
+	 	  
+	      <div class="container">
+	      
+	      	<!-- Logo -->
+	        <div class="navbar-header">
+	          
+	          
+	          
+	          <button sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" 
+	          		type="button" class="navbar-toggle collapsed dropdown" data-toggle="collapse" data-target="#notificationbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle notifications</span>
+	            
 	            <a href="#notifications-panel" class="dropdown-toggle" data-toggle="dropdown">
 	              <i th:attr="data-count=${notifications.size()}" class="glyphicon glyphicon-bell" th:classappend="${notifications.size()>0} ? notification-icon : no-notification"></i>
 	            </a>
-	
 	            <div class="dropdown-container dropdown-position-bottomright">
+		
+		              <div class="dropdown-toolbar">
+		                <div class="dropdown-toolbar-actions">
+		                  <a class="markAllAsRead" href="#">Mark all as read</a>
+		                </div>
+		                <h3 class="dropdown-toolbar-title">Notifications (<span th:text="${notifications.size()}"></span>)</h3>
+		              </div><!-- /dropdown-toolbar -->
+		
+		              <ul class="dropdown-menu notifications ">						
+		              </ul>
+		            </div><!-- /dropdown-container -->
+	          </button>
+	          
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <!-- Menu <i class="fa fa-bars"></i>-->
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          
+	          <a class="navbar-brand" th:text="#{site.title}" th:href="@{|/|}" href="/">MixedNutz</a>
+	        </div>
+	        
+	        <!-- Main Menu -->
+	        <div id="navbar" class="collapse navbar-collapse navbar-left">
+	          <ul class="nav navbar-nav">
+	          	<li class="hidden"><a href="#page-top"></a></li>
+	          	<li><a th:href="@{|/|}" href="/">Home</a></li>
+	            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY') and hasAnyRole('ROLE_TIMELINE','ROLE_ADMIN')"><a th:href="@{|/main|}" href="/main">My Timeline</a></li>
+	            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/${#authentication.principal.username}|}" href="/username">My Profile</a></li>
+	            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY') and hasAnyRole('ROLE_HAS_SETTINGS','ROLE_ADMIN')"><a th:href="@{|/settings|}" href="/settings">Settings</a></li>
+	            
+	            <li th:each="menuItem : ${customMenu}" th:if="${#lists.isEmpty(menuItem.submenus)}">
+	            	<a th:href="@{|${menuItem.uri}|}" th:text="${menuItem.name}">menuItem.name</a>
+	            </li>
+	           	<li th:each="menuItem : ${customMenu}" th:if="${!#lists.isEmpty(menuItem.submenus)}" class="dropdown">
+	           		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span th:text="${menuItem.name}">menuItem.name</span> <span class="caret"></span></a>
+	           		<ul class="dropdown-menu">
+	           			<li th:each="submenu: ${menuItem.submenus}"><a th:href="@{|${submenu.uri}|}" th:text="${submenu.name}">submenu.name</a></li>
+	           		</ul>
+	           	</li>
+	            
+	            
+	            <li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/logout|}" href="/logout">Log Out</a></li>
+	          	
+	          	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/signup|}" href="/signup">Register</a></li>
+	          	<li sec:authorize="!isAuthenticated() or hasRole('ROLE_INVITE_KEY')"><a th:href="@{|/login|}" href="/login">Log in</a></li>
+	          	
+	          	<li sec:authorize="isAuthenticated() and !hasRole('ROLE_INVITE_KEY')" class="hidden-xs dropdown dropdown-notifications">
+		            <a href="#notifications-panel" class="dropdown-toggle" data-toggle="dropdown">
+		              <i th:attr="data-count=${notifications.size()}" class="glyphicon glyphicon-bell" th:classappend="${notifications.size()>0} ? notification-icon : no-notification"></i>
+		            </a>
+		
+		            <div class="dropdown-container dropdown-position-bottomright">
+		
+		              <div class="dropdown-toolbar">
+		                <div class="dropdown-toolbar-actions">
+		                  <a class="markAllAsRead" href="#">Mark all as read</a>
+		                </div>
+		                <h3 class="dropdown-toolbar-title">Notifications (<span th:text="${notifications.size()}"></span>)</h3>
+		              </div><!-- /dropdown-toolbar -->
+		
+		              <ul class="dropdown-menu notifications">						
+		              </ul>
+		            </div><!-- /dropdown-container -->
+		          </li>
+	          </ul>
+	          
+	        </div><!--/.nav-collapse -->
+	        
+	        
+	        
+	      </div>
+		</nav>
+	</div>
 	
-	              <div class="dropdown-toolbar">
-	                <div class="dropdown-toolbar-actions">
-	                  <a class="markAllAsRead" href="#">Mark all as read</a>
-	                </div>
-	                <h3 class="dropdown-toolbar-title">Notifications (<span th:text="${notifications.size()}"></span>)</h3>
-	              </div><!-- /dropdown-toolbar -->
-	
-	              <ul class="dropdown-menu notifications">						
-	              </ul>
-	            </div><!-- /dropdown-container -->
-	          </li>
-          </ul>
-          
-        </div><!--/.nav-collapse -->
-        
-        
-        
-      </div>
-	</nav>
-	<nav th:fragment="navbar_login" class="navbar navbar-inverse navbar-static-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" th:text="#{site.title}" href="#">MixedNutz</a>
-        </div>
-      </div>
-	</nav>
+	<div th:fragment="navbar_login">
+		<style th:replace="~{fragments_custom_css :: navbar} ?: _"></style>
+		<nav class="navbar navbar-default navbar-static-top">
+	      <div class="container">
+	        <div class="navbar-header">
+	          <a class="navbar-brand" th:text="#{site.title}" th:href="@{|/|}" href="/">MixedNutz</a>
+	        </div>
+	      </div>
+		</nav>
+	</div>
 	<script th:fragment="navbar_js" th:inline="javascript">
 	/*<![CDATA[*/
 	var notificationHostName = /*[[@{|/|}]]*/ "/";

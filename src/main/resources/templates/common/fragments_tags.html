@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+  <body>
+  
+  	<div th:fragment="tags (uri)">
+		<span class="glyphicon glyphicon-tag"></span> Tags: <span
+			sec:authorize="!isAuthenticated()" class="tags-list"> <span
+			th:each="tagScore, iterStat : ${tagScores}"> <span
+				th:class="@{|tag tag_${tagScore.tag}|}"> <span
+					th:text="${tagScore.tag}">tagScore.tag</span> <span
+					th:class="@{|label ${tagScore.userIncluded?'label-info':'label-primary'} score|}"
+					th:text="${tagScore.score}">4</span><span th:if="${!iterStat.last}">,
+				</span>
+			</span>
+		</span>
+		</span> <span sec:authorize="isAuthenticated()" class="btn-group tag-btn-group"
+			role="group" th:attr="data-entity-uri=${uri!=null?uri:''}">
+			<button th:each="tagScore, iterStat : ${tagScores}"
+				th:class="@{|btn btn-xs ${tagScore.userIncluded?'btn-info':'btn-default'} tag_${tagScore.tag} toggleTag|}"
+				th:attr="data-tag=${tagScore.tag}" type="button">
+				<span th:text="${tagScore.tag}">tagScore.tag</span> <span
+					class="badge score" th:text="${tagScore.score}">4</span>
+			</button>
+			<button class="btn btn-xs btn-default newTag" type="button"
+				data-toggle="modal" data-target="#addTagsModal">New Tag...</button>
+		</span>
+	</div>
+	
+	<div th:fragment="addTags_modal">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">
+				<span>&times;</span>
+			</button>
+			<h4>Add Tags</h4>
+		</div>
+		<div class="modal-body">
+			<input type="hidden" class="currentEntityUri" />
+
+			<div class="form-inline">
+				<div class="form-group">
+					<label for="addtags_tagsString">Tag(s)</label> <input
+						id="addtags_tagsString" class="form-control" type="text"
+						name="tagsString" placeholder="Comma or space delimited" />
+				</div>
+			</div>
+		</div>
+
+		<div class="modal-footer">
+			<button class="btn addTag-btn" type="submit" name="submit"
+				data-dismiss="modal">Add</button>
+		</div>
+	</div>
+	
+	<script th:fragment="tags_JS" th:inline="javascript">
+		/*<![CDATA[*/
+
+		$('.newTag').on(
+				'click',
+				function(e) {
+					if ($(this).parent().data('entity-uri') != null) {
+						$('#addTagsModal .currentEntityUri').val(
+								$(this).parent().data('entity-uri'));
+					}
+				});
+
+		$('.tag-btn-group').on(
+				'click', '.toggleTag',
+				function(e) {
+					var entityUrl = $(this).parent().data('entity-uri');
+					var toggleUrl = entityUrl + '/tag/toggle';
+					var tagString = $(this).attr('data-tag');
+					var posturl = apiurl + toggleUrl + '?tag=' + tagString;
+					$.post(posturl, function(data, status) {
+						var score = parseInt($('.tag_' + tagString + ' .score')
+								.first().text(), 10);
+						if ($.trim(data)) {
+							$('button.tag_' + tagString).removeClass(
+									'btn-default').addClass('btn-info');
+							score++;
+						} else {
+							$('button.tag_' + tagString)
+									.removeClass('btn-info').addClass(
+											'btn-default');
+							score--;
+						}
+						$('.tag_' + tagString + ' .score').text(score);
+					});
+				});
+		$('.addTag-btn')
+				.on(
+						'click',
+						function(e) {
+							var entityUrl = $('#addTagsModal .currentEntityUri')
+									.val();
+							var tagUrl = entityUrl + '/tag';
+							var tagsString = $('#addtags_tagsString').val();
+							var posturl = apiurl + tagUrl + '?tagsString='
+									+ tagsString;
+							$
+									.post(
+											posturl,
+											function(data, status) {
+												for (i in data) {
+													var tagString = data[i].tag;
+													if ($('button.tag_'
+															+ tagString).length > 0) {
+														var score = parseInt(
+																$(
+																		'.tag_'
+																				+ tagString
+																				+ ' .score')
+																		.first()
+																		.text(),
+																10);
+														$(
+																'button.tag_'
+																		+ tagString)
+																.removeClass(
+																		'btn-default')
+																.addClass(
+																		'btn-info');
+														score++;
+														$(
+																'.tag_'
+																		+ tagString
+																		+ ' .score')
+																.text(score);
+													} else {
+														$(
+																'<button class="btn btn-xs btn-info tag_'+tagString+' toggleTag" data-tag="'+tagString+'" type="button">'
+																		+ '<span>'
+																		+ tagString
+																		+ '</span> <span class="badge score">1</span>')
+																.insertBefore(
+																		'button.newTag');
+													}
+												}
+											});
+						});
+		/*]]>*/
+	</script>
+  
+  </body>
+</html>

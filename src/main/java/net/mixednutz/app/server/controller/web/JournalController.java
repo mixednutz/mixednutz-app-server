@@ -39,6 +39,7 @@ public class JournalController extends BaseJournalController {
 			return new ResourceNotFoundException("");
 		});
 		getJournal(journal, auth,model);
+		incrementHitCount(journal);
 		return "journal/view";
 	}
 
@@ -48,6 +49,7 @@ public class JournalController extends BaseJournalController {
 			@PathVariable int day, @PathVariable String subjectKey, Authentication auth, Model model) {
 		Journal journal = get(username, year, month, day, subjectKey);
 		getJournal(journal, auth,model);
+		incrementHitCount(journal);
 		return "journal/view";
 	}
 	

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
@@ -152,6 +153,12 @@ public class NewExternalCredentialsController {
 		@Autowired
 		private List<ConnectInterceptor<?>> connectInterceptors;
 		
+		@Value("${applicationUrl:#{null}}")
+		@Override
+		public void setApplicationUrl(String applicationUrl) {
+			super.setApplicationUrl(applicationUrl);
+		}
+
 		@Autowired
 		public ConnectController(
 				ConnectionFactoryLocator connectionFactoryLocator,
