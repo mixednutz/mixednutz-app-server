@@ -72,6 +72,10 @@ page.updateExternalFeeds = function() {
   	  			$("#twitterComposeForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
   	  			$("#twitterReplyForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
   	  		}
+  	  		if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("discord")) {
+  	  			$("#discordComposeForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
+  	  			$("#discordReplyForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
+  	  		}
   	  		
 			//clear memory
 			crosspostItem.remove();
@@ -207,6 +211,11 @@ page.setupProfile = function() {
 			$('.socmed-author-discord a').attr('href','https://discord.gg/'+page.ownerBundle.user.profileData.discordInviteCode);
 		} else {
 			$('.socmed-author-discord').remove();
+		}
+		if (page.ownerBundle.user.profileData.deviantArtUsername!=null) {
+			$('.socmed-author-deviantart a').attr('href','https://deviantart.com/'+page.ownerBundle.user.profileData.deviantArtUsername);
+		} else {
+			$('.socmed-author-deviantart').remove();
 		}
 		//if (page.ownerBundle.page.instagramAccount!=null) {
 		//	$('.socmed-author-instagram a').attr('href',page.ownerBundle.page.instagramAccount.userProfileUrl.href);

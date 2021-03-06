@@ -1,6 +1,6 @@
 spring: 
   
-  profiles.active: jpa-dev, db-local-hsqldb, uploads-dev, mixednutz_base, twitter, aws-local
+  profiles.active: jpa-dev, db-local-hsqldb, uploads-dev, mixednutz_base, twitter, discord, aws-local
 #  profiles.active: jpa-dev, db-local-hsqldb-file, uploads-dev, twitter, aws-local
   
   data:
@@ -62,6 +62,17 @@ mixednutz:
       consumer-key: ${TWITTER_CONSUMER_KEY}
       consumer-secret: ${TWITTER_CONSUMER_SECRET}
       
+---
+# Optionally link up with Discord
+spring:
+  profiles: discord
+  
+mixednutz:
+  social: 
+    discord:
+      token: ${DISCORD_TOKEN}
+      default-channel-id: ${DISCORD_CHANNEL_ID}
+
 ---
 spring:
   profiles: ssl

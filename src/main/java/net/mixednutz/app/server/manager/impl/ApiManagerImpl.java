@@ -359,6 +359,10 @@ public class ApiManagerImpl implements ApiManager{
 		public String getDiscordInviteCode() {
 			return userProfile.getDiscordInviteCode();
 		}
+
+		public String getDeviantArtUsername() {
+			return userProfile.getDeviantArtUsername();
+		}
 				
 	}
 

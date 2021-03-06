@@ -103,6 +103,7 @@
 				<span class="socmed-author socmed-author-linkedin"><a href="#" target="_blank" ><i class="fa fa-linkedin fa-2x"></i></a></span>
 				<span class="socmed-author socmed-author-pinterest"><a href="#" target="_blank" ><i class="fa fa-pinterest fa-2x"></i></a></span> -->
 				<span class="socmed-author socmed-author-discord"><a target="_blank" ><i class="fab fa-discord fa-2x"></i></a></span>
+				<span class="socmed-author socmed-author-deviantart"><a target="_blank" ><i class="fab fa-deviantart fa-2x"></i></a></span>
 			</div>
 		</div>
   	</div>
@@ -129,6 +130,7 @@
 						<span class="socmed-author socmed-author-linkedin"><a href="#" target="_blank" ><i class="fa fa-linkedin fa-2x"></i></a></span>
 						<span class="socmed-author socmed-author-pinterest"><a href="#" target="_blank" ><i class="fa fa-pinterest fa-2x"></i></a></span> -->
 						<span th:if="${profile.discordInviteCode!=null}" class="socmed-author socmed-author-discord"><a th:href="@{|${#messages.msg('discordInviteUrlPrefix')+profile.discordInviteCode}|}" href="#" target="_blank" ><i class="fab fa-discord fa-2x"></i></a></span>
+						<span th:if="${profile.deviantArtUsername!=null}" class="socmed-author socmed-author-deviantart"><a th:href="@{|${#messages.msg('deviantArtUrlPrefix')+profile.deviantArtUsername}|}" href="#" target="_blank" ><i class="fab fa-discord fa-2x"></i></a></span>
 					</div>
 				</div>
 			</div>
@@ -198,6 +200,16 @@
 					<input id="discordInviteCode" type="text" th:field="*{discordInviteCode}" class="form-control" />
 				</div>
 				<small id="discordInviteCode_help" class="form-text text-muted" th:text="#{form.discordInviteCode.help}">form.discordInviteCode.help</small>
+			</div>
+			
+			<!-- DeviantArt Username -->
+			<div class="deviantArt form-group">
+				<label for="deviantArtUsername" th:text="#{form.deviantArtUsername.label}">form.pronouns.label</label>
+				<div class="input-group">
+					<div class="input-group-addon" th:text="#{deviantArtUrlPrefix}">deviantArtUrlPrefix</div>
+					<input id="discordInviteCode" type="text" th:field="*{deviantArtUsername}" class="form-control" />
+				</div>
+				<small id="deviantArtUsername_help" class="form-text text-muted" th:text="#{form.deviantArtUsername.help}">form.discordInviteCode.help</small>
 			</div>
 			
 			<!-- Twitter Account -->

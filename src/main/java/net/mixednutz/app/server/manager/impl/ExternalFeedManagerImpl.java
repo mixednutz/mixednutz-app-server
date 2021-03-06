@@ -543,6 +543,10 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
 		
 		MixednutzClient api = provider.getApi(creds);
+		
+		if (api.getUserClient()==null) {
+			return null;
+		}
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
 			feed.setVisibility(VisibilityType.PRIVATE);
