@@ -208,6 +208,11 @@ page.setupProfile = function() {
 		} else {
 			$('.socmed-author-discord').remove();
 		}
+		if (page.ownerBundle.user.profileData.deviantArtUsername!=null) {
+			$('.socmed-author-deviantart a').attr('href','https://deviantart.com/'+page.ownerBundle.user.profileData.deviantArtUsername);
+		} else {
+			$('.socmed-author-deviantart').remove();
+		}
 		//if (page.ownerBundle.page.instagramAccount!=null) {
 		//	$('.socmed-author-instagram a').attr('href',page.ownerBundle.page.instagramAccount.userProfileUrl.href);
 		//} else {

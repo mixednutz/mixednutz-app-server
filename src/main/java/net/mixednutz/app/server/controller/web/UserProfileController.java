@@ -119,6 +119,9 @@ public class UserProfileController {
 		if (notEquals(form.getDiscordInviteCode(), profile.getDiscordInviteCode())) {
 			profile.setDiscordInviteCode(form.getDiscordInviteCode());
 		}
+		if (notEquals(form.getDeviantArtUsername(), profile.getDeviantArtUsername())) {
+			profile.setDeviantArtUsername(form.getDeviantArtUsername());
+		}
 		profileRepository.save(profile);
 				
 		return "redirect:/"+currentUser.getUsername();
@@ -158,6 +161,7 @@ public class UserProfileController {
 		private String website;
 		private Integer twitterAccountId;
 		private String discordInviteCode;
+		private String deviantArtUsername;
 		
 		public ProfileForm() {
 			super();
@@ -172,6 +176,7 @@ public class UserProfileController {
 			website = profile.getWebsite();
 			twitterAccountId = profile.getTwitterAccountId();
 			discordInviteCode = profile.getDiscordInviteCode();
+			deviantArtUsername = profile.getDeviantArtUsername();
 		}
 		public boolean isClearAvatar() {
 			return clearAvatar;
@@ -226,6 +231,12 @@ public class UserProfileController {
 		}
 		public void setDiscordInviteCode(String discordInviteCode) {
 			this.discordInviteCode = discordInviteCode;
+		}
+		public String getDeviantArtUsername() {
+			return deviantArtUsername;
+		}
+		public void setDeviantArtUsername(String deviantArtUsername) {
+			this.deviantArtUsername = deviantArtUsername;
 		}
 		
 	}
