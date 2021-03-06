@@ -72,6 +72,10 @@ page.updateExternalFeeds = function() {
   	  			$("#twitterComposeForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
   	  			$("#twitterReplyForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
   	  		}
+  	  		if (feed.canCrosspostTo!=null && feed.canCrosspostTo.includes("discord")) {
+  	  			$("#discordComposeForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
+  	  			$("#discordReplyForm .externalFeedId select[name=externalFeedId]").append(accountOptItem.clone());
+  	  		}
   	  		
 			//clear memory
 			crosspostItem.remove();
