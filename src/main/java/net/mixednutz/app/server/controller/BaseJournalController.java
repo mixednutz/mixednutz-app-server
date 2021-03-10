@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -15,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.context.request.NativeWebRequest;
 
 import net.mixednutz.app.server.controller.exception.ResourceMovedPermanentlyException;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
@@ -191,7 +194,7 @@ public class BaseJournalController {
 			Long groupId, 
 			Long[] externalFeedId, String tagsString, boolean emailFriendGroup, 
 			LocalDateTime localPublishDate,
-			User user) {
+			User user, NativeWebRequest request) {
 		if (user==null) {
 			throw new AuthenticationCredentialsNotFoundException("You have to be logged in to do that");
 		}
@@ -242,7 +245,7 @@ public class BaseJournalController {
 					externalFeedManager.crosspost(feed, 
 							exportableEntity.getTitle(), 
 							exportableEntity.getUrl(), 
-							tagArray);
+							tagArray, (HttpServletRequest) request.getNativeRequest());
 				}
 			}
 		}

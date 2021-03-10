@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -58,11 +58,15 @@ public class ExternalFeedApiController {
 		final Map<INetworkInfoSmall, List<AbstractFeed>> externalFeeds = 
 				feedManager.feedsForUser(user);
 		
-		ExternalFeedsList feeds = new ExternalFeedsList();
-		for (Entry<INetworkInfoSmall, List<AbstractFeed>> entry: externalFeeds.entrySet()) {
-			feeds.add(new ExternalFeed(entry.getKey(), entry.getValue(), feedManager.getCompatibleFeedsForCrossposting(entry.getKey())));
-		}
-		return feeds;
+		//Grab reference data for each feed
+		externalFeeds.values().stream().forEach((l)->l.stream().forEach((feed)->{
+			feed.setReferenceData(feedManager.referenceData(feed));
+		}));
+		
+		return new ExternalFeedsList(externalFeeds.entrySet().stream()
+			.map((entry)->new ExternalFeed(entry.getKey(), entry.getValue(), 
+					feedManager.getCompatibleFeedsForCrossposting(entry.getKey())))
+			.collect(Collectors.toList()));
 	}
 	
 	@RequestMapping(value="/{username}/feeds", method = RequestMethod.GET)
@@ -76,11 +80,15 @@ public class ExternalFeedApiController {
 		final Map<INetworkInfoSmall, List<AbstractFeed>> externalFeeds = 
 				feedManager.feedsForUserVisibleToWorld(profileUser.get());
 		
-		ExternalFeedsList feeds = new ExternalFeedsList();
-		for (Entry<INetworkInfoSmall, List<AbstractFeed>> entry: externalFeeds.entrySet()) {
-			feeds.add(new ExternalFeed(entry.getKey(), entry.getValue(), feedManager.getCompatibleFeedsForCrossposting(entry.getKey())));
-		}
-		return feeds;
+		//Grab reference data for each feed
+		externalFeeds.values().stream().forEach((l)->l.stream().forEach((feed)->{
+			feed.setReferenceData(feedManager.referenceData(feed));
+		}));
+		
+		return new ExternalFeedsList(externalFeeds.entrySet().stream()
+				.map((entry)->new ExternalFeed(entry.getKey(), entry.getValue(), 
+						feedManager.getCompatibleFeedsForCrossposting(entry.getKey())))
+				.collect(Collectors.toList()));
 	}
 	
 	@RequestMapping(value="/feeds/timeline", method = RequestMethod.GET)
@@ -250,14 +258,14 @@ public class ExternalFeedApiController {
 	}
 	
 	public static class ExternalFeedsList extends ApiList<ExternalFeed> {
-
+		
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 2314764021162994219L;
 
-		public ExternalFeedsList() {
-			super("externalFeeds");
+		public ExternalFeedsList(List<ExternalFeed> list) {
+			super("externalFeeds", list);
 		}
 		
 	}

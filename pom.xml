@@ -4,7 +4,7 @@
 
 	<groupId>net.mixednutz.app.server</groupId>
 	<artifactId>mixednutz-app-server</artifactId>
-	<version>2.0.4</version>
+	<version>2.0.5</version>
 	<packaging>jar</packaging>
 
 	<name>mixednutz-app-server</name>
@@ -26,7 +26,7 @@
 		<connection>scm:git:ssh://git@github.com/mixednutz/mixednutz-app-server.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/mixednutz/mixednutz-app-server.git</developerConnection>
 		<url>https://github.com/mixednutz/mixednutz-app-server</url>
-		<tag>mixednutz-app-server-2.0.4</tag>
+		<tag>mixednutz-app-server-2.0.5</tag>
     </scm>
 	
 	<!-- 
@@ -68,10 +68,10 @@
 		<java.version>11</java.version>
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		
-		<mixednutz-app-core.version>2.0.4</mixednutz-app-core.version>
-		<mixednutz-app-series.version>2.0.4</mixednutz-app-series.version>
-		<mixednutz-java-api-twitter.version>2.0.0</mixednutz-java-api-twitter.version>
-		<mixednutz-java-api-discord.version>2.0.0</mixednutz-java-api-discord.version>
+		<mixednutz-app-core.version>2.0.5</mixednutz-app-core.version>
+		<mixednutz-app-series.version>2.0.5</mixednutz-app-series.version>
+		<mixednutz-java-api-twitter.version>2.0.1</mixednutz-java-api-twitter.version>
+		<mixednutz-java-api-discord.version>2.0.1</mixednutz-java-api-discord.version>
 		<io-utils.version>0.2.3</io-utils.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>

@@ -2,6 +2,8 @@ package net.mixednutz.app.server.job;
 
 import java.time.ZonedDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,8 @@ import net.mixednutz.app.server.repository.ScheduledPostRepository;
 @Component
 @Transactional
 public class PublishPostJob {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(PublishPostJob.class);
 
 	@Autowired
 	private ScheduledPostRepository scheduledPostRepository;
@@ -60,10 +64,17 @@ public class PublishPostJob {
 			if (scheduledPost.getExternalFeedId()!=null) {
 				for (Long feedId: scheduledPost.getExternalFeedId()) {
 					AbstractFeed feed= externalFeedRepository.findById(feedId).get();
-					externalFeedManager.crosspost(feed, 
-							exportableEntity.getTitle(), 
-							exportableEntity.getUrl(), 
-							tags);
+					try {
+						externalFeedManager.crosspost(feed, 
+								exportableEntity.getTitle(), 
+								exportableEntity.getUrl(), 
+								tags, 
+								scheduledPost.getExternalFeedData());
+					} catch (Exception e) {
+						// Log and swallow error
+						LOGGER.error("Unable to crosspost to "+feed.getType()+" "+feed.getFeedId(), e);
+					}
+					
 				}
 			}
 			

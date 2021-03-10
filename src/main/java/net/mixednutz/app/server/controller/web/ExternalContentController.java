@@ -52,6 +52,7 @@ public class ExternalContentController {
 			) {
 		
 		AbstractFeed feed = loadFeed(externalFeedId);
+		
 		IPost post = externalFeedManager.instantiatePost(feed)
 			.orElseThrow(() -> new IllegalArgumentException("Feed doesn't support posting"));
 		
