@@ -15,7 +15,7 @@ page.updateExternalFeeds = function() {
 	$("#newpoll_form .externalFeedId").empty();
 
 	for (var i=0; i< app.externalFeeds.length; i++) {
-		var feed = app.externalFeeds[i];  			
+		var feed = app.externalFeeds[i];  		
 		var template = $('#tabs_feed_template').clone();
 		template.attr("id","externalFeed_"+feed.name); 
 		template.find(".iconName").addClass("fa-"+feed.feedInfo.fontAwesomeIconName);
@@ -48,6 +48,23 @@ page.updateExternalFeeds = function() {
 			}
 			
 			composeFormDropdown.append(accountOptItem.clone());
+			
+			//reference data
+			for (var key in account.referenceData) {
+			
+				var refSelect = $('<select></select>');
+				refSelect.attr('name',"externalFeedData['"+account.feedId+"']['"+key+"']");
+				$(".externalFeedData").append(refSelect);	
+			
+				var refElement= $('.'+key+' select');
+				for (var iii=0; iii<account.referenceData[key].length; iii++) {
+					var obj = account.referenceData[key][iii];
+					var refOptItem = $('<option></option>');
+					refOptItem.val(obj.id).text(obj.name);
+					refElement.append(refOptItem);
+					refSelect.append(refOptItem.clone());	
+				}
+			}
 			
 			//clear memory
 			crosspostItem.remove();

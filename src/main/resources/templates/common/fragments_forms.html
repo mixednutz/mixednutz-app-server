@@ -74,6 +74,15 @@
 			<div class="form-group externalFeedId">
 			</div>
 		</div>
+		<div class="form-group channels">
+			<label>Channel:</label>
+			<select name="channelIdAsString">
+			<!--  
+				This is filled by pwa.js
+			-->
+			</select>
+		</div>
+		
 		
 		<div class="form-group" th:if="${showTags}">
 			<label for="tagsString">Tags</label> <input class="form-control"
