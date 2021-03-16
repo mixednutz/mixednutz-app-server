@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.ServletRequestParameterPropertyValues;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import net.mixednutz.api.client.MixednutzClient;
 import net.mixednutz.api.client.PostClient;
@@ -470,6 +471,15 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		if (additionalValues!=null) {
 			final WebDataBinder binder = new WebDataBinder(ipost);
 			binder.bind(additionalValues);
+		}
+		
+		if (url!=null) {
+			url = UriComponentsBuilder
+				.fromHttpUrl(url)
+				.queryParam("utm_source",feed.getProviderId())
+				.queryParam("utm_medium","social")
+				.queryParam("utm_campaign","crosspost")
+				.build().toUriString();
 		}
 		
 		ipost.setText(text);
