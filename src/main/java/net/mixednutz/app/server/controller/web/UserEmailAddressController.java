@@ -17,7 +17,7 @@ import net.mixednutz.app.server.manager.VerificationTokenManager;
 import net.mixednutz.app.server.repository.UserEmailAddressRepository;
 import net.mixednutz.app.server.security.OnRegistrationCompleteEvent;
 
-@Controller
+//@Controller
 public class UserEmailAddressController {
 
 	@Autowired
@@ -64,17 +64,17 @@ public class UserEmailAddressController {
 		// Load entities so we can change them:
 		
 		//FIX THIS SINCE EMAILADDRESS HAS ITS OWN ID NOW
-		UserEmailAddress emailAddress = emailAddressRepository.findById(currentUser.getUserId())
-				.orElse(new UserEmailAddress());
+//		UserEmailAddress emailAddress = emailAddressRepository.findById(currentUser.getUserId())
+//				.orElse(new UserEmailAddress());
 		
 
-		if (notEquals(form.getEmailAddress(), emailAddress.getEmailAddress())) {
-			emailAddress.setEmailAddress(form.getEmailAddress());
-		}
-		
-		emailAddress = emailAddressRepository.save(emailAddress);
-			
-		eventPublisher.publishEvent(new OnRegistrationCompleteEvent(emailAddress));
+//		if (notEquals(form.getEmailAddress(), emailAddress.getEmailAddress())) {
+//			emailAddress.setEmailAddress(form.getEmailAddress());
+//		}
+//		
+//		emailAddress = emailAddressRepository.save(emailAddress);
+//			
+//		eventPublisher.publishEvent(new OnRegistrationCompleteEvent(emailAddress));
 		
 		return "redirect:/"+currentUser.getUsername();
 	}
