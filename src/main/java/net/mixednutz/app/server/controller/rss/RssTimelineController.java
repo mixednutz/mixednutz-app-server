@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.rometools.rome.feed.rss.Channel;
 import com.rometools.rome.feed.rss.Description;
@@ -119,25 +120,35 @@ public class RssTimelineController {
 		FormattingUtils formatter = new FormattingUtilsImpl(request);
 				
 		Channel channel = new Channel();
-        channel.setFeedType("rss_2.0");
-        channel.setTitle(accessor.getMessage("site.title"));
-        channel.setDescription(accessor.getMessage("rss.description"));
-        channel.setLink(formatter.formatAbsoluteUrl("/rss/"+username));
-        channel.setCopyright("Copyright "+ZonedDateTime.now().getYear()+" "+
-        		accessor.getMessage("site.title"));
-        channel.setLanguage("en");
+		channel.setFeedType("rss_2.0");
+		channel.setTitle(accessor.getMessage("site.title"));
+		channel.setDescription(accessor.getMessage("rss.description"));
+		String channelLink = UriComponentsBuilder
+				.fromHttpUrl(formatter.formatAbsoluteUrl("/rss/" + username))
+				.queryParam("utm_source", "channel")
+				.queryParam("utm_medium", "rss")
+				.queryParam("utm_campaign", "post")
+				.build().toUriString();
+		channel.setLink(channelLink);
+		channel.setCopyright("Copyright " + ZonedDateTime.now().getYear() + " " + accessor.getMessage("site.title"));
+		channel.setLanguage("en");
 //        channel.setWebMaster(webMaster);
         
         for (ITimelineElement element: page.getItems()) {
-        	Item item = new Item();
-            item.setAuthor(element.getPostedByUser().getUsername());
-            item.setLink(element.getUrl());
-            item.setTitle(element.getTitle());
-            item.setPubDate(Date.from(element.getPostedOnDate().toInstant()));
-            item.setComments(element.getUrl()+"#comments");
-            item.setDescription(new Description());
-            item.getDescription().setValue(element.getDescription());
-            channel.getItems().add(item);
+			Item item = new Item();
+			item.setAuthor(element.getPostedByUser().getUsername());
+			if (element.getUrl() != null) {
+				String itemLink = UriComponentsBuilder.fromHttpUrl(element.getUrl())
+						.queryParam("utm_source", element.getType().getName().toLowerCase())
+						.queryParam("utm_medium", "rss").queryParam("utm_campaign", "post").build().toUriString();
+				item.setLink(itemLink);
+			}
+			item.setTitle(element.getTitle());
+			item.setPubDate(Date.from(element.getPostedOnDate().toInstant()));
+			item.setComments(element.getUrl() + "#comments");
+			item.setDescription(new Description());
+			item.getDescription().setValue(element.getDescription());
+			channel.getItems().add(item);
         }
         return channel;
 	}
