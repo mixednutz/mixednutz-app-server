@@ -31,6 +31,7 @@ import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.api.model.ITimelineElement;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
+import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.format.FormattingUtils;
@@ -144,6 +145,12 @@ public class RssTimelineController {
 				item.setLink(itemLink);
 			}
 			item.setTitle(element.getTitle());
+			if (element instanceof InternalTimelineElement) {
+				InternalTimelineElement ite = (InternalTimelineElement)element;
+// 				if (ite.getLatestSubtitle()!=null) {
+// 					item.setTitle(element.getTitle()+" - "+ite.getLatestSubtitle());
+// 				}
+			}
 			item.setPubDate(Date.from(element.getPostedOnDate().toInstant()));
 			item.setComments(element.getUrl() + "#comments");
 			item.setDescription(new Description());
