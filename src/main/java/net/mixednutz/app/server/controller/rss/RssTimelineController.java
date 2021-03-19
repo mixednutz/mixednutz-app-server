@@ -141,20 +141,33 @@ public class RssTimelineController {
 			if (element.getUrl() != null) {
 				String itemLink = UriComponentsBuilder.fromHttpUrl(element.getUrl())
 						.queryParam("utm_source", element.getType().getName().toLowerCase())
-						.queryParam("utm_medium", "rss").queryParam("utm_campaign", "post").build().toUriString();
+						.queryParam("utm_medium", "rss")
+						.queryParam("utm_campaign", "post").build().toUriString();
 				item.setLink(itemLink);
 			}
 			item.setTitle(element.getTitle());
 			if (element instanceof InternalTimelineElement) {
 				InternalTimelineElement ite = (InternalTimelineElement)element;
-// 				if (ite.getLatestSubtitle()!=null) {
-// 					item.setTitle(element.getTitle()+" - "+ite.getLatestSubtitle());
-// 				}
+ 				if (ite.getLatestSubtitle()!=null) {
+ 					item.setTitle(element.getTitle()+" - "+ite.getLatestSubtitle());
+ 				}
 			}
 			item.setPubDate(Date.from(element.getPostedOnDate().toInstant()));
 			item.setComments(element.getUrl() + "#comments");
 			item.setDescription(new Description());
 			item.getDescription().setValue(element.getDescription());
+			if (element instanceof InternalTimelineElement) {
+				InternalTimelineElement ite = (InternalTimelineElement)element;
+ 				if (ite.getLatestSubdescription()!=null) {
+ 					StringBuffer buffer = new StringBuffer(element.getDescription());
+ 					buffer.append("\n\n");
+ 					if (ite.getLatestSubtitle()!=null) {
+ 						buffer.append(ite.getLatestSubtitle()).append(" : ");
+ 					}
+ 					buffer.append(ite.getLatestSubdescription());
+ 					item.getDescription().setValue(buffer.toString());
+ 				}
+			}
 			channel.getItems().add(item);
         }
         return channel;
