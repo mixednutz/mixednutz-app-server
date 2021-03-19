@@ -305,6 +305,7 @@ public class BaseJournalController {
 		entity.setSubjectKey(form.getSubjectKey());
 		entity.setDescription(form.getDescription());
 		entity.setBody(form.getBody());
+		entity.setVisibility(form.getVisibility());
 		
 //		journal.parseVisibility(user, friendGroupId, groupId);
 		
