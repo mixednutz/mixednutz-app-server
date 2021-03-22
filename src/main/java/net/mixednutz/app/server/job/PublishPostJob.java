@@ -51,6 +51,7 @@ public class PublishPostJob {
 				.findByPublishDateLessThanEqualAndPublishedFalse(ZonedDateTime.now())) {
 
 			Post<?> post = scheduledPost.post();
+			LOGGER.info("Publishing Post: {} URI:{}", post.getId(), post.getUri());
 			post.setDatePublished(ZonedDateTime.now());
 			scheduledPost.setPublished(true);
 			
@@ -64,6 +65,9 @@ public class PublishPostJob {
 			if (scheduledPost.getExternalFeedId()!=null) {
 				for (Long feedId: scheduledPost.getExternalFeedId()) {
 					AbstractFeed feed= externalFeedRepository.findById(feedId).get();
+					LOGGER.info("Crossposting {} to {}", 
+							exportableEntity.getTitle(), 
+							feed.getProviderId());
 					try {
 						externalFeedManager.crosspost(feed, 
 								exportableEntity.getTitle(), 
