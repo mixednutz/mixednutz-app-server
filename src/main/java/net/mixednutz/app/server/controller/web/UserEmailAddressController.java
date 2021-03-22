@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserEmailAddress;
-import net.mixednutz.app.server.manager.VerificationTokenManager;
 import net.mixednutz.app.server.repository.UserEmailAddressRepository;
 import net.mixednutz.app.server.security.OnRegistrationCompleteEvent;
 
@@ -22,9 +21,6 @@ public class UserEmailAddressController {
 
 	@Autowired
 	private UserEmailAddressRepository emailAddressRepository;
-	
-	@Autowired
-	protected VerificationTokenManager verificationTokenManager;
 	
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
