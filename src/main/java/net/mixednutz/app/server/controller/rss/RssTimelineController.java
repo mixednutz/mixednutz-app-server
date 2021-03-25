@@ -142,9 +142,9 @@ public class RssTimelineController {
 				String itemurl = element.getUrl();
 				if (element instanceof InternalTimelineElement) {
 					InternalTimelineElement ite = (InternalTimelineElement)element;
-// 					if (ite.getLatestSuburl()!=null) {
-// 						itemurl = ite.getLatestSuburl();
-// 					}
+ 					if (ite.getLatestSuburl()!=null) {
+ 						itemurl = ite.getLatestSuburl();
+ 					}
 				}
 				String itemLink = UriComponentsBuilder.fromHttpUrl(itemurl)
 						.queryParam("utm_source", element.getType().getName().toLowerCase())
