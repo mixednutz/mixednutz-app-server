@@ -55,7 +55,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 	
 	@Override
 	public InternalTimelineElement toTimelineElement(
-			InternalTimelineElement api, Journal entity, User viewer) {
+			InternalTimelineElement api, Journal entity, User viewer, String baseUrl) {
 		api.setType(new Type("Journal",
 				networkInfo.getHostName(),
 				networkInfo.getId()+"_Journal"));
