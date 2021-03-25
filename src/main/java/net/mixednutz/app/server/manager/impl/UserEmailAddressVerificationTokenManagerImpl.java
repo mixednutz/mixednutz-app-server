@@ -1,10 +1,15 @@
 package net.mixednutz.app.server.manager.impl;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.mixednutz.app.server.entity.UserEmailAddress;
 import net.mixednutz.app.server.entity.UserEmailAddressVerificationToken;
+import net.mixednutz.app.server.manager.EmailMessageManager;
+import net.mixednutz.app.server.manager.EmailMessageManager.EmailMessage;
 import net.mixednutz.app.server.manager.TokenGenerator;
 import net.mixednutz.app.server.manager.UserEmailAddressVerificationTokenManager;
 import net.mixednutz.app.server.repository.UserEmailAddressVerificationTokenRepository;
@@ -17,8 +22,24 @@ public class UserEmailAddressVerificationTokenManagerImpl implements UserEmailAd
 	private UserEmailAddressVerificationTokenRepository verificationTokenRepository;
 	
 	@Autowired
+	private EmailMessageManager emailManager;
+	
+	@Autowired
 	private TokenGenerator tokenGenerator;
 	
+	@Value("${mixednutz.email.name}")
+	private String siteEmailName;
+	
+	@Override
+	public void send(UserEmailAddressVerificationToken token) {
+		
+		EmailMessage msg = new EmailMessage();
+		msg.setTo(Collections.singleton(token.getEmailAddress()));
+		msg.setSubject(siteEmailName+" Registration Confirmation");
+				
+		emailManager.send("html/verification", msg, Collections.singletonMap("token", token));
+	}
+
 	@Override
 	public UserEmailAddressVerificationToken createVerificationToken(UserEmailAddress emailAddress) {
 		UserEmailAddressVerificationToken token = new UserEmailAddressVerificationToken();
@@ -40,5 +61,5 @@ public class UserEmailAddressVerificationTokenManagerImpl implements UserEmailAd
 	public void delete(UserEmailAddressVerificationToken token) {
 		verificationTokenRepository.delete(token);
 	}
-
+	
 }

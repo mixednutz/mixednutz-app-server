@@ -14,6 +14,12 @@ mixednutz:
     id: andrewfestadotcom
     host-name: andrewfesta.com
     display-name: AndrewFesta.com
+
+  email:
+    host: andrewfesta.com
+    name: AndrewFesta.com
+    no-reply: noreply@andrewfesta.com
+    log-to: andy_festa@yahoo.com
     
 logging:
   level: 
