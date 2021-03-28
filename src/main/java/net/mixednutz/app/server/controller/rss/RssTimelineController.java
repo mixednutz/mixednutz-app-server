@@ -139,11 +139,19 @@ public class RssTimelineController {
 			Item item = new Item();
 			item.setAuthor(element.getPostedByUser().getUsername());
 			if (element.getUrl() != null) {
-				String itemLink = UriComponentsBuilder.fromHttpUrl(element.getUrl())
+				String itemurl = element.getUrl();
+				if (element instanceof InternalTimelineElement) {
+					InternalTimelineElement ite = (InternalTimelineElement)element;
+ 					if (ite.getLatestSuburl()!=null) {
+ 						itemurl = ite.getLatestSuburl();
+ 					}
+				}
+				String itemLink = UriComponentsBuilder.fromHttpUrl(itemurl)
 						.queryParam("utm_source", element.getType().getName().toLowerCase())
 						.queryParam("utm_medium", "rss")
 						.queryParam("utm_campaign", "post").build().toUriString();
 				item.setLink(itemLink);
+				
 			}
 			item.setTitle(element.getTitle());
 			if (element instanceof InternalTimelineElement) {

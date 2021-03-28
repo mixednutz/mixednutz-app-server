@@ -52,7 +52,7 @@ public class FeedPoller {
 				if (!nextPages.containsKey(feed)) {
 					LOG.info("Polling Feed:{}", feed.getFeedId());
 					IPage<?,Object> page = externalFeedManager.pollTimeline(feed);
-					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems().size());
+					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems()!=null?page.getItems().size():0);
 					if (!page.getItems().isEmpty()) {
 						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());
 						LOG.info("Feed:{}, nextPage: {}", feed.getFeedId(), page.getNextPage());

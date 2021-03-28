@@ -117,10 +117,11 @@ public class ApiManagerImpl implements ApiManager{
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private <E> void copyWithApiElementConverters(InternalTimelineElement api, E entity, User viewer) {
+	private <E> void copyWithApiElementConverters(InternalTimelineElement api, 
+			E entity, User viewer, String baseUrl) {
 		for (ApiElementConverter<?> converter: apiElementConverters) {
 			if (converter.canConvert(entity.getClass())) {
-				((ApiElementConverter)converter).toTimelineElement(api, entity, viewer);
+				((ApiElementConverter)converter).toTimelineElement(api, entity, viewer, baseUrl);
 			}
 		}
 	}
@@ -162,7 +163,7 @@ public class ApiManagerImpl implements ApiManager{
 						hasReactions.getReactions(), ((Post<?>)entity).getAuthor(), viewer));
 			}
 		}
-		this.copyWithApiElementConverters(api, entity, viewer);
+		this.copyWithApiElementConverters(api, entity, viewer, baseUrl);
 		return api;
 	}
 
