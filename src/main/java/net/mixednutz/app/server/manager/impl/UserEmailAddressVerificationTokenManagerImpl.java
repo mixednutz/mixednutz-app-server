@@ -1,11 +1,16 @@
 package net.mixednutz.app.server.manager.impl;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import net.mixednutz.api.core.model.NetworkInfo;
+import net.mixednutz.app.server.controller.web.UserEmailAddressController;
 import net.mixednutz.app.server.entity.UserEmailAddress;
 import net.mixednutz.app.server.entity.UserEmailAddressVerificationToken;
 import net.mixednutz.app.server.manager.EmailMessageManager;
@@ -30,14 +35,32 @@ public class UserEmailAddressVerificationTokenManagerImpl implements UserEmailAd
 	@Value("${mixednutz.email.name}")
 	private String siteEmailName;
 	
+	private static NetworkInfo networkInfo;
+	
+
+	@Autowired
+	public void setNetworkInfo(NetworkInfo networkInfo) {
+		UserEmailAddressVerificationTokenManagerImpl.networkInfo = networkInfo;
+	}
+	
 	@Override
 	public void send(UserEmailAddressVerificationToken token) {
 		
 		EmailMessage msg = new EmailMessage();
 		msg.setTo(Collections.singleton(token.getEmailAddress()));
 		msg.setSubject(siteEmailName+" Registration Confirmation");
+		
+		Map<String, Object> model = new HashMap<>();
+		model.put("token", token);
+		
+		String url = UriComponentsBuilder
+			.fromHttpUrl(networkInfo.getBaseUrl())
+			.path(UserEmailAddressController.REGISTRATION_CONFIRMATION_URL)
+			.queryParam("token", token.getToken())
+			.build().toUriString();
+		model.put("verificationUrl", url);
 				
-		emailManager.send("html/verification", msg, Collections.singletonMap("token", token));
+		emailManager.send("html/verification", msg, model);
 	}
 
 	@Override

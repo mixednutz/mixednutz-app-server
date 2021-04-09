@@ -1,5 +1,6 @@
 package net.mixednutz.app.server.manager.impl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
@@ -31,6 +32,7 @@ public class UserEmailAddressVerificationTokenManagerImplTest {
 	@MockBean
 	UserEmailAddressVerificationTokenRepository repoisitory;
 	
+	@Ignore
 	@Test
 	public void test() {
 		

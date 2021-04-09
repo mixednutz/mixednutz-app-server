@@ -234,7 +234,9 @@ page.postLoad = function() {
 	$('.extended-profile').removeAttr("hidden");
 	$('#requestFriend-status').remove();
 	if (app.user!=null && app.user.providerId==page.owner.providerId) {
-		$('#viewusermenu a').attr('href',getRelativePath(app.user.uri+'/edit'));
+		console.log($('#viewusermenu a'));
+		$('#viewusermenu .editprofile').attr('href',getRelativePath(app.user.uri+'/edit'));
+		$('#viewusermenu .editemailaddress').attr('href',getRelativePath(app.user.uri+'/editEmailAddress'));
 		$('#viewusermenu').removeAttr("hidden");
 	} else {
 		$('#viewusermenu').remove();

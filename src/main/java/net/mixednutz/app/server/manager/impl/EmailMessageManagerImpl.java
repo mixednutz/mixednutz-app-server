@@ -1,8 +1,13 @@
 package net.mixednutz.app.server.manager.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 import org.slf4j.Logger;
@@ -29,7 +34,7 @@ public class EmailMessageManagerImpl implements EmailMessageManager {
 	
 	@Autowired
 	private JavaMailSender mailSender;
-	
+			
 	private SpringTemplateEngine emailTemplateEngine;
 	
 	private EmailProperties email = new EmailProperties();
@@ -38,27 +43,44 @@ public class EmailMessageManagerImpl implements EmailMessageManager {
 	public void setEmailTemplateEngine(SpringTemplateEngine emailTemplateEngine) {
 		this.emailTemplateEngine = emailTemplateEngine;
 	}
-	
+		
 	@Override
 	public void send(String templateName, EmailMessage message, Map<String, Object> model) {
 
 		try {
 			mailSender.send(new MimeMessagePreparator[] {
-					setTo(message),
-					setLogAsBcc(),
-					message.getFrom()!=null ? setNoReply() : setUserAsFrom(),
+					
 					(msg)->{
 						MimeMessageHelper helper = new MimeMessageHelper(msg);
 						
+						//TO
+						setTo(helper, message);
+						
+						//BCC
+						setLogAsBcc(helper, message);
+						
+						//FROM
+						if (message.getFrom()!=null) {
+							setNoReply(helper);
+						} else {
+//							setUserAsFrom(helper);
+							setDefaultAsFrom(helper);
+						}
+						
 						//Subject
+						LOG.info("Subject: {}",message.getSubject());
 						helper.setSubject(message.getSubject());
 						
 						//Body
-						helper.setText(processTemplate(templateName, model), true);
+						String body = processTemplate(templateName, model);
+						LOG.info("Body: {}",body);
+						helper.setText(body, true);
 					}
 			});
 		} catch (MailException me) {
 			LOG.error("Error sending email", me);
+			// remove this after testing
+			throw me;
 		}
 	}
 	
@@ -67,21 +89,28 @@ public class EmailMessageManagerImpl implements EmailMessageManager {
 		return emailTemplateEngine.process(templateName, context);
 	}
 	
-	protected MimeMessagePreparator setTo(EmailMessage message) {
-		return (msg)->{
-			MimeMessageHelper helper = new MimeMessageHelper(msg);
-			for (UserEmailAddress email: message.getTo()) {
-				InternetAddress to = new InternetAddress(email.getEmailAddress());
-				if (email.getDisplayName()!=null) {
-					to.setPersonal(email.getUser().getDisplayName());
-				} 
-				helper.addTo(to);
+	protected void setTo(MimeMessageHelper helper, EmailMessage message) 
+			throws UnsupportedEncodingException, MessagingException {
+		
+		for (UserEmailAddress email: message.getTo()) {
+			InternetAddress to = new InternetAddress(email.getEmailAddress());
+			if (email.getDisplayName()!=null) {
+				to.setPersonal(email.getUser().getDisplayName());
+				LOG.info("To: {}<{}>", email.getEmailAddress(), email.getDisplayName());
+			} else {
+				LOG.info("To: {}", email.getEmailAddress());
 			}
-		};
+			helper.addTo(to);
+		}
 	}
 	
-	protected MimeMessagePreparator setUserAsFrom() {
-		return (msg)->{
+	protected void setDefaultAsFrom(MimeMessageHelper helper) throws MessagingException {
+		InternetAddress from2 = new InternetAddress("tfes8@yahoo.com");
+		LOG.info("From: {}", from2.getAddress());
+		helper.setFrom(from2);
+	}
+	
+	protected void setUserAsFrom(MimeMessageHelper helper) {
 //			User user = (User) CurrentUserHolder.getUser();
 //			String email = makeUsernameEmail(user.getUsername());
 //			InternetAddress from = new InternetAddress(email);
@@ -90,28 +119,28 @@ public class EmailMessageManagerImpl implements EmailMessageManager {
 //			from.setPersonal(personalName);
 //			LOG.info("From: "+personalName+"<"+email+">");
 //			helper.setFrom(from);			
-		};
 	}
 	
-	protected MimeMessagePreparator setNoReply() {
-		return (msg)->{
-			InternetAddress from2 = new InternetAddress(email.getNoReply());
-			if (email.getName()!=null) {
-				from2.setPersonal(email.getName());
-				LOG.info("From: {}<{}>", email.getName(), email.getNoReply());
-			} else {
-				LOG.info("From: {}", email.getNoReply());
-			}
-			msg.setFrom(from2);
-		};
+	protected void setNoReply(MimeMessageHelper helper) throws UnsupportedEncodingException, MessagingException {
+		InternetAddress from2 = new InternetAddress(email.getNoReply());
+		if (email.getName()!=null) {
+			from2.setPersonal(email.getName());
+			LOG.info("From: {}<{}>", email.getName(), email.getNoReply());
+		} else {
+			LOG.info("From: {}", email.getNoReply());
+		}
+		helper.setFrom(from2);
 	}
 	
-	public MimeMessagePreparator setLogAsBcc() {
-		return (msg)->{
-			MimeMessageHelper helper = new MimeMessageHelper(msg);
+	public void setLogAsBcc(MimeMessageHelper helper, EmailMessage message) throws MessagingException {
+		List<String> emails = StreamSupport
+			.stream(message.getTo().spliterator(), true)
+			.map((uea)->uea.getEmailAddress())
+			.collect(Collectors.toList());
+		if (!emails.contains(email.getLogTo())) {
 			helper.setBcc(email.getLogTo());
 			LOG.info("Bcc: {}", email.getLogTo());
-		};
+		}		
 	}
 	
 	public EmailProperties getEmail() {

@@ -3,6 +3,7 @@ package net.mixednutz.app.server.manager.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class EmailMessageManagerImplTest {
 	@MockBean
 	JavaMailSender mailSender;
 	
+	@Ignore
 	@Test
 	public void processTemplate() {
 		Map<String,Object>model = new HashMap<>();
@@ -35,7 +37,7 @@ public class EmailMessageManagerImplTest {
 		String result = manager.processTemplate("html/test_template", model);
 		LOG.debug(result);
 	}
-
+	
 	public static class Message {
 		String hello;
 

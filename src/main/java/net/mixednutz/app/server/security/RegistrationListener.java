@@ -22,10 +22,12 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
 	private void confirmRegistration(OnRegistrationCompleteEvent event) {
 		UserEmailAddress userEmailAddress = event.getUserEmailAddress();
-       
-        UserEmailAddressVerificationToken token = verificationTokenManager.createVerificationToken(userEmailAddress);
-        //TODO Create Email abstraction
-        //verificationTokenManager.send(token, verifyEmailFormatter);
+		
+		if (!userEmailAddress.isVerified()) {
+			UserEmailAddressVerificationToken token = verificationTokenManager.createVerificationToken(userEmailAddress);
+			verificationTokenManager.send(token);
+		}
+
     }
 	
 }

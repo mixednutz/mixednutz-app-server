@@ -150,7 +150,7 @@ public class NewExternalCredentialsController {
 	@Controller
 	public static class ConnectController extends org.springframework.social.connect.web.ConnectController {
 
-		@Autowired
+		@Autowired(required=false)
 		private List<ConnectInterceptor<?>> connectInterceptors;
 		
 		@Value("${applicationUrl:#{null}}")
@@ -178,8 +178,10 @@ public class NewExternalCredentialsController {
 
 		@PostConstruct
 		public void addInterceptors() {
-			for (ConnectInterceptor<?> connectInterceptor: this.connectInterceptors) {
-				this.addInterceptor(connectInterceptor);
+			if (connectInterceptors!=null) {
+				for (ConnectInterceptor<?> connectInterceptor: this.connectInterceptors) {
+					this.addInterceptor(connectInterceptor);
+				}
 			}
 		}
 		
