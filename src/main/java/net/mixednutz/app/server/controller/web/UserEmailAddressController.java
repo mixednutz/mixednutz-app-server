@@ -55,7 +55,7 @@ public class UserEmailAddressController {
 	
 	private String emailForm(@AuthenticationPrincipal User user, Model model) {
 		final UserEmailAddress emailAddress =
-				emailAddressRepository.findByUser(user).orElse(new UserEmailAddress());
+				emailAddressRepository.findByUserAndPrimaryTrue(user).orElse(new UserEmailAddress());
 		
 		EmailAddressForm form = new EmailAddressForm(emailAddress);
 		model.addAttribute("form", form);
@@ -127,8 +127,17 @@ public class UserEmailAddressController {
 	    
 	    userEmailAddress.setVerified(true);
 	    userEmailAddress.setPrimary(true);
-	    emailAddressRepository.save(userEmailAddress);	    
+	    emailAddressRepository.save(userEmailAddress);
 	    userEmailAddressVerificationTokenManager.delete(verificationToken);
+	    
+	    //Get Others
+	    for (UserEmailAddress inactiveEmailAddress : emailAddressRepository.findByUser(userEmailAddress.getUser())) {
+	    	if (!inactiveEmailAddress.equals(userEmailAddress) && 
+	    			inactiveEmailAddress.isPrimary()) {
+	    		inactiveEmailAddress.setPrimary(false);
+	    		emailAddressRepository.save(inactiveEmailAddress);	    
+	    	}
+	    }
 
 	    login(userEmailAddress.getUser(), request);
 	    return "redirect:/main";

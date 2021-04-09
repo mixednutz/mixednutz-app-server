@@ -57,7 +57,7 @@ public class EmailMessageManagerIntegrationTest {
 		em.flush();
 		
 		UserEmailAddress emailAddress =
-				userEmailAddressRepository.findByUser(user).orElseGet(()->{
+				userEmailAddressRepository.findByUserAndPrimaryTrue(user).orElseGet(()->{
 					UserEmailAddress newEmailAddress = new UserEmailAddress();
 					newEmailAddress.setEmailAddress("andy_festa@yahoo.com");
 					newEmailAddress.setUser(user);
