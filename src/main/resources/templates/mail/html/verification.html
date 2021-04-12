@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+  	<h1><span th:text="#{site.title}">site.title</span> Email Verification</h1>
+  	
+  	<p>Your <span th:text="#{site.title}">site.title</span> email address <strong th:text="${token.emailAddress.emailAddress}">email</strong> has been registered. 
+	In order to receive email at this address, you will need to verify that you 
+	actually can receive email here.
+	 
+	Please click the provided link to verify this address and return to the site. 
+	If you believe you received this email in error, please contact. </p>
+	
+	<a th:href="${verificationUrl}" href="#">Verify Account</a>
+  </body>
+</html>

@@ -70,7 +70,10 @@
   		<span class="username"></span>
   		
   		<div id="viewusermenu" hidden="hidden">
- 			<a class="btn btn-primary" href="#">Edit Profile</a>
+  			<div class="btn-group" role="group">
+	 			<a class="btn btn-sm btn-default editprofile" href="#">Edit Profile</a>
+	 			<a class="btn btn-sm btn-default editemailaddress" href="#">Edit Email Address</a>
+ 			</div>
  		</div>
   	</div>
   	
@@ -135,6 +138,25 @@
 				</div>
 			</div>
 		</div>
+	</div>
+  	
+  	<div th:fragment="emailaddress_form">
+		
+		<form th:action="@{|/${#authentication.principal.username}/editEmailAddress|}" th:object="${form}" method="post">
+		
+			<p>Registering an Email address with us is entirely optional - unless you want to get email subscriptions or notifications.  Then we kinda need that... obviously</p>
+		
+			<!-- Display Name -->
+			<div class="displayName form-group">
+				<label for="emailAddress" th:text="#{form.emailAddress.label}">form.emailAddress.label</label>
+				<input id="emailAddress" type="email" th:field="*{emailAddress}" class="form-control" />
+			</div>
+			
+			<div class="form-group">
+				<button type="submit" class="btn btn-success" th:text="#{profile.edit.form.submit}">profile.edit.form.submit</button>
+			</div>
+		
+		</form>
 	</div>
   	
   	<div th:fragment="profile_form">
