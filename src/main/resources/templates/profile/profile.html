@@ -101,7 +101,9 @@
  	<script th:replace="common/fragments_js :: timeline"></script>
  	<script type="text/javascript" th:src="@{|/js/pwa_profile.js|}" src="../js/pwa_profile.js"></script>
  	<script type="text/javascript" th:src="@{|/js/pwa.js|}" src="../js/pwa.js"></script>
-    
+    <div class="componentScriptTemplates" th:each="fragmentName : ${componentScriptTemplates}">
+		<script th:include="__${fragmentName}__" type="text/javascript"></script>
+	</div>
     
     <!-- Google Analytics JavaScript 
  	================================================== -->

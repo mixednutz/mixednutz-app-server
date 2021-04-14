@@ -1,5 +1,6 @@
 var page = {
 		homeTimelineTemplate: $('#home_input_template'),
+		elementCallbacks: []
   	};
 
 page.setup = function() {
@@ -8,6 +9,10 @@ page.setup = function() {
 	page.setupForms();
 };
 
+page.registerElementCallback = function(callback) {
+	console.log('Register callback:'+callback);
+	page.elementCallbacks.push(callback);
+}
 	
 page.updateExternalFeeds = function() {
 	var lastTab = '#home_tab';

@@ -301,6 +301,7 @@ function buildInternalTimelineElement(element) {
 	
 	var template = $('#template_'+element.type.name).clone();
 	console.log('looking for '+'#template_'+element.type.name);
+	console.log(element);
 	template.attr("id",id); 	
 	
 	//Default stuff (avatar/username/date)
@@ -350,6 +351,12 @@ function buildInternalTimelineElement(element) {
  	}
  	if (element.reactions!=null) {
  		populateReactions(template.find(".reactions-list"), element.reactions);
+ 	}
+ 	
+ 	if (element.additionalData!=null) {
+	 	for (i in page.elementCallbacks) {
+	 		page.elementCallbacks[i](template, element);
+	 	}
  	}
  	
 	
