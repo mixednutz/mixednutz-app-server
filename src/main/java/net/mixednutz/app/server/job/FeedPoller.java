@@ -54,6 +54,7 @@ public class FeedPoller {
 					IPage<?,Object> page = externalFeedManager.pollTimeline(feed);
 					if (page==null) {
 						LOG.warn("{} Feed {} returned null page", feed.getProviderId(), feed.getFeedId());
+						continue;
 					}
 					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems()!=null?page.getItems().size():0);
 					if (!page.getItems().isEmpty()) {
