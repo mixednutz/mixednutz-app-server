@@ -50,8 +50,11 @@ public class FeedPoller {
 		for (AbstractFeed feed: getActiveFeeds()) {
 			try {
 				if (!nextPages.containsKey(feed)) {
-					LOG.info("Polling Feed:{}", feed.getFeedId());
+					LOG.info("Polling {} Feed:{}", feed.getProviderId(), feed.getFeedId());
 					IPage<?,Object> page = externalFeedManager.pollTimeline(feed);
+					if (page==null) {
+						LOG.warn("{} Feed {} returned null page", feed.getProviderId(), feed.getFeedId());
+					}
 					LOG.info("Feed:{}, Found {} items", feed.getFeedId(), page.getItems()!=null?page.getItems().size():0);
 					if (!page.getItems().isEmpty()) {
 						LOG.info("Feed:{}, Putting PagingObject: {}", feed.getFeedId(), page.getReversePage());

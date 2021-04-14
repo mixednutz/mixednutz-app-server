@@ -100,10 +100,14 @@ public class MainController {
 	
 	private void addTemplates(Model model) {
 		List<String> fragments = new ArrayList<>();
+		List<String> scriptFragments = new ArrayList<>();
 		List<String[]> modalFragments = new ArrayList<>();
 		for (ComponentSettings compSettings: componentSettings) {
 			if (compSettings.includeTimelineTemplateHtmlFragment()) {
 				fragments.add(compSettings.includeTimelineTemplateHtmlFragmentName());
+			}
+			if (compSettings.includeTimelineTemplateScriptFragment()) {
+				scriptFragments.add(compSettings.includeTimelineTemplateScriptFragmentName());
 			}
 			if (compSettings.includeNewFormModal()) {
 				modalFragments.add(new String[] {
@@ -112,6 +116,7 @@ public class MainController {
 			}
 		}
 		model.addAttribute("componentTemplates", fragments);		
+		model.addAttribute("componentScriptTemplates", scriptFragments);		
 		model.addAttribute("newFormModalTemplates", modalFragments);
 	}
 	

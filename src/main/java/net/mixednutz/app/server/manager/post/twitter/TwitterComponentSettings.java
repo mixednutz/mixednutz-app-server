@@ -45,6 +45,18 @@ public class TwitterComponentSettings implements ComponentSettings {
 	}
 
 	@Override
+	public boolean includeTimelineTemplateScriptFragment() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String includeTimelineTemplateScriptFragmentName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public boolean includeHtmlFragment() {
 		// TODO Auto-generated method stub
 		return false;
