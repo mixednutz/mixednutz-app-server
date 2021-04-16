@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+  	<h1>New <span th:text="${commentType}">commentType</span> at <span th:text="#{site.title}">site.title</span> for <span th:text="${entity.title}">entity.title</span></h1>
+  	
+  	<p>You have received a new <span th:text="${commentType}">commentType</span> at <span th:text="#{site.title}">site.title</span> for <span th:text="${entity.title}">entity.title</span>. You can view your new <span th:text="${commentType}">commentType</span> at
+	  <a th:href="${commentUrl}" href="#">Read <span th:text="${commentType}">commentType</span></a>
+      
+	If you believe you received this email in error, please contact. </p>
+	
+	
+  </body>
+</html>
