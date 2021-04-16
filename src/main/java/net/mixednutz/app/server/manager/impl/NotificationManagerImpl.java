@@ -108,6 +108,9 @@ public class NotificationManagerImpl implements NotificationManager {
 				for (AbstractNotification notif: castedIface.lookupCommentNotifications(user, post)) {
 					notifications.add(notif);
 				}
+				for (AbstractNotification notif: castedIface.lookupCommentReplyNotifications(user, post)) {
+					notifications.add(notif);
+				}
 				for (AbstractNotification notif: castedIface.lookupReactionNotifications(user, post)) {
 					notifications.add(notif);
 				}
