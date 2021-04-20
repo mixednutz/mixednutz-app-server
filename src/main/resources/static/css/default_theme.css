@@ -1,3 +1,10 @@
+.advertisement {
+	text-align:center;
+}
+.advertisement .notice {
+	display:block
+}
+
 footer {
   padding: 50px 0 65px;
 }

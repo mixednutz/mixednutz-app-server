@@ -28,7 +28,8 @@
 
 		<div th:replace="profile/fragments_profile :: timeline_input">input</div>
 
-
+		<div sec:authorize="!isAuthenticated()" th:replace="google_adsense :: horizontal_ad"></div>
+  	
 		<div id="elements"></div>
 
 		<!-- Templates -->
