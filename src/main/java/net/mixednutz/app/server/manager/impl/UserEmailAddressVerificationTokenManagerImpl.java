@@ -32,7 +32,7 @@ public class UserEmailAddressVerificationTokenManagerImpl implements UserEmailAd
 	@Autowired
 	private TokenGenerator tokenGenerator;
 	
-	@Value("${mixednutz.email.name}")
+	@Value("${mixednutz.email.display-name}")
 	private String siteEmailName;
 	
 	private static NetworkInfo networkInfo;

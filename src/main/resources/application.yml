@@ -28,8 +28,7 @@ mixednutz:
     display-name: AndrewFesta.com
 
   email:
-    host: andrewfesta.com
-    name: AndrewFesta.com
+    display-name: AndrewFesta.com
     no-reply: noreply@andrewfesta.com
     log-to: andy_festa@yahoo.com
     

@@ -123,9 +123,9 @@ public class EmailMessageManagerImpl implements EmailMessageManager {
 	
 	protected void setNoReply(MimeMessageHelper helper) throws UnsupportedEncodingException, MessagingException {
 		InternetAddress from2 = new InternetAddress(email.getNoReply());
-		if (email.getName()!=null) {
-			from2.setPersonal(email.getName());
-			LOG.info("From: {}<{}>", email.getName(), email.getNoReply());
+		if (email.getDisplayName()!=null) {
+			from2.setPersonal(email.getDisplayName());
+			LOG.info("From: {}<{}>", email.getDisplayName(), email.getNoReply());
 		} else {
 			LOG.info("From: {}", email.getNoReply());
 		}
@@ -153,22 +153,15 @@ public class EmailMessageManagerImpl implements EmailMessageManager {
 	
 	public static class EmailProperties {
 		
-		private String host;
-		private String name;
+		private String displayName;
 		private String noReply;
 		private String logTo;
 		
-		public String getHost() {
-			return host;
+		public String getDisplayName() {
+			return displayName;
 		}
-		public void setHost(String host) {
-			this.host = host;
-		}
-		public String getName() {
-			return name;
-		}
-		public void setName(String name) {
-			this.name = name;
+		public void setDisplayName(String name) {
+			this.displayName = name;
 		}
 		public String getNoReply() {
 			return noReply;
