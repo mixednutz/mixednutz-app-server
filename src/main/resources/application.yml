@@ -19,6 +19,8 @@ spring:
           starttls.enable: true
         debug: true
 
+  resources.addMappings: false
+
 site.settings.uniqueId: 1
 
 mixednutz:
@@ -31,6 +33,8 @@ mixednutz:
     display-name: AndrewFesta.com
     no-reply: noreply@andrewfesta.com
     log-to: andy_festa@yahoo.com
+
+ads-txt: "classpath:static/ads.txt"
     
 logging:
   level: 
