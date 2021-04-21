@@ -51,7 +51,7 @@ public class NotificationManagerImpl implements NotificationManager {
 	@Autowired
 	private EmailMessageManager emailManager;
 	
-	@Value("${mixednutz.email.name}")
+	@Value("${mixednutz.email.display-name}")
 	private String siteEmailName;
 	
 	@Autowired
