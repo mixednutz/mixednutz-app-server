@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
 	@Value("${photoDirectory:#{null}}")
-	Resource photoDirectory;
+	String photoDirectory;
 		
 	@Value("${ads-txt:#{null}}")
 	Resource adsTxtLocation;
@@ -27,12 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
 	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		URI photoDirectoryUri;
-		try {
-			photoDirectoryUri = photoDirectory!=null?photoDirectory.getURI():Paths.get("").toUri();
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load Resource Handler for photoDirectory.", e);
-		}
+		URI photoDirectoryUri = Paths.get(photoDirectory!=null?photoDirectory:"").toUri();
 		//This might not be necessary.  addResourceLocations might take as adsTxtLocation is. 
 		URI adsTxtUri;
 		try {
