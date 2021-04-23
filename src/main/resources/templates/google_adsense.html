@@ -13,11 +13,12 @@
   
 	<div th:fragment="horizontal_ad" th:inline="javascript" class="advertisement">
 		<small class="notice">Advertisement</small>
-		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<script async th:src="@{|https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=#{google.adsense.data-ad-client}|}"
+		     crossorigin="anonymous"></script>
 		<!-- Horizontal -->
 		<ins class="adsbygoogle"
 		     style="display:inline-block;width:728px;height:90px"
-		     data-ad-client="#{google.adsense.data-ad-client}"
+		     th:data-ad-client="#{google.adsense.data-ad-client}"
 		     data-ad-slot="8033125778"></ins>
 		<script>
 		     (adsbygoogle = window.adsbygoogle || []).push({});
