@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ import net.mixednutz.app.server.repository.UserRepository;
 
 @Service
 public class NotificationManagerImpl implements NotificationManager {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NotificationManagerImpl.class);
 	
 	@Autowired
 	List<PostNotificationFactory<?,?,?>> postNotifications;
@@ -87,6 +91,7 @@ public class NotificationManagerImpl implements NotificationManager {
 	}
 	
 	protected void sendCommentEmail(AbstractPostComment comment) {
+		LOG.info("Sending email notification for comment {}", comment.getUri());
 		List<UserEmailAddress> emailAddressesToSend = new ArrayList<>();
 		//Post Author
 		emailAddressRepository.findByUserAndPrimaryTrue(
@@ -104,6 +109,7 @@ public class NotificationManagerImpl implements NotificationManager {
 	}
 	
 	protected void sendCommentEmail(AbstractPostComment comment, UserEmailAddress userEmailAddress) {
+		LOG.info("Sending email notification for comment {} to {}", comment.getUri(), userEmailAddress.getEmailAddress());
 		EmailMessage msg = new EmailMessage();
 		InternalTimelineElement element = apiManager.toTimelineElement(comment.getPost(), null);
 		msg.setTo(Collections.singleton(userEmailAddress));
