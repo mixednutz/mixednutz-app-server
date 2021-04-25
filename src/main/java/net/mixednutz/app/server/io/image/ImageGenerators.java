@@ -85,6 +85,13 @@ public class ImageGenerators {
 		return null;
 	}
 	
+	public File generateCover(PersistableFile file) {
+		if (imageGenerators.containsKey(file.getContentType())) {
+			return imageGenerators.get(file.getContentType()).generateCover(file);
+		}
+		return null;
+	}
+	
 	public File generateThumbnail(PersistableFile file) {
 		if (imageGenerators.containsKey(file.getContentType())) {
 			return imageGenerators.get(file.getContentType()).generateThumbnail(file);
@@ -116,6 +123,13 @@ public class ImageGenerators {
 	public File getLargeFeatureFilename(String basefilename, String contentType) {
 		if (imageGenerators.containsKey(contentType)) {
 			return imageGenerators.get(contentType).getLargeFeatureFilename(basefilename);
+		}
+		return null;
+	}
+	
+	public File getCoverFilename(String basefilename, String contentType) {
+		if (imageGenerators.containsKey(contentType)) {
+			return imageGenerators.get(contentType).getCoverFilename(basefilename);
 		}
 		return null;
 	}

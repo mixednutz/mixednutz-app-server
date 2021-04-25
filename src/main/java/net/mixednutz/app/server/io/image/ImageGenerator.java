@@ -94,6 +94,14 @@ public interface ImageGenerator {
 	 * @return
 	 */
 	public File generateSmallFeature(PersistableFile file);
+	
+	/**
+	 * Generates an image the size of a book cover
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public File generateCover(PersistableFile file);
 		
 	/**
 	 * Generates an image the size of a column
@@ -111,6 +119,12 @@ public interface ImageGenerator {
 	 */
 	public File generateLargeFeature(PersistableFile file);
 	
+	/**
+	 * Gets the destination filename for a book cover
+	 * @param file
+	 * @return
+	 */
+	public File getCoverFilename(String file);
 	
 	/**
 	 * Gets the destination filename for a file

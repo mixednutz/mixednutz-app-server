@@ -30,6 +30,7 @@ public class JpegImageGenerator extends AbstractImageGenerator {
 	@Value("${photoDirectory:#{null}}")
 	public void setPhotoDirectory(String photosDirectory) {
 		super.setAvatarDirectory(new File(photosDirectory,"avatars"));
+		super.setBookCoversDirectory(new File(photosDirectory,"bookCovers"));
 		super.setDestinationDirectory(new File(photosDirectory!=null?photosDirectory:""));
 	}
 	@Value("#{systemProperties['java.io.tmpdir']}")
