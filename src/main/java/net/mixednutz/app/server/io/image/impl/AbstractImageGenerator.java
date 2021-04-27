@@ -38,6 +38,7 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 	
 	private File destinationDirectory;
 	private File avatarDirectory;
+	private File bookCoversDirectory;
 	private File tempDirectory;
 	
 //	private static final String DEFAULT_THUMBNAIL_DIR = "tn";
@@ -46,13 +47,14 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 	private static final String DEFAULT_LARGE_FEATURE_DIR = "lg";
 //	private static final String DEFAULT_XLARGE_FEATURE_DIR = "xl";
 	private static final String DEFAULT_LARGE_AVATAR_DIR = "avatar_lg";
+	private static final String DEFAULT_BOOK_COVER_DIR = "book";
 	
 	private static final int DEFAULT_THUMBNAIL_SIZE = 99;
 	private static final int DEFAULT_SMALL_AVATAR_SIZE = 32;
 	private static final int DEFAULT_LARGE_AVATAR_SIZE = 128;
 	private static final int DEFAULT_XLARGE_AVATAR_SIZE = 256;
 	private static final int DEFAULT_AVATAR_SIZE = 80;
-	
+		
 	private static final int DEFAULT_TINY_WIDTH = 40;
 	private static final int DEFAULT_TINY_HEIGHT = 32;
 	private static final int DEFAULT_SMALL_WIDTH = 160;
@@ -61,6 +63,9 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 	private static final int DEFAULT_MEDIUM_HEIGHT = 317;
 	private static final int DEFAULT_LARGE_WIDTH = 500; //was 600
 	private static final int DEFAULT_LARGE_HEIGHT = 400;
+	private static final int DEFAULT_COVER_WIDTH = 250;
+	private static final int DEFAULT_COVER_HEIGHT = 400;
+	
 		
 	private int thumbnailSize = DEFAULT_THUMBNAIL_SIZE;
 	private int avatarSize = DEFAULT_AVATAR_SIZE;
@@ -76,6 +81,8 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 	private int largeFeatureHeight = DEFAULT_LARGE_HEIGHT;
 	private int tinyFeatureWidth = DEFAULT_TINY_WIDTH;
 	private int tinyFeatureHeight = DEFAULT_TINY_HEIGHT;
+	private int coverWidth = DEFAULT_COVER_WIDTH;
+	private int coverHeight = DEFAULT_COVER_HEIGHT;
 		
 	protected FileSupport fileSupport = new FileSupport();
 	
@@ -111,6 +118,13 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 		return new File(tempDirectory, filename);
 	}
 	
+	public File getCoverFilename(String file) {
+		String filename = getFilename(file,"_"+coverWidth+"_"+coverHeight);
+		File coverDirectory = new File(bookCoversDirectory, DEFAULT_BOOK_COVER_DIR);
+		coverDirectory.mkdirs();
+		return new File(coverDirectory, filename);
+	}
+	
 	public File getLargeFeatureFilename(String file) {
 		String filename = getFilename(file,"_"+largeFeatureWidth+"_"+largeFeatureHeight);
 		File largeFeatureDirectory = new File(destinationDirectory, DEFAULT_LARGE_FEATURE_DIR);
@@ -137,6 +151,20 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 		File largeAvatarDirectory = new File(avatarDirectory, DEFAULT_LARGE_AVATAR_DIR);
 		largeAvatarDirectory.mkdirs();
 		return new File(largeAvatarDirectory, filename);
+	}
+	
+	public File generateCover(final PersistableFile file) {
+		File dest = getCoverFilename(file.getFilename());
+		
+		fileSupport.write(dest, (out)-> {
+				try (InputStream is = file.getInputStream()){
+					scaleImage(is, out, coverWidth, coverHeight, true);
+				} catch (RuntimeException e) {
+					throw e;
+				} 
+			});
+				
+		return dest;
 	}
 	
 	public File generateLargeFeature(final PersistableFile file) {
@@ -704,6 +732,14 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 
 	public void setAvatarDirectory(File avatarDirectory) {
 		this.avatarDirectory = avatarDirectory;
+	}
+
+	public File getBookCoversDirectory() {
+		return bookCoversDirectory;
+	}
+
+	public void setBookCoversDirectory(File bookCoversDirectory) {
+		this.bookCoversDirectory = bookCoversDirectory;
 	}
 
 	public File getTempDirectory() {

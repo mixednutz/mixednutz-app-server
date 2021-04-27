@@ -52,6 +52,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	private static final String SMALL_SIZE = "small";
 	private static final String TINY_SIZE = "tiny";
 	private static final String AVATAR_SIZE = "avatar";
+	private static final String BOOK_SIZE = "book";
 
 	@Autowired
 	private ImageGenerators imageGenerators;
@@ -161,6 +162,8 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 					return imageGenerators.generateTinyFeature(persistableFile);
 				} else if (AVATAR_SIZE.equals(size)) {
 					return imageGenerators.generateLargeAvatar(persistableFile);
+				} else if (BOOK_SIZE.equals(size)) {
+					return imageGenerators.generateCover(persistableFile);
 				}
 				throw new UnsupportedOperationException("Unknown size : "+size);
 			}};
@@ -200,7 +203,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, TINY_SIZE));
 		//Upload Large Avatar
 		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, AVATAR_SIZE));
-		
+				
 		executor.shutdown();
 		try {
 			executor.awaitTermination(60, TimeUnit.SECONDS);
@@ -325,6 +328,9 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		}
 		if (AVATAR_SIZE.equalsIgnoreCase(sizeName)) {
 			return imageGenerators.getLargeAvatarFilename(filename, contentType);
+		}
+		if (BOOK_SIZE.equalsIgnoreCase(sizeName)) {
+			return imageGenerators.getCoverFilename(filename, contentType);
 		}
 		throw new RuntimeException("Unknown size: "+sizeName);
 	}
