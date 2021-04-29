@@ -26,6 +26,7 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.io.domain.FileWrapper;
 import net.mixednutz.app.server.io.image.ImageGenerators;
 import net.mixednutz.app.server.io.manager.PhotoUploadManager;
+import net.mixednutz.app.server.io.manager.PhotoUploadManager.Size;
 import net.mixednutz.app.server.repository.UserRepository;
 
 public class BasePhotoController {
@@ -47,7 +48,7 @@ public class BasePhotoController {
 	@RequestMapping(value = PHOTOS_STORAGE_MAPPING, method = RequestMethod.GET)
 	public ResponseEntity<Resource> getPhotoResource(
 			HttpServletRequest request,
-			@RequestParam(value="size", defaultValue="original") String size,
+			@RequestParam(value="size", defaultValue="original") String sizeName,
 			@RequestParam(value="rotate", defaultValue="0") int rotateDegrees,
 			@AuthenticationPrincipal User user) {
 		String uri = request.getRequestURI();
@@ -76,13 +77,14 @@ public class BasePhotoController {
 		
 		FileWrapper file = null;
 		boolean missingSize = false;
+		Size size = Size.getValue(sizeName);
 		try {
 			file = photoUploadManager.downloadFile(photoAccount, filename, size);
 		} catch (AmazonS3Exception e) {
 			LOG.error("AmazonError", e);
 			if (!"original".equals(size) && e.getStatusCode()==404) {
 				try {
-					file = photoUploadManager.downloadFile(photoAccount, filename, "original");
+					file = photoUploadManager.downloadFile(photoAccount, filename, Size.ORIGINAL);
 					missingSize = true;
 				} catch (AmazonS3Exception | IOException e2) {
 					LOG.error("Error on re-try", e);

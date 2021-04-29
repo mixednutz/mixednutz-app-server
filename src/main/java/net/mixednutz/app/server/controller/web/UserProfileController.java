@@ -21,6 +21,7 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.io.domain.PersistableMultipartFile;
 import net.mixednutz.app.server.io.manager.PhotoUploadManager;
+import net.mixednutz.app.server.io.manager.PhotoUploadManager.Size;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -143,7 +144,7 @@ public class UserProfileController {
 		PersistableMultipartFile pFile = new PersistableMultipartFile();
 		pFile.setFile(file);
 		try {
-			return photoUploadManager.uploadFile(user, pFile, "avatar");
+			return photoUploadManager.uploadFile(user, pFile, Size.AVATAR);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
