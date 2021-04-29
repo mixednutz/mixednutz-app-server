@@ -158,7 +158,7 @@ public abstract class AbstractImageGenerator implements ImageGenerator {
 		
 		fileSupport.write(dest, (out)-> {
 				try (InputStream is = file.getInputStream()){
-					scaleImage(is, out, coverWidth, coverHeight, true);
+					scaleImage(is, out, coverWidth, coverHeight, false);
 				} catch (RuntimeException e) {
 					throw e;
 				} 
