@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
+import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.entity.Oembeds.Oembed;
 import net.mixednutz.app.server.manager.ApiManager;
@@ -24,6 +25,9 @@ public class OembedController {
 	
 	@Autowired
 	private ApiManager apiManager;
+	
+	@Autowired
+	private NetworkInfo networkInfo;
 	
 	@RequestMapping(method = RequestMethod.GET, params="format=xml")
 	public @ResponseBody Oembed oembedXml() {
@@ -50,7 +54,7 @@ public class OembedController {
 			path = path.substring(contextPath.length());
 		}
 		
-		return apiManager.toOembed(path, maxwidth, maxheight, format, auth)
+		return apiManager.toOembed(path, maxwidth, maxheight, format, auth, networkInfo.getBaseUrl())
 				.orElseThrow(() -> 
 				new ResourceNotFoundException("Unable to find resource: "+url));
 	}

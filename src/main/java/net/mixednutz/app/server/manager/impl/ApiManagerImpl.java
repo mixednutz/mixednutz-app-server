@@ -127,11 +127,11 @@ public class ApiManagerImpl implements ApiManager{
 	}
 	
 	public Optional<Oembed> toOembed(String path, Integer maxwidth, Integer maxheight, String format, 
-			Authentication auth) {
+			Authentication auth, String baseUrl) {
 		for (ApiElementConverter<?> converter: apiElementConverters) {
 			if (converter.canConvertOembed(path)) {
 				return Optional.of(converter.toOembed(path, maxwidth, maxheight, 
-						format, auth));
+						format, auth, baseUrl));
 			}
 		}
 		return Optional.empty();

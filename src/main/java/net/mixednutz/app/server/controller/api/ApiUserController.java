@@ -15,9 +15,11 @@ import net.mixednutz.api.core.model.ApiList;
 import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.controller.api.ExternalFeedApiController.ExternalFeedsList;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
+import net.mixednutz.app.server.entity.Lastonline;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.manager.ApiManager;
+import net.mixednutz.app.server.repository.LastonlineRepository;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -33,6 +35,9 @@ public class ApiUserController {
 	
 	@Autowired
 	private UserProfileRepository profileRepository;
+	
+	@Autowired
+	private LastonlineRepository lastonlineRepository;
 	
 	@Autowired
 	private ExternalFeedApiController externalFeedApi;
@@ -54,9 +59,12 @@ public class ApiUserController {
 		
 		UserProfile profileData = profileRepository.findById(profileUser.getUserId()).orElse(null);
 				
+		Lastonline lastonline = lastonlineRepository.findById(profileUser.getUserId()).orElse(null);
+		
 		UserProfileBundle bundle = new UserProfileBundle()
 				.addUser(apiManager.toUser(profileUser, profileData))
-				.addExternalFeedsList(externalFeedApi.externalFeeds(username));
+				.addExternalFeedsList(externalFeedApi.externalFeeds(username))
+				.addLastonline(lastonline);
 //				.addFollowerCount(friendManager.countFollowers(account, false))
 //				.addFollowingCount(friendManager.countFollowing(account, false));
 				
@@ -135,6 +143,12 @@ public class ApiUserController {
 //		UserProfileBundle addFriendPath(FriendPath friendPath) {
 //			return addBundle(friendPath);
 //		}
+		UserProfileBundle addLastonline(Lastonline lastonline) {
+			if (lastonline!=null) {
+				this.put("lastOnline", lastonline.getTimestamp().toLocalDate());
+			}
+			return this;
+		}
 		
 	}
 

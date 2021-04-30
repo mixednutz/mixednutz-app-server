@@ -3,8 +3,10 @@ package net.mixednutz.app.server.manager.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,12 +94,16 @@ public class NotificationManagerImpl implements NotificationManager {
 	
 	protected void sendCommentEmail(AbstractPostComment comment) {
 		LOG.info("Sending email notification for comment {}", comment.getUri());
-		List<UserEmailAddress> emailAddressesToSend = new ArrayList<>();
-		//Post Author
-		emailAddressRepository.findByUserAndPrimaryTrue(
-				comment.getPost().getAuthor())
-				.ifPresent(emailAddress->emailAddressesToSend.add(emailAddress));
-		//If Replied to Comment
+		Set<UserEmailAddress> emailAddressesToSend = new LinkedHashSet<>();
+		//Post Author - exclude author of new comment
+		if (!comment.getPost().getAuthor().getUserId().equals(
+				comment.getAuthor().getUserId())) {
+			emailAddressRepository.findByUserAndPrimaryTrue(
+					comment.getPost().getAuthor())
+					.ifPresent(emailAddress->emailAddressesToSend.add(emailAddress));
+		}
+		
+		//If Replied to Comment - exclude author of new comment
 		if (comment.getInReplyTo()!=null && 
 				!comment.getInReplyTo().getAuthor().getUserId().equals(
 					comment.getAuthor().getUserId())) {

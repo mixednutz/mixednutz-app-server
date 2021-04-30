@@ -70,7 +70,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 	}
 
 	@Override
-	public Oembed toOembed(String path, Integer maxwidth, Integer maxheight, String format, Authentication auth) {
+	public Oembed toOembed(String path, Integer maxwidth, Integer maxheight, String format, Authentication auth, String baseUrl) {
 		Matcher matcher = JOURNAL_PATTERN_REST.matcher(path);
 		if (matcher.matches()) {
 			String username = matcher.group("username");
@@ -80,7 +80,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 			String subjectKey = matcher.group("subjectKey");
 			Optional<Journal> journal = get(username, year, month, day, subjectKey);
 			if (journal.isPresent()) {
-				return toOembedRich(journal.get(), maxwidth, maxheight);
+				return toOembedRich(journal.get(), baseUrl, maxwidth, maxheight);
 			}
 		}
 		return null;
@@ -102,7 +102,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 		return Optional.empty();
 	}
 	
-	private OembedRich toOembedRich(Journal journal, 
+	private OembedRich toOembedRich(Journal journal, String baseUrl, 
 			int maxwidth, int maxheight) {
 		int height = (maxheight > 270 || maxheight <=0) ? 270 : maxheight;
 		int width = (maxwidth > 658 || maxwidth <= 0) ? 658 : maxwidth;

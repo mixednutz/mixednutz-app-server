@@ -21,12 +21,14 @@ import net.mixednutz.app.server.controller.api.NotificationApiController;
 import net.mixednutz.app.server.entity.ComponentSettings;
 import net.mixednutz.app.server.entity.Emoji;
 import net.mixednutz.app.server.entity.EmojiCategory;
+import net.mixednutz.app.server.entity.Lastonline;
 import net.mixednutz.app.server.entity.MenuItem;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.format.FormattingUtils;
 import net.mixednutz.app.server.format.FormattingUtilsImpl;
 import net.mixednutz.app.server.manager.EmojiManager;
 import net.mixednutz.app.server.repository.MenuItemRepository;
+import net.mixednutz.app.server.security.LastonlineFilter;
 
 @ControllerAdvice(basePackages={"net.mixednutz.app.server.controller.web"})
 public class WebControllers {
@@ -44,6 +46,9 @@ public class WebControllers {
 	
 	@Autowired(required=false)
 	protected List<ComponentSettings> componentSettings;
+	
+	@Autowired
+	LastonlineFilter lastonlineFilter;
 	
 	@ModelAttribute("notifications")
 	public List<? extends INotification> getNotificationItems(@AuthenticationPrincipal User user) {
@@ -84,6 +89,11 @@ public class WebControllers {
 			}
 		}
 		return cssFiles;
+	}
+	
+	@ModelAttribute("lastonline")
+	public Lastonline checkLastonline() {
+		return lastonlineFilter.doFilter();
 	}
 
 }

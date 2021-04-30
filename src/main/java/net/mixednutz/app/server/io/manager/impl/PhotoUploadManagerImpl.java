@@ -46,13 +46,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	@Value("${mixednutz.aws.photosBucket:#{null}}")
 	private String photosBucket;
 	
-	private static final String SLASH = "/";
-	private static final String ORIGINAL_SIZE = "original";
-	private static final String LARGE_SIZE = "large";
-	private static final String SMALL_SIZE = "small";
-	private static final String TINY_SIZE = "tiny";
-	private static final String AVATAR_SIZE = "avatar";
-	private static final String BOOK_SIZE = "book";
+	private static final String SLASH = "/";	
 
 	@Autowired
 	private ImageGenerators imageGenerators;
@@ -62,23 +56,23 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
     
     
 	@Override
-	public FileWrapper downloadFile(User user, String filename, String sizeName) throws IOException {
+	public FileWrapper downloadFile(User user, String filename, Size size) throws IOException {
 
 		String contentType = getContentType(filename.substring(
 				filename.lastIndexOf('.')+1, filename.length())); 
 		
-		File file = this.getFile(filename, contentType, sizeName);
+		File file = this.getFile(filename, contentType, size);
 		if (file==null) {
 			LOG.error("getFile({},{},{}) returned null.  Throwing exception", 
-					filename, contentType, sizeName);
+					filename, contentType, size);
 			throw new RuntimeException("No ImageGenerator for "+contentType);
 		}
 		if (!file.exists()) {
 			//Download
-			LOG.info("Pulling {} {} from cloud", sizeName, filename);
-			return downloadCloudFileInternal(user, filename, sizeName);
+			LOG.info("Pulling {} {} from cloud", size, filename);
+			return downloadCloudFileInternal(user, filename, size);
 		}
-		LOG.debug("{} {} exists locally", sizeName, filename);
+		LOG.debug("{} {} exists locally", size, filename);
 		return new FileWrapper(file, contentType);
 	}
 
@@ -87,7 +81,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		return this.uploadFile(user, file, null, false);
 	}
 	
-	public String uploadFile(User user, File file, String size) throws IOException {
+	public String uploadFile(User user, File file, Size size) throws IOException {
 		return this.uploadFile(user, file, null, false, size);
 	}
 
@@ -106,7 +100,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		return file.getName();
 	}
 	
-	public String uploadFile(User user, File file, String renameToFilename, boolean replaceIfExisting, String size) throws IOException {
+	public String uploadFile(User user, File file, String renameToFilename, boolean replaceIfExisting, Size size) throws IOException {
 		if (!file.getParentFile().equals(new File(photosDirectory)) || renameToFilename!=null) {
 			file = replaceLocally(file, renameToFilename, replaceIfExisting);
 		}
@@ -130,7 +124,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	}
 	
 	@Override
-	public String uploadFile(User user, PersistableFile persistableFile, String size) throws IOException {
+	public String uploadFile(User user, PersistableFile persistableFile, Size size) throws IOException {
 		File localOriginal = uploadLocally(persistableFile.getInputStream(), persistableFile.getContentType());
 
 		uploadToCloud(user, localOriginal, persistableFile.getContentType(), false, size);
@@ -149,27 +143,29 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	 */
 	
 	protected CloudUploadWorker getCloudWorker(User user, final File file, 
-			String contentType, boolean replaceIfExisting, final String size) {
+			String contentType, boolean replaceIfExisting, final Size size) {
 		return new CloudUploadWorker(file,contentType, user.getUserId(), size, replaceIfExisting) {
 			@Override
 			File getSourceFile(PersistableFile persistableFile) {
 				LOG.debug("Generating {} version of {}", size, file.getName());
-				if (LARGE_SIZE.equals(size)) {
+				switch (size) {
+				case LARGE:
 					return imageGenerators.generateLargeFeature(persistableFile);
-				} else if (SMALL_SIZE.equals(size)) {
+				case SMALL:
 					return imageGenerators.generateSmallFeature(persistableFile);
-				} else if (TINY_SIZE.equals(size)) {
+				case TINY:
 					return imageGenerators.generateTinyFeature(persistableFile);
-				} else if (AVATAR_SIZE.equals(size)) {
+				case AVATAR:
 					return imageGenerators.generateLargeAvatar(persistableFile);
-				} else if (BOOK_SIZE.equals(size)) {
+				case BOOK:
 					return imageGenerators.generateCover(persistableFile);
+				default:
+					throw new UnsupportedOperationException("Unknown size : "+size);
 				}
-				throw new UnsupportedOperationException("Unknown size : "+size);
 			}};
 	}
 	
-	protected void uploadToCloud(User user, final File file, String contentType, boolean replaceIfExisting, String size) {
+	protected void uploadToCloud(User user, final File file, String contentType, boolean replaceIfExisting, Size size) {
 		//Syncronous uploader
 		Executor executor = new Executor() {
 			@Override
@@ -189,20 +185,20 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		
 		//Upload Original
 		executor.execute(
-				new CloudUploadWorker(file, contentType, user.getUserId(), ORIGINAL_SIZE, replaceIfExisting) {
+				new CloudUploadWorker(file, contentType, user.getUserId(), Size.ORIGINAL, replaceIfExisting) {
 					@Override
 					File getSourceFile(PersistableFile persistableFile) {
 						return localFile;
 					}});
 		
 		//Upload Large Feature
-		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, LARGE_SIZE));
+		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, Size.LARGE));
 		//Upload Small Feature
-		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, SMALL_SIZE));
+		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, Size.SMALL));
 		//Upload Small Feature
-		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, TINY_SIZE));
+		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, Size.TINY));
 		//Upload Large Avatar
-		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, AVATAR_SIZE));
+		executor.execute(getCloudWorker(user, file, contentType, replaceIfExisting, Size.AVATAR));
 				
 		executor.shutdown();
 		try {
@@ -212,23 +208,33 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		}
 	}
 	
-	protected FileWrapper downloadCloudFileInternal(User user, String filename, String sizeName) throws IOException {
-		try (S3Object s3object = downloadFromCloud(photosBucket, getCloudFileName(filename, user.getUserId(), sizeName))) {
+	protected FileWrapper downloadCloudFileInternal(User user, String filename, Size size) throws IOException {
+		try (S3Object s3object = downloadFromCloud(photosBucket, getCloudFileName(filename, user.getUserId(), size))) {
 			File file;
 			String contentType = s3object.getObjectMetadata().getContentType();
-			if (ORIGINAL_SIZE.equalsIgnoreCase(sizeName)) {
+			switch (size) {
+			case ORIGINAL:
 				file = new File(photosDirectory, filename);
-			} else if (LARGE_SIZE.equalsIgnoreCase(sizeName)) {
+				break;
+			case LARGE:
 				file = imageGenerators.getLargeFeatureFilename(filename, contentType);
-			} else if (SMALL_SIZE.equalsIgnoreCase(sizeName)) {
+				break;
+			case SMALL:
 				file = imageGenerators.getSmallFeatureFilename(filename, contentType);
-			} else if (TINY_SIZE.equalsIgnoreCase(sizeName)) {
+				break;
+			case TINY:
 				file = imageGenerators.getTinyFeatureFilename(filename, contentType);
-			} else if (AVATAR_SIZE.equalsIgnoreCase(sizeName)) {
+				break;
+			case AVATAR:
 				file = imageGenerators.getLargeAvatarFilename(filename, contentType);
-			} else {
-				throw new RuntimeException("Unknown size: "+sizeName);
+				break;
+			case BOOK:
+				file = imageGenerators.getCoverFilename(filename, contentType);
+				break;
+			default:
+				throw new RuntimeException("Unknown size: "+size);
 			}
+			
 			if (!file.exists()) {
 				saveFile(s3object.getObjectContent(), file);
 			}
@@ -258,12 +264,12 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		Files.copy(in, target);
 	}
 	
-	protected String getCloudFileName(File file, Long userId, String size) {
+	protected String getCloudFileName(File file, Long userId, Size size) {
 		return getCloudFileName(file.getName(), userId, size);
 	}
 	
-	protected String getCloudFileName(String filename, Long userId, String size) {
-		return userId+SLASH+(size!=null?size+SLASH:"")+filename;
+	protected String getCloudFileName(String filename, Long userId, Size size) {
+		return userId+SLASH+(size!=null?size.getSize()+SLASH:"")+filename;
 	}
 	
 	protected PutObjectResult uploadToCloud(File file, String bucketName, String filename) throws IOException {
@@ -313,26 +319,22 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 	 * @param filename
 	 * @return
 	 */
-	protected File getFile(String filename, String contentType, String sizeName) {
-		if (ORIGINAL_SIZE.equalsIgnoreCase(sizeName)) {
+	protected File getFile(String filename, String contentType, Size size) {
+		switch (size) {
+		case ORIGINAL:
 			return new File(photosDirectory, filename);
-		}
-		if (LARGE_SIZE.equalsIgnoreCase(sizeName)) {
+		case LARGE:
 			return imageGenerators.getLargeFeatureFilename(filename, contentType);
-		}
-		if (SMALL_SIZE.equalsIgnoreCase(sizeName)) {
+		case SMALL:
 			return imageGenerators.getSmallFeatureFilename(filename, contentType);
-		}
-		if (TINY_SIZE.equalsIgnoreCase(sizeName)) {
+		case TINY:
 			return imageGenerators.getTinyFeatureFilename(filename, contentType);
-		}
-		if (AVATAR_SIZE.equalsIgnoreCase(sizeName)) {
+		case AVATAR:
 			return imageGenerators.getLargeAvatarFilename(filename, contentType);
-		}
-		if (BOOK_SIZE.equalsIgnoreCase(sizeName)) {
+		case BOOK:
 			return imageGenerators.getCoverFilename(filename, contentType);
 		}
-		throw new RuntimeException("Unknown size: "+sizeName);
+		throw new RuntimeException("Unknown size: "+size);
 	}
 	
 	/***
@@ -381,14 +383,14 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		final File localFile;
 		final String contentType;
 		final Long userId;
-		final String sizeName;
+		final Size size;
 		final boolean replaceIfExisting;
 		
-		CloudUploadWorker(File localFile, String contentType, Long userId, String sizeName, boolean replaceIfExisting) {
+		CloudUploadWorker(File localFile, String contentType, Long userId, Size size, boolean replaceIfExisting) {
 			this.localFile = localFile;
 			this.contentType = contentType;
 			this.userId = userId;
-			this.sizeName = sizeName;
+			this.size = size;
 			this.replaceIfExisting = replaceIfExisting;
 		}
 		
@@ -398,7 +400,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 		public void run() {
 			LOG.debug("Working on local file {} size: {}", localFile.getName(), localFile.length());
 			try (FileWrapper pFile = new FileWrapper(localFile, contentType)) {
-				String filename = getCloudFileName(pFile.getFile(), userId, sizeName);
+				String filename = getCloudFileName(pFile.getFile(), userId, size);
 				if (photosBucket==null) {
 					LOG.warn("photoBucket is not set.  Local copies are not uploaded to cloud.");
 					File sourceFile = getSourceFile(pFile);
@@ -419,7 +421,7 @@ public class PhotoUploadManagerImpl implements PhotoUploadManager {
 					LOG.debug("Finished uploading {} to {}/{}", new Object[]{localFile.getAbsolutePath(), photosBucket, filename});
 				}
 			} catch (Exception e) {
-				LOG.error("Unable to upload "+localFile.getAbsolutePath()+" "+sizeName, e);
+				LOG.error("Unable to upload "+localFile.getAbsolutePath()+" "+size, e);
 			} catch (Throwable t) {
 				LOG.error("WTF!", t);
 				t.printStackTrace();
