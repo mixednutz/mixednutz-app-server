@@ -17,7 +17,6 @@ page.setup = function() {
 };
 
 page.registerElementCallback = function(callback) {
-	console.log('Register callback:'+callback);
 	page.elementCallbacks.push(callback);
 }
 
@@ -195,13 +194,13 @@ page.setupProfile = function() {
 		} else {
 			$('.profile .membersince').remove();
 		}
-		/*if (page.ownerBundle.page.lastlogin!=null) {
+		if (page.ownerBundle.lastOnline!=null) {
 			$('.profile .lastlogin time') 
-				.attr('datetime', page.ownerBundle.page.lastlogin)
-				.text(new Date(page.ownerBundle.page.lastlogin).toLocaleDateString());
+				.attr('datetime', page.ownerBundle.lastOnline)
+				.text(new Date(page.ownerBundle.lastOnline).toLocaleDateString());
 		} else {
 			$('.profile .lastlogin').remove();
-		}*/
+		}
 		
 		$('.profile .followers .followingCount').text(page.ownerBundle.followingCount);
 		$('.profile .followers .followerCount').text(page.ownerBundle.followerCount);
