@@ -125,7 +125,7 @@ public class RssTimelineController {
 		channel.setTitle(accessor.getMessage("site.title"));
 		channel.setDescription(accessor.getMessage("rss.description"));
 		String channelLink = UriComponentsBuilder
-				.fromHttpUrl(formatter.formatAbsoluteUrl("/rss/" + username))
+				.fromHttpUrl(formatter.formatAbsoluteUrl("/" + username))
 				.queryParam("utm_source", "channel")
 				.queryParam("utm_medium", "rss")
 				.queryParam("utm_campaign", "post")

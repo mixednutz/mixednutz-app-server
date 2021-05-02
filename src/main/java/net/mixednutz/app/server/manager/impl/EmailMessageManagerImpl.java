@@ -9,6 +9,7 @@ import java.util.stream.StreamSupport;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
@@ -48,39 +48,42 @@ public class EmailMessageManagerImpl implements EmailMessageManager {
 	public void send(String templateName, EmailMessage message, Map<String, Object> model) {
 
 		try {
-			mailSender.send(new MimeMessagePreparator[] {
-					
-					(msg)->{
-						MimeMessageHelper helper = new MimeMessageHelper(msg);
+			MimeMessage msg = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(msg);
+			
+			//TO
+			setTo(helper, message);
+			
+			//BCC
+			setLogAsBcc(helper, message);
+			
+			//FROM
+			if (message.getFrom()!=null) {
+				setNoReply(helper);
+			} else {
+//				setUserAsFrom(helper);
+				setDefaultAsFrom(helper);
+			}
+			
+			//Subject
+			LOG.info("Subject: {}",message.getSubject());
+			helper.setSubject(message.getSubject());
+			
+			//Body
+			String body = processTemplate(templateName, model);
+			LOG.info("Body: {}",body);
+			helper.setText(body, true);
 						
-						//TO
-						setTo(helper, message);
-						
-						//BCC
-						setLogAsBcc(helper, message);
-						
-						//FROM
-						if (message.getFrom()!=null) {
-							setNoReply(helper);
-						} else {
-//							setUserAsFrom(helper);
-							setDefaultAsFrom(helper);
-						}
-						
-						//Subject
-						LOG.info("Subject: {}",message.getSubject());
-						helper.setSubject(message.getSubject());
-						
-						//Body
-						String body = processTemplate(templateName, model);
-						LOG.info("Body: {}",body);
-						helper.setText(body, true);
-					}
-			});
+			LOG.info("Sending msg");
+			mailSender.send(msg);
 		} catch (MailException me) {
 			LOG.error("Error sending email", me);
 			// remove this after testing
 			throw me;
+		} catch (UnsupportedEncodingException | MessagingException e) {
+			LOG.error("Error build email message", e);
+			// remove this after testing
+			throw new RuntimeException("Error build email message", e);
 		}
 	}
 	
