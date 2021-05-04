@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
@@ -125,7 +126,12 @@ public class NotificationManagerImpl implements NotificationManager {
 		model.put("entity", element);
 		model.put("siteEmailName", siteEmailName);
 		model.put("commentType", "comment");		
-		model.put("commentUrl", networkInfo.getBaseUrl()+comment.getUri());
+		String url = UriComponentsBuilder
+				.fromHttpUrl(networkInfo.getBaseUrl()+comment.getUri())
+				.queryParam("utm_source","comment_email")
+				.queryParam("utm_medium","email")
+				.build().toUriString();
+		model.put("commentUrl", url);
 				
 		emailManager.send("html/newcomment", msg, model);
 	}
