@@ -102,3 +102,15 @@ margin-bottom: 0px;
 .socmed-author-deviantart a{
 	color:#05CC46;
 }
+
+.reactions-list .reaction {
+	font-size: 2em;
+}
+.reaction-btn-group .reaction {
+	font-size: 1.25em;
+	padding: 3px;
+}
+.panel-group .emoji {
+	font-size: 2em;
+	padding: 3px;
+}

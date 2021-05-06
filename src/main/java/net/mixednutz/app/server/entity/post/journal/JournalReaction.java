@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.AbstractReaction;
+import net.mixednutz.app.server.entity.post.Post;
 
 @Entity
 @DiscriminatorValue(JournalReaction.TYPE)
@@ -61,6 +62,19 @@ public class JournalReaction extends AbstractReaction {
 	@Transient
 	public String getParentUri() {
 		return journal.getUri();
+	}
+	
+	@Override
+	public <P extends Post<?>> void setPost(P post) {
+		this.journal = (Journal) post;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transient
+	@JsonIgnore
+	public <P extends Post<?>> P getPost() {
+		return (P) journal;
 	}
 	
 }

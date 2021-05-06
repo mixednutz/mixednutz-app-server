@@ -24,18 +24,18 @@
 			role="group"
 			th:attr="data-entity-uri=${uri!=null?uri:''}, data-parent-div=${divClass!=null?'.'+divClass:''}">
 			<button th:each="reactionScore, iterStat : ${reactionScores}"
-				th:class="@{|btn btn-xs ${reactionScore.userIncluded?'btn-info':'btn-default'} reaction reaction_${reactionScore.emoji.id} toggleReaction|}"
+				th:class="@{|btn ${reactionScore.userIncluded?'btn-info':'btn-default'} reaction reaction_${reactionScore.emoji.id} toggleReaction|}"
 				th:attr="data-emoji=${reactionScore.emoji.id}" type="button">
 				<span class="emoji" th:utext="${reactionScore.emoji.htmlCode}"
 					th:title="${reactionScore.emoji.description}">&x#x601a;</span> <span
 					class="badge score" th:text="${reactionScore.score}">4</span>
 			</button>
-			<button class="btn btn-xs btn-default newReaction" type="button"
+			<button class="btn btn-default newReaction" type="button"
 				data-toggle="modal" data-target="#reactModal">
 				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				New Reaction
 			</button>
-			<button class="btn btn-xs btn-default viewReactions" type="button"
+			<button class="btn btn-default viewReactions" type="button"
 				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				View <span class="caret"></span>
 			</button>
@@ -136,7 +136,6 @@
 									.removeClass('btn-default').addClass(
 											'btn-info');
 							score++;
-							//$('<li id="reaction_'+data.id+'"><span class="emoji">'+data.emojiCode+'</span><span>'+data.reactorId+'</span></li>').appendTo(parent);
 						} else {
 							parent.find('button.reaction_' + emojiId)
 									.removeClass('btn-info').addClass(

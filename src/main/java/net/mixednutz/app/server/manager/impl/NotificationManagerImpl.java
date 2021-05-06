@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
@@ -20,6 +21,7 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserEmailAddress;
 import net.mixednutz.app.server.entity.post.AbstractNotification;
 import net.mixednutz.app.server.entity.post.AbstractPostComment;
+import net.mixednutz.app.server.entity.post.AbstractReaction;
 import net.mixednutz.app.server.entity.post.CommentReplyNotification;
 import net.mixednutz.app.server.entity.post.GroupedPosts;
 import net.mixednutz.app.server.entity.post.Post;
@@ -125,24 +127,16 @@ public class NotificationManagerImpl implements NotificationManager {
 		model.put("entity", element);
 		model.put("siteEmailName", siteEmailName);
 		model.put("commentType", "comment");		
-		model.put("commentUrl", networkInfo.getBaseUrl()+comment.getUri());
+		String url = UriComponentsBuilder
+				.fromHttpUrl(networkInfo.getBaseUrl()+comment.getUri())
+				.queryParam("utm_source","comment_email")
+				.queryParam("utm_medium","email")
+				.build().toUriString();
+		model.put("commentUrl", url);
 				
 		emailManager.send("html/newcomment", msg, model);
 	}
 	
-	public void notifyNewCommentReply(AbstractPostComment replyTo, AbstractPostComment comment) {
-		if (!replyTo.getAuthor().getUserId().equals(comment.getAuthor().getUserId())) {
-			//Don't make notification when author replies to own post
-			
-			PostNotification notification = new CommentReplyNotification(replyTo.getAuthor().getUserId(), replyTo, comment);
-			notificationRepository.save((AbstractNotification) notification);
-//			webPushService.send(notification.getAccountId(), getCommentNotificationItem(
-//					dequeEntry(replyTo, notification)));
-		}
-	}
-
-
-
 	@Override
 	public <P extends Post<C>, C extends PostComment, R extends PostReaction> void notifyNewReaction(P reactedTo,
 			R reaction) {
@@ -160,7 +154,55 @@ public class NotificationManagerImpl implements NotificationManager {
 			}
 			
 			notificationRepository.save((AbstractNotification) notification);
-//			commentManager.sendEmail(comment);
+//			webPushService.send(notification.getAccountId(), getCommentNotificationItem(
+//					dequeEntry(replyTo, notification)));
+		}
+		if (reaction instanceof AbstractReaction) {
+			AbstractReaction aReaction = (AbstractReaction) reaction;
+			sendReactionEmail(aReaction);
+		}
+	}
+	
+	protected void sendReactionEmail(AbstractReaction reaction) {
+		LOG.info("Sending email notification for comment {}", reaction.getParentUri());
+		Set<UserEmailAddress> emailAddressesToSend = new LinkedHashSet<>();
+		//Post Author - exclude author of new comment
+		if (!reaction.getPost().getAuthor().getUserId().equals(
+				reaction.getReactorId())) {
+			emailAddressRepository.findByUserAndPrimaryTrue(
+					reaction.getPost().getAuthor())
+					.ifPresent(emailAddress->emailAddressesToSend.add(emailAddress));
+		}
+		
+		emailAddressesToSend.forEach((emailAddress->sendReactionEmail(reaction, emailAddress)));
+	}
+	
+	protected void sendReactionEmail(AbstractReaction reaction, UserEmailAddress userEmailAddress) {
+		LOG.info("Sending email notification for reaction {} to {}", reaction.getParentUri(), userEmailAddress.getEmailAddress());
+		EmailMessage msg = new EmailMessage();
+		InternalTimelineElement element = apiManager.toTimelineElement(reaction.getPost(), null);
+		msg.setTo(Collections.singleton(userEmailAddress));
+		msg.setSubject("New Reaction for "+element.getTitle());
+		
+		Map<String, Object> model = new HashMap<>();
+		model.put("entity", element);
+		model.put("siteEmailName", siteEmailName);	
+		String url = UriComponentsBuilder
+				.fromHttpUrl(networkInfo.getBaseUrl()+reaction.getParentUri())
+				.queryParam("utm_source","reaction_email")
+				.queryParam("utm_medium","email")
+				.build().toUriString();
+		model.put("reactionUrl", url);
+				
+		emailManager.send("html/newreaction", msg, model);
+	}
+	
+	public void notifyNewCommentReply(AbstractPostComment replyTo, AbstractPostComment comment) {
+		if (!replyTo.getAuthor().getUserId().equals(comment.getAuthor().getUserId())) {
+			//Don't make notification when author replies to own post
+			
+			PostNotification notification = new CommentReplyNotification(replyTo.getAuthor().getUserId(), replyTo, comment);
+			notificationRepository.save((AbstractNotification) notification);
 //			webPushService.send(notification.getAccountId(), getCommentNotificationItem(
 //					dequeEntry(replyTo, notification)));
 		}
