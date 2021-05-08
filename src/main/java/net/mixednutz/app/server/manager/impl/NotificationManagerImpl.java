@@ -1,5 +1,6 @@
 package net.mixednutz.app.server.manager.impl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,9 +127,9 @@ public class NotificationManagerImpl implements NotificationManager {
 		Map<String, Object> model = new HashMap<>();
 		model.put("entity", element);
 		model.put("siteEmailName", siteEmailName);
-		model.put("commentType", "comment");		
+		model.put("commentType", "comment");	
 		String url = UriComponentsBuilder
-				.fromHttpUrl(networkInfo.getBaseUrl()+comment.getUri())
+				.fromUri(URI.create(networkInfo.getBaseUrl()+comment.getUri()))
 				.queryParam("utm_source","comment_email")
 				.queryParam("utm_medium","email")
 				.build().toUriString();
