@@ -106,6 +106,11 @@ margin-bottom: 0px;
 .reactions-list .reaction {
 	font-size: 2em;
 }
+.reactions-list .reaction .label.score {
+	font-size: 45%;
+	border-radius: 1em;
+	margin-left: -.5em;
+}
 .reaction-btn-group .reaction {
 	font-size: 1.25em;
 	padding: 3px;
