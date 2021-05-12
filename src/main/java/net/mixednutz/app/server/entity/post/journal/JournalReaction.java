@@ -23,13 +23,9 @@ public class JournalReaction extends AbstractReaction {
 	
 	private Journal journal;
 	
-	public JournalReaction(Journal journal, String emojiId) {
-		super(TYPE, emojiId);
-		this.journal = journal;
-	}
-	
 	public JournalReaction(Journal journal, String emojiId, User user) {
 		super(TYPE, emojiId, user.getUserId());
+		this.setReactor(user);
 		this.journal = journal;
 	}
 
