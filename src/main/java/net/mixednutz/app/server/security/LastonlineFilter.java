@@ -2,6 +2,8 @@ package net.mixednutz.app.server.security;
 
 import java.time.ZonedDateTime;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,17 @@ public class LastonlineFilter {
 	private static final Logger logger = LoggerFactory.getLogger(LastonlineFilter.class);
 	
 	@Autowired
-	LastonlineRepository lastonlineRepository;
-		
+	private LastonlineRepository lastonlineRepository;
+			
 	//Roles to log the last online timestamp
 	private String[] rolesToLog = new String[] {"ROLE_ADMIN","ROLE_USER"};
+	
+	private HttpServletRequest request;
+
+    @Autowired
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
 	
 	public Lastonline doFilter() {
 		
@@ -38,6 +47,17 @@ public class LastonlineFilter {
         	}
         }
         return null;
+	}
+	
+	protected String getClientIpAddress() {
+		String remoteAddr = "";
+		if (request != null) {
+		    remoteAddr = request.getHeader("X-FORWARDED-FOR");
+		    if (remoteAddr == null || "".equals(remoteAddr)) {
+		    	remoteAddr = request.getRemoteAddr();
+		    }
+		}
+		return remoteAddr;
 	}
 	
 	protected boolean isAuthorized(Authentication auth) {
@@ -56,6 +76,7 @@ public class LastonlineFilter {
 				.orElse(new Lastonline(user));
 		
 		lastonline.setTimestamp(ZonedDateTime.now());
+		lastonline.setIpAddress(getClientIpAddress());
 		lastonline = lastonlineRepository.save(lastonline);
 		
 		if (logger.isDebugEnabled()) {
