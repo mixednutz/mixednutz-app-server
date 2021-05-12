@@ -291,8 +291,6 @@
         <!-- Posted Comments -->
         <div id="comments" class="comments" th:include="common/fragments_comments :: post_comments (${journal})">Comments</div>
             
-        <div sec:authorize="!isAuthenticated()" th:replace="google_adsense :: horizontal_ad"></div>
-                
         <hr/>
         
         <div sec:authorize="!isAuthenticated()" th:replace="google_adsense :: horizontal_ad"></div>
