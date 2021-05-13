@@ -15,6 +15,7 @@ public class Lastonline {
 
 	private Long userId;
 	private ZonedDateTime timestamp;
+	private String ipAddress;
 	
 	public Lastonline() {
 		super();
@@ -49,6 +50,13 @@ public class Lastonline {
 	}
 	public void setTimestamp(ZonedDateTime timestamp) {
 		this.timestamp = timestamp;
+	}
+	@Column(name="ip_address")
+	public String getIpAddress() {
+		return ipAddress;
+	}
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 	
 }

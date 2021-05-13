@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import net.mixednutz.api.core.model.NetworkInfo;
+import net.mixednutz.api.model.IUserSmall;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserEmailAddress;
@@ -121,11 +122,13 @@ public class NotificationManagerImpl implements NotificationManager {
 		LOG.info("Sending email notification for comment {} to {}", comment.getUri(), userEmailAddress.getEmailAddress());
 		EmailMessage msg = new EmailMessage();
 		InternalTimelineElement element = apiManager.toTimelineElement(comment.getPost(), null);
+		IUserSmall user = apiManager.toUser(comment.getAuthor());
 		msg.setTo(Collections.singleton(userEmailAddress));
 		msg.setSubject("New Comment for "+element.getTitle());
 		
 		Map<String, Object> model = new HashMap<>();
 		model.put("entity", element);
+		model.put("user", user);
 		model.put("siteEmailName", siteEmailName);
 		model.put("commentType", "comment");	
 		String url = UriComponentsBuilder
@@ -182,11 +185,13 @@ public class NotificationManagerImpl implements NotificationManager {
 		LOG.info("Sending email notification for reaction {} to {}", reaction.getParentUri(), userEmailAddress.getEmailAddress());
 		EmailMessage msg = new EmailMessage();
 		InternalTimelineElement element = apiManager.toTimelineElement(reaction.getPost(), null);
+		IUserSmall user = apiManager.toUser(reaction.getReactor());
 		msg.setTo(Collections.singleton(userEmailAddress));
 		msg.setSubject("New Reaction for "+element.getTitle());
 		
 		Map<String, Object> model = new HashMap<>();
 		model.put("entity", element);
+		model.put("user", user);
 		model.put("siteEmailName", siteEmailName);	
 		String url = UriComponentsBuilder
 				.fromHttpUrl(networkInfo.getBaseUrl()+reaction.getParentUri())

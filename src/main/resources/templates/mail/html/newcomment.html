@@ -7,7 +7,7 @@
   
   	<h1>New <span th:text="${commentType}">commentType</span> at <span th:text="${siteEmailName}">site.title</span> for <span th:text="${entity.title}">entity.title</span></h1>
   	
-  	<p>You have received a new <span th:text="${commentType}">commentType</span> at <span th:text="${siteEmailName}">site.title</span> for <span th:text="${entity.title}">entity.title</span>. You can view your new <span th:text="${commentType}">commentType</span> at the following link.</p>
+  	<p>You have received a new <span th:text="${commentType}">commentType</span> by <a th:href="${user.url}" th:text="${user.username}">user.username</a> for <span th:text="${entity.title}">entity.title</span>. You can view your new <span th:text="${commentType}">commentType</span> at the following link.</p>
   	
   	<div style="background: #DEF; padding:2px; border: 1px solid #CCC; text-align:center; font-family:verdana;">
 		<a th:href="${commentUrl}" href="#" style="font-size: 1.4em;">Read <span th:text="${commentType}">commentType</span></a>
