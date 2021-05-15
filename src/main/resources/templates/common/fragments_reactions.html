@@ -43,9 +43,9 @@
 				<li th:each="reaction, iterStat: ${reactions}"
 					th:id="${'reaction_'+reaction.id}"><span class="emoji"
 					th:utext="${reaction.emoji.htmlCode}">&x#x601a;</span> <span
-					th:if="${reaction.reactor!=null}"
-					th:text="${reaction.reactor.username}">username</span> <span
-					th:if="${reaction.reactor==null}">Non-MixedNutz Member</span></li>
+					th:if="${reaction.reactorUsername!=null}"
+					th:text="${reaction.reactorUsername}">username</span> <span
+					th:if="${reaction.reactorUsername==null}">Non-MixedNutz Member</span></li>
 			</ul>
 
 		</span>
