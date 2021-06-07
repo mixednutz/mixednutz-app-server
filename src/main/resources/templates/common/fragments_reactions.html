@@ -159,12 +159,20 @@
 							var emojiId = $(this).data('emoji-id');
 							var posturl = apiurl + reactionUrl + '?emojiId='
 									+ emojiId;
+							console.log(parentSelector);
 							$
 									.post(
 											posturl,
 											function(data, status) {
 												for (i in data) {
 													var emojiId = data[i].emojiId;
+													console.log(parentSelector
+															+ ' button.reaction_'
+															+ emojiId);
+													console.log($(parentSelector
+															+ ' button.reaction_'
+															+ emojiId).length);
+													
 													if ($(parentSelector
 															+ ' button.reaction_'
 															+ emojiId).length > 0) {
@@ -192,6 +200,11 @@
 																		+ ' .score')
 																.text(score);
 													} else {
+														console.log(parentSelector
+																+ ' button.newReaction');
+														console.log($(parentSelector
+																+ ' button.newReaction'));
+														
 														$(
 																'<button class="btn btn-xs btn-info reaction reaction_'+emojiId+' toggleReaction" data-emoji="'+emojiId+'" type="button">'
 																		+ '<span class="emoji">'
