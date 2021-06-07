@@ -18,6 +18,7 @@ import net.mixednutz.app.server.entity.User;
 public class UserController extends BaseUserController {
 	
 	private static final String USER_SIGNUP_FORM_VIEW = "signup/user_new";
+	private static final String FORGOTPW_FORM_VIEW = "forgotpw/forgotpw";
 		
 	@RequestMapping(value={"/signup"}, method=RequestMethod.GET)
 	public String signup(Model model) {
@@ -36,5 +37,10 @@ public class UserController extends BaseUserController {
 		
 		return "redirect:/"; 
 	} 
+	
+	@RequestMapping(value={"/forgotpw"}, method=RequestMethod.GET)
+	public String forgotPassword(Model model) {
+		return FORGOTPW_FORM_VIEW;
+	}
 
 }
