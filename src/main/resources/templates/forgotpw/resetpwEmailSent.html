@@ -23,15 +23,13 @@
 <body>
 
 	<!-- Banner -->
-	<div th:replace="header :: navbar_login">navbar</div>
+	<div th:replace="header :: navbar">navbar</div>
 	
 	<div class="container">
 	
-		<h1>Forgot Password?</h1>
-		
-		<p>I don't have a proper password reset mechanism yet.  So fill out this form, then shoot me an email, a Twitter DM, or a message on Discord to let me know you need your password reset.</p>
+		<h1>E-mail Sent</h1>
 	
-		<div th:include="forgotpw/fragments_forgotpw :: forgotpw_form">Forgot Password</div>
+		<p class="alert alert-success">A link to reset your password has sent to the E-mail address that we have on record.</p>
 	
 	</div>
     
@@ -53,10 +51,9 @@
     ================================================== -->
     <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
     
-     <!-- Google Analytics JavaScript 
- 	================================================== --> 
+    <!-- Google Analytics JavaScript 
+ 	================================================== -->
     <script async th:src="@{|https://www.googletagmanager.com/gtag/js?id=#{google.analytics.trackingId}|}"></script>
     <script th:replace="google_analytics :: tracking"></script>
 </body>
 </html>
-

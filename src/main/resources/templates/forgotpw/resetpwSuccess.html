@@ -8,8 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Language" content="en" />
-	<title th:text="|#{forgotpw.window-title} - #{site.title}|">My Timeline - MixedNutz.net</title>
-	<meta name="description" th:content="#{forgotpw.description}" />
+	<title th:text="|#{resetpw.window-title} - #{site.title}|">My Timeline - MixedNutz.net</title>
+	<meta name="description" th:content="#{resetpw.description}" />
 	
 	<meta rel="icon" th:sizes="#{pwa.icon.sizes}" th:href="@{|#{pwa.icon.href}|}" href="/img/icon-192x192.png" />
 	<meta name="theme-color" th:content="#{pwa.theme-color}"/>
@@ -23,16 +23,15 @@
 <body>
 
 	<!-- Banner -->
-	<div th:replace="header :: navbar_login">navbar</div>
+	<div th:replace="header :: navbar">navbar</div>
 	
 	<div class="container">
 	
-		<h1>Forgot Password?</h1>
-		
-		<p>I don't have a proper password reset mechanism yet.  So fill out this form, then shoot me an email, a Twitter DM, or a message on Discord to let me know you need your password reset.</p>
+		<h1>Success - You password has been updated</h1>
 	
-		<div th:include="forgotpw/fragments_forgotpw :: forgotpw_form">Forgot Password</div>
-	
+		<p class="alert alert-success">Your password has been successfully changed.  You may now log in with your
+		new credentials.</p>
+			
 	</div>
     
     <!-- Footer -->
@@ -41,7 +40,7 @@
     </footer>
     
 
-
+	
 	<!-- Placed at the end of the document so the pages load faster -->	
 	
 	<!-- JQuery 
@@ -53,10 +52,9 @@
     ================================================== -->
     <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
     
-     <!-- Google Analytics JavaScript 
- 	================================================== --> 
+    <!-- Google Analytics JavaScript 
+ 	================================================== -->
     <script async th:src="@{|https://www.googletagmanager.com/gtag/js?id=#{google.analytics.trackingId}|}"></script>
     <script th:replace="google_analytics :: tracking"></script>
 </body>
 </html>
-

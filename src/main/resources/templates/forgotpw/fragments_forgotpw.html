@@ -1,44 +1,53 @@
 <!DOCTYPE html>
-<html lang="en"
-	  xmlns="http://www.w3.org/1999/xhtml"
+
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<head>
-	<meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta http-equiv="Content-Language" content="en" />
-   
-	<title th:text="#{site.title}">site.title</title>
-	<meta name="description" th:content="#{signup.user_new.description}" />
-	
-	<!-- Bootstrap Core CSS -->
-	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
-	
-	
-</head>
-<body>
 
-	<div class="container">
+  <body>
+  
+  	<div th:fragment="forgotpw_form">
+    	
+		<p>Enter in your username OR the email address you registered with:</p>		
+		<h2>Lookup by username:</h2>
+		<div th:if="${#fields.hasErrors('${forgotPasswordForm.*}')}" class="alert alert-error">    
+		        Invalid user
+		    </div>		
+	    <form  class="form-inline" th:object="${forgotPasswordForm}" th:action="@{|forgotpw|}" method="post">
+			<div class="form-group">
+				<label for="username">User Name:</label>
+				<input class="form-control" id="username" th:field="*{username}" required="required" />
+				<input class="btn btn-warning" type="submit" value="Reset Password"/>
+			</div>
+		</form>
+		<h2>Lookup by E-mail address:</h2>
+		<form  class="form-inline" th:object="${forgotPasswordForm}" th:action="@{|forgotpw|}" method="post">
+			<div class="form-group">
+				<label id="email">E-mail Address:</label>
+				<input class="form-control" id="email" type="email" th:field="*{email}" required="required" />
+				<input class="btn btn-warning" type="submit" value="Reset Password"/>
+			</div>
+		</form>
+		
+	</div>
 	
-	<h1 th:text="#{signup.user_new.title}">signup.user_new.title</h1> 
+	<div th:fragment="resetpw_form">
 	
-	<p>Register to join <span th:text="#{site.title}">site.title</span>.</p>
-
-	<form th:action="@{/signup} " th:object="${user}" method="post">
-	
+		<form th:action="@{|/resetpw|}" th:object="${user}" method="post">
+						
 		<div class="username form-group required has-feedback">
-			<label for="username" th:text="#{form.username.label}">form.username.label</label>
-			<input id="username" type="text" th:field="*{username}" autocomplete="username" class="form-control" required="required"/>
+			<label for="username" th:text="#{resetpw.form.username.label}">resetpw.form.username.label</label>
+			<input id="username" type="text" name="username_confirm" autocomplete="username" class="form-control" required="required"/>
+			<small id="username_help" class="form-text text-muted" th:text="#{resetpw.form.username.help}">resetpw.form.username.help</small>
 			<span id="username_feedback" class="form-control-feedback" aria-hidden="true"></span>
 			<span class="message text-danger"></span>
-		</div>
-		
+		</div>					
+						
 		<div class="passwordRaw form-group required has-feedback">
-			<label for="passwordRaw" th:text="#{form.passwordRaw_new.label}">form.passwordRaw_new.label</label>
-			<input id="passwordRaw" th:field="*{passwordRaw}" type="password" autocomplete="new-password" class="form-control" required="required"/>
-			<span id="passwordRaw_feedback" class="form-control-feedback" aria-hidden="true"></span>
-			<span class="message text-danger"></span>
+				<label for="passwordRaw" th:text="#{form.passwordRaw_new.label}">form.passwordRaw_new.label</label>
+				<input id="passwordRaw" th:field="*{passwordRaw}" type="password" autocomplete="new-password" class="form-control" required="required"/>
+				<span id="passwordRaw_feedback" class="form-control-feedback" aria-hidden="true"></span>
+				<span class="message text-danger"></span>
 		</div>
 		
 		
@@ -48,24 +57,16 @@
 			<span class="message text-danger"></span>
 		</div>
 		
-		<input class="btn btn-success btn-lg disabled" type="submit" disabled="disabled" th:value="#{signup.user_new.form.submit}" value="signup.user_new.form.submit"/>
+		<input name="token" type="hidden" th:value="${resetPasswordToken.token}"/>
+		
+		<input class="submitBtn btn btn-warning btn-lg disabled" type="submit" disabled="disabled" th:value="#{resetpw.form.submit}" value="signup.user_new.form.submit"/>
 	
-	</form>
+		
+		</form>
 	
 	</div>
 	
-	<!-- Placed at the end of the document so the pages load faster -->	
-	
-	<!-- JQuery 
-	================================================== -->
-	<script th:src="@{|/webjars/jquery/jquery.min.js|}"></script>
-	
-	
-	<!-- Bootstrap core JavaScript
-    ================================================== -->
-    <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
-      
-    <script th:inline="javascript">
+	<script th:fragment="resetpw_js" th:inline="javascript">
     /*<![CDATA[*/
     var usernameMinLength = /*[[#{form.username.minLength}]]*/ 3;
     var usernameHasError = /*[[#{form.username.error.tooShort}]]*/ 'Too Short';
@@ -117,17 +118,14 @@
 		if ( $('.username.has-feedback').hasClass('has-error') || 
 				$('.passwordRaw.has-feedback').hasClass('has-error') || 
 				$('.passwordConfirm.has-feedback').hasClass('has-error')) {
-			$('.btn-success').prop("disabled",true).addClass('disabled');	 
+			$('.submitBtn').prop("disabled",true).addClass('disabled');	 
 		} else {
-			$('.btn-success').prop("disabled",false).removeClass('disabled');
+			$('.submitBtn').prop("disabled",false).removeClass('disabled');
 		}
     });
     /*]]>*/
     </script>
-
-	 <!-- Google Analytics JavaScript 
- 	================================================== -->
-    <script async th:src="@{|https://www.googletagmanager.com/gtag/js?id=#{google.analytics.trackingId}|}"></script>
-    <script th:replace="google_analytics :: tracking"></script>
-</body>
+  
+  
+  </body>
 </html>
