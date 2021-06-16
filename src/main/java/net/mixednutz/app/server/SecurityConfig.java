@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 
+import net.mixednutz.app.server.controller.web.AuthController;
 import net.mixednutz.app.server.controller.web.UserEmailAddressController;
 import net.mixednutz.app.server.manager.UserService;
 
@@ -137,6 +138,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        			"/v1/search/**",
 	        			"/settings/**",
 	        			"/**/loggedin/**",
+	        			AuthController.AUTH_THEN_REDIRECT_PREFIX,
 	        			"/**/edit",
 	        			"/event/**",
 	        			"/privacy/**").authenticated()

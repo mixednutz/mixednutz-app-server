@@ -111,7 +111,7 @@
 	  	<!-- Reply Form -->
 		<h5>Reply:</h5>
 		<div sec:authorize="!isAuthenticated()">
-		  	<p class="alert bg-info" >You need to logged-in to reply. <a th:href="@{|/signup|}" href="/signup">Register</a> | <a th:href="@{|/login|}" href="/login">Log in</a></p>
+		  	<p class="alert bg-info" >You need to logged-in to reply. <a th:href="@{|/signup|}" href="/signup">Register</a> | <a th:href="@{|/auth${post.uri}?hash=replyForm_${comment.commentId}|}" href="/login">Log in</a></p>
 		</div>
 		<div sec:authorize="isAuthenticated()">
 			<form role="form" th:action="@{|${post.uri}/comment/${comment.commentId}/reply|}"
@@ -127,10 +127,10 @@
 	  
 	  
 	  
-	  <div th:fragment="post_comment_form(post, heading)" class="well">
+	  <div th:fragment="post_comment_form(post, heading)" class="well" id="commentForm">
 		  <h4 th:text="${heading}">Leave a Comment:</h4>
 		  <div sec:authorize="!isAuthenticated()">
-		  	<div class="well">You need to logged-in to leave a comment. <a th:href="@{|/signup|}" href="/signup">Register</a> | <a th:href="@{|/login|}" href="/login">Log in</a></div>
+		  	<div class="well">You need to logged-in to leave a comment. <a th:href="@{|/signup|}" href="/signup">Register</a> | <a th:href="@{|/auth${post.uri}?hash=commentForm|}" href="/login">Log in</a></div>
 		  </div>
 		  <div sec:authorize="isAuthenticated()">
 	          <form role="form" th:action="@{|${post.uri}/comment/new|}" th:object="${newComment}" method="post">
