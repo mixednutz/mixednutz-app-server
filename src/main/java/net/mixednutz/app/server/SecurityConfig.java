@@ -121,6 +121,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     			.and()
 	        .logout()
 	        	.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+			.deleteCookies("JSESSIONID")
 	        	.and()
 //	        .addFilterAfter(lastonlineFilter, AnonymousAuthenticationFilter.class)
         	.authorizeRequests()
