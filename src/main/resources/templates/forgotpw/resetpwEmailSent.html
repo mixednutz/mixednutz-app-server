@@ -8,9 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Language" content="en" />
-   
-	<title th:text="|#{login.window-title} - #{site.title}|">login.window-title - site.title</title>
-	<meta name="description" th:content="#{login.description}" />
+	<title th:text="|#{forgotpw.window-title} - #{site.title}|">My Timeline - MixedNutz.net</title>
+	<meta name="description" th:content="#{forgotpw.description}" />
+	
 	<meta rel="icon" th:sizes="#{pwa.icon.sizes}" th:href="@{|#{pwa.icon.href}|}" href="/img/icon-192x192.png" />
 	<meta name="theme-color" th:content="#{pwa.theme-color}"/>
 		
@@ -19,32 +19,27 @@
 	
 	<link th:href="@{|/css/default_theme.css|}" href="../css/default_theme.css" rel="stylesheet" type="text/css" />
 	
-	
 </head>
 <body>
 
 	<!-- Banner -->
-	<div th:replace="header :: navbar_login">navbar</div>
+	<div th:replace="header :: navbar">navbar</div>
 	
 	<div class="container">
 	
-		<h1 th:text="#{login.title}">login.title</h1>
-    
-	    <p th:text="#{login.text}">login.text</p>
-	    
-	    <p><a th:href="@{|/signup|}" href="/signup">Register Now</a>.  I will only ask for a username and password.  That's it.</p>
-	    
-	    <p><a th:href="@{/forgotpw}" href="/forgotpw">Forgot Your password?</a></p>
-	    
-  		<div class="module" th:include="login/fragments_login :: loginform">Login</div>
-		
-		
-		
-
-    </div>
-
-
+		<h1>E-mail Sent</h1>
 	
+		<p class="alert alert-success">A link to reset your password has sent to the E-mail address that we have on record.</p>
+	
+	</div>
+    
+    <!-- Footer -->
+    <footer th:include="footer :: footer">
+        footer
+    </footer>
+    
+
+
 	<!-- Placed at the end of the document so the pages load faster -->	
 	
 	<!-- JQuery 
@@ -56,8 +51,8 @@
     ================================================== -->
     <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
     
-     <!-- Google Analytics JavaScript 
- 	================================================== --> 
+    <!-- Google Analytics JavaScript 
+ 	================================================== -->
     <script async th:src="@{|https://www.googletagmanager.com/gtag/js?id=#{google.analytics.trackingId}|}"></script>
     <script th:replace="google_analytics :: tracking"></script>
 </body>

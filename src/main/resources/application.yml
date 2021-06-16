@@ -23,6 +23,10 @@ spring:
 
 site.settings.uniqueId: 1
 
+rememberMe:
+  key: ${REMEMBER_ME_KEY:changeme}
+  tokenValiditySeconds: 2592000
+
 mixednutz:
   network-info:
     id: andrewfestadotcom

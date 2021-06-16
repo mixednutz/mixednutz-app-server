@@ -1,10 +1,10 @@
 package net.mixednutz.app.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 
+import net.mixednutz.app.server.controller.web.AuthController;
 import net.mixednutz.app.server.controller.web.UserEmailAddressController;
 import net.mixednutz.app.server.manager.UserService;
 
@@ -26,6 +27,12 @@ import net.mixednutz.app.server.manager.UserService;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	@Value("${rememberMe.key}")
+	private String rememberMeKey;
+	
+	@Value("${rememberMe.tokenValiditySeconds}")
+	private int rememberMeTokenValiditySeconds;
 	
 	@Autowired
 	UserService userService;
@@ -46,10 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    daoProvider.setPasswordEncoder(passwordEncoder());
 	    return daoProvider;
 	}
-	public RememberMeAuthenticationProvider rememberMeProvider() {
-		return new RememberMeAuthenticationProvider("mixedNutzRox");
-	}
-	
+		
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(14);
@@ -59,10 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
-	
 	    auth
-	    	.authenticationProvider(daoProvider())
-	    	.authenticationProvider(rememberMeProvider());
+	    	.authenticationProvider(daoProvider());
 	}
 	
 	@Bean
@@ -108,12 +110,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        	.permitAll()
 	        	.and()
 	        .rememberMe()
+				.key(rememberMeKey).tokenValiditySeconds(rememberMeTokenValiditySeconds)
+				.userDetailsService(userService)
 //	        	.rememberMeServices(chainedRememberMeServices())
 	        	.and()
 	        .httpBasic()
     			.and()
 	        .logout()
 	        	.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+	        	.deleteCookies("JSESSIONID")
 	        	.and()
 //	        .addFilterAfter(lastonlineFilter, AnonymousAuthenticationFilter.class)
         	.authorizeRequests()
@@ -137,6 +142,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        			"/v1/search/**",
 	        			"/settings/**",
 	        			"/**/loggedin/**",
+	        			AuthController.AUTH_THEN_REDIRECT_PREFIX,
 	        			"/**/edit",
 	        			"/event/**",
 	        			"/privacy/**").authenticated()

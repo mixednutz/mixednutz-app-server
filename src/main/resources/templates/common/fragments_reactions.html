@@ -43,9 +43,9 @@
 				<li th:each="reaction, iterStat: ${reactions}"
 					th:id="${'reaction_'+reaction.id}"><span class="emoji"
 					th:utext="${reaction.emoji.htmlCode}">&x#x601a;</span> <span
-					th:if="${reaction.reactor!=null}"
-					th:text="${reaction.reactor.username}">username</span> <span
-					th:if="${reaction.reactor==null}">Non-MixedNutz Member</span></li>
+					th:if="${reaction.reactorUsername!=null}"
+					th:text="${reaction.reactorUsername}">username</span> <span
+					th:if="${reaction.reactorUsername==null}">Non-MixedNutz Member</span></li>
 			</ul>
 
 		</span>
@@ -159,12 +159,20 @@
 							var emojiId = $(this).data('emoji-id');
 							var posturl = apiurl + reactionUrl + '?emojiId='
 									+ emojiId;
+							console.log(parentSelector);
 							$
 									.post(
 											posturl,
 											function(data, status) {
 												for (i in data) {
 													var emojiId = data[i].emojiId;
+													console.log(parentSelector
+															+ ' button.reaction_'
+															+ emojiId);
+													console.log($(parentSelector
+															+ ' button.reaction_'
+															+ emojiId).length);
+													
 													if ($(parentSelector
 															+ ' button.reaction_'
 															+ emojiId).length > 0) {
@@ -192,6 +200,11 @@
 																		+ ' .score')
 																.text(score);
 													} else {
+														console.log(parentSelector
+																+ ' button.newReaction');
+														console.log($(parentSelector
+																+ ' button.newReaction'));
+														
 														$(
 																'<button class="btn btn-xs btn-info reaction reaction_'+emojiId+' toggleReaction" data-emoji="'+emojiId+'" type="button">'
 																		+ '<span class="emoji">'

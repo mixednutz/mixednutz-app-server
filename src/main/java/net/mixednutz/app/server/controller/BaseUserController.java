@@ -23,5 +23,10 @@ public class BaseUserController {
 		user.getRoles().add(new Role(user, USER_ROLE));
 		return userRepository.save(user);
 	}
-
+	
+	protected User encryptPassword(User user) {
+		userService.encryptPassword(user);
+		return userRepository.save(user);
+	}
+	
 }
