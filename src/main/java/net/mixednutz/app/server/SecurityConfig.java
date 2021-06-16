@@ -27,6 +27,12 @@ import net.mixednutz.app.server.manager.UserService;
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
+	@Value("${rememeberMe.key}")
+	String rememberMeKey;
+	
+	@Value("${rememeberMe.tokenValiditySeconds}")
+	long rememberMeTokenValiditySeconds;
+	
 	@Autowired
 	UserService userService;
 	
@@ -108,6 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        	.permitAll()
 	        	.and()
 	        .rememberMe()
+			.key(rememberMeKey).tokenValiditySeconds(rememberMeKeyTokenValiditySeconds)
 //	        	.rememberMeServices(chainedRememberMeServices())
 	        	.and()
 	        .httpBasic()
