@@ -4,12 +4,13 @@ import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import net.mixednutz.api.core.model.ApiList;
 import net.mixednutz.api.model.IUserSmall;
@@ -23,7 +24,7 @@ import net.mixednutz.app.server.repository.LastonlineRepository;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
-@Controller
+@RestController
 @RequestMapping({"/api","/internal"})
 public class ApiUserController {
 	
@@ -45,8 +46,17 @@ public class ApiUserController {
 	@Autowired
 	private ApiManager apiManager;
 	
+	/**
+	 * Simple endpoint to keep the authentication session alive
+	 */
+	@RequestMapping("/keepAlive")
+	@ResponseStatus(value=HttpStatus.NO_CONTENT)
+	public String keepAlive() {
+		return null;
+	}
+	
 	@RequestMapping(value="/{username}/bundle", method = RequestMethod.GET)
-	public @ResponseBody UserProfileBundle getUserTimelineBundle(
+	public UserProfileBundle getUserTimelineBundle(
 			@PathVariable String username,
 			@AuthenticationPrincipal User user) {
 		
@@ -89,7 +99,7 @@ public class ApiUserController {
 	 * @return
 	 */
 	@RequestMapping(value=USER_PROFILE_ENDPOINT, method = RequestMethod.GET)
-	public @ResponseBody IUserSmall loggedInUser(@AuthenticationPrincipal User user) {
+	public IUserSmall loggedInUser(@AuthenticationPrincipal User user) {
 		return apiManager.toUser(user);
 	}
 	

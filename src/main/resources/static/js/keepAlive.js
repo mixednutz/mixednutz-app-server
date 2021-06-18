@@ -1,24 +1,23 @@
 var keepAliveTimer = null;
 
 $(document).ready(function(){
-  console.log('ready');
+  console.log('ready keepAlive listener');
   
   var keepAliveFunction = function(){
-    console.log('keepAlive');
     if (keepAliveTimer != null) {
       clearTimeout(keepAliveTimer);
     }
     keepAliveTimer = setTimeout(function(){
       $.ajax({
-        url: '/keepAlive',
+        url: '/internal/keepAlive',
         type: "GET",
-        xhrFields: {withCredentials: true},
-        success: function(){console.log('success');}
-      }, 3000);
-    });
-  
-    $('body').bind('click keypress scroll', keepAliveFunction);
-    $('textarea input').bind('click keypress', keepAliveFunction);
-        
+        xhrFields: {withCredentials: true}
+      });
+    },3000);
   };
+  
+  $('body').bind('click keypress scroll', keepAliveFunction);
+  $('textarea input').bind('click keypress', keepAliveFunction);
+        
+  
 });

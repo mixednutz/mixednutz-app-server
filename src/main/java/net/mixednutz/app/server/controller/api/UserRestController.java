@@ -27,14 +27,5 @@ public class UserRestController {
 		// return resourceAssembler.toResource(manager.save(user));
 		return null;
 	}
-	
-	/**
-	 * Simple endpoint to keep the authentication session alive
-	 */
-	@RequestMapping("/keepAlive")
-	@ResponseStatus(value=HttpStatus.NO_CONTENT)
-	public @ResponseBody String keepAlive() {
-		return null;
-	}
 
 }
