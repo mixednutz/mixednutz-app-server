@@ -20,6 +20,8 @@ public class SiteSettings {
 	
 	private Page indexPage = Page.SPLASH;
 	
+	private Boolean commentsAllowedDefault = false;
+	
 	public SiteSettings() {
 		super();
 	}
@@ -66,6 +68,14 @@ public class SiteSettings {
 	
 	public void setIndexPage(Page indexPage) {
 		this.indexPage = indexPage;
+	}
+
+	public Boolean getCommentsAllowedDefault() {
+		return commentsAllowedDefault!=null?commentsAllowedDefault:false;
+	}
+
+	public void setCommentsAllowedDefault(Boolean commentsAllowedDefault) {
+		this.commentsAllowedDefault = commentsAllowedDefault;
 	}
 
 	public enum Page {
