@@ -55,6 +55,19 @@ public class ApiUserController {
 		return null;
 	}
 	
+	@RequestMapping(value = "/{username}/exists", method = RequestMethod.GET)
+	@ResponseStatus(value = HttpStatus.NO_CONTENT)
+	public String userExists(@PathVariable String username) {
+		userRepository.findByUsername(username).orElseThrow(new Supplier<UserNotFoundException>() {
+			@Override
+			public UserNotFoundException get() {
+				throw new UserNotFoundException("User " + username + " not found");
+			}
+		});
+
+		return null;
+	}
+	
 	@RequestMapping(value="/{username}/bundle", method = RequestMethod.GET)
 	public UserProfileBundle getUserTimelineBundle(
 			@PathVariable String username,
