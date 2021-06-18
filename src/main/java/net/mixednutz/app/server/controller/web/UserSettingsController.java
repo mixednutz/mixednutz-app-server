@@ -55,6 +55,7 @@ public class UserSettingsController {
 		
 		SettingsForm form = new SettingsForm();
 		form.setIndexPage(siteSettings.getIndexPage());
+		form.setCommentsAllowedDefault(siteSettings.getCommentsAllowedDefault());
 		model.addAttribute("form", form);
 		
 		// Menu
@@ -104,6 +105,7 @@ public class UserSettingsController {
 			//Get the non-cached version so we can save it
 			siteSettings = siteSettingsRepository.findById(user.getUserId()).get();
 			siteSettings.setIndexPage(form.getIndexPage());
+			siteSettings.setCommentsAllowedDefault(form.isCommentsAllowedDefault());
 			siteSettingsManager.save(siteSettings);
 		}
 		
@@ -172,6 +174,7 @@ public class UserSettingsController {
 		Page indexPage;
 		Long[] feedId;
 		VisibilityType[] visibility;
+		boolean commentsAllowedDefault;
 		
 		public Map<Long, VisibilityType> visibilityMap() {
 			Map<Long, VisibilityType> map = new LinkedHashMap<>();
@@ -203,6 +206,12 @@ public class UserSettingsController {
 		}
 		public void setVisibility(VisibilityType[] visibility) {
 			this.visibility = visibility;
+		}
+		public boolean isCommentsAllowedDefault() {
+			return commentsAllowedDefault;
+		}
+		public void setCommentsAllowedDefault(boolean commentsAllowedDefault) {
+			this.commentsAllowedDefault = commentsAllowedDefault;
 		}
 	}
 	

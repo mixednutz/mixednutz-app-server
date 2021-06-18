@@ -23,6 +23,7 @@ import net.mixednutz.app.server.entity.ComponentSettings;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.SiteSettings.Page;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.entity.post.AbstractPost;
 import net.mixednutz.app.server.entity.post.NewPostFactory;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
@@ -89,8 +90,16 @@ public class MainController {
 	}
 	
 	private void addNewPostForms(Model model, User owner) {
+		SiteSettings siteSettings = siteSettingsManager.getSiteSettings();
+		
 		for (NewPostFactory<?> factory: newPostFactories) {
-			factory.newPostForm(model, owner);
+			Object form = factory.newPostForm(model, owner);
+			
+			//Adjust site defaults
+			if (form instanceof AbstractPost) {
+				AbstractPost<?> post = (AbstractPost<?>) form;
+				post.setCommentsAllowed(siteSettings.getCommentsAllowedDefault());
+			}
 		}
 				
 		//New External Feed

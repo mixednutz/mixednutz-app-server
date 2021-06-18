@@ -15,7 +15,8 @@
 	<!-- Bootstrap Core CSS -->
 	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
 	
-	
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 
@@ -65,26 +66,77 @@
     ================================================== -->
     <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script>
       
+    <!-- My JavaScript 
+ 	================================================== -->
+    <script th:replace="common/fragments_js :: common"></script>
     <script th:inline="javascript">
     /*<![CDATA[*/
     var usernameMinLength = /*[[#{form.username.minLength}]]*/ 3;
     var usernameHasError = /*[[#{form.username.error.tooShort}]]*/ 'Too Short';
+    var usernameExistsError = /*[[#{form.username.error.exists}]]*/ 'Username already exists';
     var passwordMinLength = /*[[#{form.passwordRaw_new.minLength}]]*/ 3;
     var passwordRawHasError = /*[[#{form.passwordRaw_new.error.tooShort}]]*/ 'Too Short';
     var passwordConfirmHasError = /*[[#{form.passwordConfirm.error.notMatch}]]*/ 'Password does not match';
+    
+    var usernameExists = false;
+    
+    function validateUsername(val) {
+    	$('#username_feedback').empty();
+			if (val.length<usernameMinLength) {
+				$('#username_feedback').addClass('glyphicon glyphicon-alert');
+				$('.username.has-feedback').addClass('has-error');
+				$('.username .message').html(usernameHasError);
+			} else if (usernameExists) {
+				$('#username_feedback').addClass('glyphicon glyphicon-alert');
+				$('.username.has-feedback').addClass('has-error');
+				$('.username .message').html(usernameExistsError);
+			} else {
+				$('#username_feedback').removeClass('glyphicon glyphicon-remove');
+  			$('.username.has-feedback').removeClass('has-error');
+  			$('.username .message').html('');
+		}
+    }
+    function validate() {
+    	//check for feedback and disable success button if needed
+    	if ( $('.username.has-feedback').hasClass('has-error') || 
+				$('.passwordRaw.has-feedback').hasClass('has-error') || 
+				$('.passwordConfirm.has-feedback').hasClass('has-error')) {
+			$('.btn-success').prop("disabled",true).addClass('disabled');	 
+		} else {
+			$('.btn-success').prop("disabled",false).removeClass('disabled');
+		}
+    }
+    
+    function checkUsername(username) {
+    	console.log(getRelativePath('/internal/'+username+'/exists'))
+    	
+
+    	if (username<passwordMinLength) {
+    		//Dont bother with ajax call
+    		validateUsername(username);
+    		return;
+    	}
+
+    	$.ajax({
+    		async: false,
+			type: 'GET', 
+			url: getRelativePath('/internal/'+username+'/bundle'),
+			dataType: "json",
+			success: function(){
+				usernameExists = true;
+				validateUsername(username);
+			},
+			error: function() {
+				usernameExists = false;
+				validateUsername(username);
+			}
+		});
+	    	
+    }
+    
     $('form input[type="text"],[type="password"]').keyup(function() {
     	if (this.id=='username') {
-    		var val = $(this).val();
-  			$('#username_feedback').empty();
-  			if (val.length<usernameMinLength) {
-  				$('#username_feedback').addClass('glyphicon glyphicon-alert');
-  				$('.username.has-feedback').addClass('has-error');
-  				$('.username .message').html(usernameHasError);
-  			} else {
-  				$('#username_feedback').removeClass('glyphicon glyphicon-remove');
-	  			$('.username.has-feedback').removeClass('has-error');
-	  			$('.username .message').html('');
-  			}
+    		checkUsername($(this).val());
     	}
     	if (this.id=='passwordRaw') {
     		var val = $(this).val();
@@ -113,14 +165,7 @@
     		}
     	}
     	
-    	//check for feedback and disable success button if needed
-		if ( $('.username.has-feedback').hasClass('has-error') || 
-				$('.passwordRaw.has-feedback').hasClass('has-error') || 
-				$('.passwordConfirm.has-feedback').hasClass('has-error')) {
-			$('.btn-success').prop("disabled",true).addClass('disabled');	 
-		} else {
-			$('.btn-success').prop("disabled",false).removeClass('disabled');
-		}
+    	validate();
     });
     /*]]>*/
     </script>
