@@ -445,25 +445,27 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		}
 	}
 	
-	public <P extends IPost> void post(AbstractFeed feed, P post) {
-		consumePostClient(feed, postClient->postClient.postToTimeline(post));
+	public <P extends IPost> ITimelineElement post(AbstractFeed feed, P post) {
+		return withPostClient(feed, postClient->postClient.postToTimeline(post));
 	}
 		
 	@Override
-	public void crosspost(AbstractFeed feed, String text, String url, String[] tags, HttpServletRequest request) {
+	public Optional<ExternalFeedContent> crosspost(AbstractFeed feed, String text, String url, String[] tags, HttpServletRequest request) {
 		if (request!=null) {
-			crosspost(feed, text, url, tags, new ServletRequestParameterPropertyValues(request));
+			return Optional.of(crosspost(feed, text, url, tags, new ServletRequestParameterPropertyValues(request)));
 		}
+		return Optional.empty();
 	}
 	
 	@Override
-	public void crosspost(AbstractFeed feed, String text, String url, String[] tags, Map<String,Object> additionalValues) {
+	public Optional<ExternalFeedContent> crosspost(AbstractFeed feed, String text, String url, String[] tags, Map<String,Object> additionalValues) {
 		if (additionalValues!=null) {
-			crosspost(feed, text, url, tags, new MutablePropertyValues(additionalValues));
+			return Optional.of(crosspost(feed, text, url, tags, new MutablePropertyValues(additionalValues)));
 		}
+		return Optional.empty();
 	}
 	
-	protected void crosspost(AbstractFeed feed, String text, String url, String[] tags, PropertyValues additionalValues) {
+	protected ExternalFeedContent crosspost(AbstractFeed feed, String text, String url, String[] tags, PropertyValues additionalValues) {
 		IPost ipost = instantiatePost(feed)
 				.orElseThrow(() -> new IllegalArgumentException("Feed doesn't support posting"));
 		
@@ -486,7 +488,14 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		ipost.setUrl(url);
 		ipost.setTags(tags);
 		
-		post(feed, ipost);
+		ITimelineElement timelineElement = post(feed, ipost);
+				
+		ExternalFeedContent content = new ExternalFeedContent(feed,
+				externalFeedTimelineElementRepository.save(
+						new ExternalFeedTimelineElement(timelineElement)), 
+				ExternalFeedContent.TimelineType.CROSSPOST);
+		System.out.println(content.getId());
+		return externalFeedContentRepository.save(content);
 	}
 
 	@Override
@@ -786,9 +795,10 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		return function.apply(api);
 	}
 	
-	protected <T> T withPostClient(AbstractFeed feed, Function<PostClient<?>, T> function) {
+	protected <P extends IPost, T> T withPostClient(AbstractFeed feed, Function<PostClient<P>, T> function) {
 		return withMixednutzClient(feed, (api)->{
-			PostClient<?> postClient = api.getPostClient();
+			@SuppressWarnings("unchecked")
+			PostClient<P> postClient = (PostClient<P>) api.getPostClient();
 			if (postClient!=null) {
 				return function.apply(postClient);
 			}

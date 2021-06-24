@@ -234,7 +234,7 @@ public class BaseJournalController {
 		
 //		journal.parseVisibility(user, friendGroupId, groupId);
 		
-		journal = journalRepository.save(journal);
+		Journal savedjournal = journalRepository.save(journal);
 		
 		//Feed Actions
 		if (journal.getScheduled()==null) {
@@ -245,7 +245,14 @@ public class BaseJournalController {
 					externalFeedManager.crosspost(feed, 
 							exportableEntity.getTitle(), 
 							exportableEntity.getUrl(), 
-							tagArray, (HttpServletRequest) request.getNativeRequest());
+							tagArray, (HttpServletRequest) request.getNativeRequest())
+					.ifPresent(crosspost->{
+						if (savedjournal.getCrossposts()==null) {
+							savedjournal.setCrossposts(new HashSet<>());
+						}
+						savedjournal.getCrossposts().add(crosspost);
+						journalRepository.save(savedjournal);
+					});
 				}
 			}
 		}
@@ -273,7 +280,7 @@ public class BaseJournalController {
 //			}
 //		}
 		
-		return journal;
+		return savedjournal;
 	}
 	
 	protected Journal update(Journal form, Long journalId, 

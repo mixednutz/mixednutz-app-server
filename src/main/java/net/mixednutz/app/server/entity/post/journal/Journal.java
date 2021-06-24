@@ -10,6 +10,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -20,9 +22,9 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import net.mixednutz.app.server.entity.CommentsAware;
+import net.mixednutz.app.server.entity.ExternalFeedContent;
 import net.mixednutz.app.server.entity.ReactionsAware;
 import net.mixednutz.app.server.entity.TagsAware;
-
 
 @Entity
 @Table(name="Journal")
@@ -35,6 +37,7 @@ public class Journal extends AbstractJournal<JournalComment> implements
 	private List<JournalComment> comments;
 	private Set<JournalTag> tags;
 	private Set<JournalReaction> reactions;
+	private Set<ExternalFeedContent> crossposts;
 	private Set<JournalView> views;
 	private String filteredBody;
 	
@@ -89,6 +92,12 @@ public class Journal extends AbstractJournal<JournalComment> implements
 		return reactions;
 	}
 	
+	@JoinTable(name="Journal_Crossposts")
+	@ManyToMany(cascade=CascadeType.ALL)
+	public Set<ExternalFeedContent> getCrossposts() {
+		return crossposts;
+	}
+
 	@OneToMany(mappedBy="journal", orphanRemoval=true)
 	public Set<JournalView> getViews() {
 		return views;
@@ -115,6 +124,10 @@ public class Journal extends AbstractJournal<JournalComment> implements
 		this.reactions = reactions;
 	}
 	
+	public void setCrossposts(Set<ExternalFeedContent> crossposts) {
+		this.crossposts = crossposts;
+	}
+
 	public void setViews(Set<JournalView> views) {
 		this.views = views;
 	}
