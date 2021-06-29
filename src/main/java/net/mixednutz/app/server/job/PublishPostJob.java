@@ -1,6 +1,8 @@
 package net.mixednutz.app.server.job;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.mixednutz.api.core.model.NetworkInfo;
+import net.mixednutz.app.server.entity.CrosspostsAware;
+import net.mixednutz.app.server.entity.ExternalFeedContent;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.post.AbstractScheduledPost;
@@ -68,12 +72,34 @@ public class PublishPostJob {
 					LOGGER.info("Crossposting {} to {}", 
 							exportableEntity.getTitle(), 
 							feed.getProviderId());
+					
+					// Get in-reply-to crosspost element
+					ExternalFeedContent inReplyToCrosspost=null;
+					if (scheduledPost.inReplyTo()!=null && scheduledPost.inReplyTo() instanceof CrosspostsAware) {
+						Optional<ExternalFeedContent> first = 
+								((CrosspostsAware) scheduledPost.inReplyTo())
+								.getCrossposts().stream()
+									.filter(cp->cp.getFeed().equals(feed)).findFirst();
+						if (first.isPresent()) {
+							inReplyToCrosspost = first.get();
+						}
+					}	
+					
 					try {
 						externalFeedManager.crosspost(feed, 
 								exportableEntity.getTitle(), 
 								exportableEntity.getUrl(), 
-								tags, 
-								scheduledPost.getExternalFeedData());
+								tags, inReplyToCrosspost,
+								scheduledPost.getExternalFeedData())
+						.ifPresent(crosspost->{
+							if (scheduledPost instanceof CrosspostsAware) {
+								CrosspostsAware crosspostAware = (CrosspostsAware) scheduledPost;
+								if (crosspostAware.getCrossposts()==null) {
+									crosspostAware.setCrossposts(new HashSet<>());
+								}
+								crosspostAware.getCrossposts().add(crosspost);
+							}
+						});
 					} catch (Exception e) {
 						// Log and swallow error
 						LOGGER.error("Unable to crosspost to "+feed.getType()+" "+feed.getFeedId(), e);

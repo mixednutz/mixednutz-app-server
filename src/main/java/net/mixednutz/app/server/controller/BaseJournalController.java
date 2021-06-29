@@ -245,7 +245,7 @@ public class BaseJournalController {
 					externalFeedManager.crosspost(feed, 
 							exportableEntity.getTitle(), 
 							exportableEntity.getUrl(), 
-							tagArray, (HttpServletRequest) request.getNativeRequest())
+							tagArray, null, (HttpServletRequest) request.getNativeRequest())
 					.ifPresent(crosspost->{
 						if (savedjournal.getCrossposts()==null) {
 							savedjournal.setCrossposts(new HashSet<>());

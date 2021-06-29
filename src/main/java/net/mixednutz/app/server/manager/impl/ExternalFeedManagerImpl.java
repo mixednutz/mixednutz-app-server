@@ -450,22 +450,29 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	}
 		
 	@Override
-	public Optional<ExternalFeedContent> crosspost(AbstractFeed feed, String text, String url, String[] tags, HttpServletRequest request) {
+	public Optional<ExternalFeedContent> crosspost(AbstractFeed feed, 
+			String text, String url, String[] tags, ExternalFeedContent inReplyTo, 
+			HttpServletRequest request) {
 		if (request!=null) {
-			return Optional.of(crosspost(feed, text, url, tags, new ServletRequestParameterPropertyValues(request)));
+			return Optional.of(crosspost(feed, text, url, tags, inReplyTo,
+					new ServletRequestParameterPropertyValues(request)));
 		}
 		return Optional.empty();
 	}
 	
 	@Override
-	public Optional<ExternalFeedContent> crosspost(AbstractFeed feed, String text, String url, String[] tags, Map<String,Object> additionalValues) {
+	public Optional<ExternalFeedContent> crosspost(AbstractFeed feed, 
+			String text, String url, String[] tags, ExternalFeedContent inReplyTo, 
+			Map<String,Object> additionalValues) {
 		if (additionalValues!=null) {
-			return Optional.of(crosspost(feed, text, url, tags, new MutablePropertyValues(additionalValues)));
+			return Optional.of(crosspost(feed, text, url, tags, inReplyTo,
+					new MutablePropertyValues(additionalValues)));
 		}
 		return Optional.empty();
 	}
 	
-	protected ExternalFeedContent crosspost(AbstractFeed feed, String text, String url, String[] tags, PropertyValues additionalValues) {
+	protected ExternalFeedContent crosspost(AbstractFeed feed, String text, 
+			String url, String[] tags, ExternalFeedContent inReplyTo, PropertyValues additionalValues) {
 		IPost ipost = instantiatePost(feed)
 				.orElseThrow(() -> new IllegalArgumentException("Feed doesn't support posting"));
 		
@@ -487,6 +494,9 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		ipost.setText(text);
 		ipost.setUrl(url);
 		ipost.setTags(tags);
+		if (inReplyTo!=null) {
+			ipost.setInReplyTo(inReplyTo.getElement().getProviderId());
+		}
 		
 		ITimelineElement timelineElement = post(feed, ipost);
 				

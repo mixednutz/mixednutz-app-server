@@ -33,4 +33,9 @@ public class ScheduledJournal extends AbstractScheduledPost {
 		return journal;
 	}
 
+	@Override
+	public Post<?> inReplyTo() {
+		return null;
+	}
+
 }
