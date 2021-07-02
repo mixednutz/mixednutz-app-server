@@ -454,8 +454,11 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			String text, String url, String[] tags, ExternalFeedContent inReplyTo, 
 			HttpServletRequest request) {
 		if (request!=null) {
-			return Optional.of(crosspost(feed, text, url, tags, inReplyTo,
-					new ServletRequestParameterPropertyValues(request)));
+			ExternalFeedContent content = crosspost(feed, text, url, tags, inReplyTo,
+					new ServletRequestParameterPropertyValues(request));
+			if (content!=null) {
+				return Optional.of(content);
+			}
 		}
 		return Optional.empty();
 	}
@@ -465,8 +468,11 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			String text, String url, String[] tags, ExternalFeedContent inReplyTo, 
 			Map<String,Object> additionalValues) {
 		if (additionalValues!=null) {
-			return Optional.of(crosspost(feed, text, url, tags, inReplyTo,
-					new MutablePropertyValues(additionalValues)));
+			ExternalFeedContent content = crosspost(feed, text, url, tags, inReplyTo,
+					new MutablePropertyValues(additionalValues));
+			if (content!=null) {
+				return Optional.of(content);
+			}
 		}
 		return Optional.empty();
 	}
