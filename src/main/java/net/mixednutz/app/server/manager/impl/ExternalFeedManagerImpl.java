@@ -499,13 +499,18 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		}
 		
 		ITimelineElement timelineElement = post(feed, ipost);
-				
-		ExternalFeedContent content = new ExternalFeedContent(feed,
-				externalFeedTimelineElementRepository.save(
-						new ExternalFeedTimelineElement(timelineElement)), 
-				ExternalFeedContent.TimelineType.CROSSPOST);
-		System.out.println(content.getId());
-		return externalFeedContentRepository.save(content);
+		
+		if (timelineElement!=null) {
+			ExternalFeedTimelineElement persisted = externalFeedTimelineElementRepository.save(
+					new ExternalFeedTimelineElement(timelineElement));
+			if (persisted!=null) {
+				ExternalFeedContent content = new ExternalFeedContent(feed, persisted, 
+						ExternalFeedContent.TimelineType.CROSSPOST);
+				System.out.println(content.getId());
+				return externalFeedContentRepository.save(content);
+			}
+		}
+		return null;
 	}
 
 	@Override
