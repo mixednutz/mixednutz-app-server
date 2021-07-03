@@ -211,6 +211,10 @@ public class BaseJournalController {
 				.setPublishDate(ZonedDateTime.of(localPublishDate, ZoneId.systemDefault()));
 			journal.getScheduled().setExternalFeedId(externalFeedId);
 			journal.getScheduled().setEmailFriendGroup(emailFriendGroup);
+			String channelId = request.getParameter("channelIdAsString");
+			if (channelId!=null) {
+				journal.getScheduled().getExternalFeedData().put("channelIdAsString", channelId);
+			}
 		} else {
 			journal.setDatePublished(ZonedDateTime.now());
 		}
