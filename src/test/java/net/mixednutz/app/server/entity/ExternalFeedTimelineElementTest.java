@@ -1,7 +1,7 @@
 package net.mixednutz.app.server.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -9,17 +9,14 @@ import java.util.Date;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import net.mixednutz.api.core.model.Action;
 import net.mixednutz.api.core.model.Image;
@@ -27,14 +24,13 @@ import net.mixednutz.api.core.model.Link;
 import net.mixednutz.api.core.model.TimelineElement;
 import net.mixednutz.api.core.model.UserSmall;
 import net.mixednutz.api.twitter.model.TweetElement;
-import net.mixednutz.app.server.IntegrationTest;
 import net.mixednutz.app.server.repository.ExternalFeedTimelineElementRepository;
 import twitter4j.Status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("jpa-dev")
 //@DataJpaTest
-@Category(IntegrationTest.class)
+@Tag("IntegrationTest")
 public class ExternalFeedTimelineElementTest {
 	
 //	@Autowired
@@ -43,7 +39,7 @@ public class ExternalFeedTimelineElementTest {
 //	@PersistenceContext
 	EntityManager em;
 	
-	@Ignore
+	@Disabled
 	@Test
 	public void testSerialization() {
 		
@@ -94,7 +90,7 @@ public class ExternalFeedTimelineElementTest {
 		
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testTwitterSerialization() {
 		twitter4j.User user = Mockito.mock(twitter4j.User.class);

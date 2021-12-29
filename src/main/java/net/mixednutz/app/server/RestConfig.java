@@ -2,8 +2,8 @@ package net.mixednutz.app.server;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceProcessor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelProcessor;
 
 import net.mixednutz.app.server.entity.User;
 
@@ -11,9 +11,9 @@ import net.mixednutz.app.server.entity.User;
 public class RestConfig {
 
 	@Bean
-	public ResourceProcessor<Resource<User>> userProcessor() {
-		return new ResourceProcessor<Resource<User>>() {
-			public Resource<User> process(Resource<User> resource) {
+	public RepresentationModelProcessor<EntityModel<User>> userProcessor() {
+		return new RepresentationModelProcessor<EntityModel<User>>() {
+			public EntityModel<User> process(EntityModel<User> resource) {
 				// TODO add actions
 				// Link link = linkTo(methodOn(Controller.class)
 				// .controllerMethod();

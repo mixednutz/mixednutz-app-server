@@ -1,9 +1,9 @@
 package net.mixednutz.app.server.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -13,28 +13,24 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import net.mixednutz.app.server.IntegrationTest;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("jpa-dev")
 //@DataJpaTest
-@Category(IntegrationTest.class)
+@Tag("IntegrationTest")
 public class JournalTest {
 	
 //	@Autowired
@@ -49,7 +45,7 @@ public class JournalTest {
 	User user;
 	User user2;
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		user = new User();
 		user.setUsername("andy");
@@ -60,7 +56,7 @@ public class JournalTest {
 		user2 = userRepository.save(user2);
 	}
 	
-	@Ignore
+	@Disabled
 	@Test
 	public void findById() {
 		
@@ -98,7 +94,7 @@ public class JournalTest {
 		assertTrue(result.isPresent());
 	}
 	
-	@Ignore
+	@Disabled
 	@Test
 	public void getMyPosts() {
 		
@@ -138,7 +134,7 @@ public class JournalTest {
 		
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void getUsersPosts() {
 		

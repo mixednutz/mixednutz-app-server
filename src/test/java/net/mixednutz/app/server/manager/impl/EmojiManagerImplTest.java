@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import net.mixednutz.app.server.entity.Emoji;
 import net.mixednutz.app.server.entity.EmojiCategory;

@@ -7,29 +7,28 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import net.mixednutz.app.server.IntegrationTest;
 import net.mixednutz.app.server.entity.Emoji;
 import net.mixednutz.app.server.entity.EmojiCategory;
 import net.mixednutz.app.server.manager.EmojiManager;
 import net.mixednutz.app.server.manager.impl.EmojiManagerImpl;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("jpa-dev")
 //@DataJpaTest
-@Category(IntegrationTest.class)
+@Tag("IntegrationTest")
 @Import(EmojiManagerImpl.class)
+@Disabled
 public class EmojiCategoryRepositoryIntegrationTest {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EmojiCategoryRepositoryIntegrationTest.class);
@@ -43,7 +42,6 @@ public class EmojiCategoryRepositoryIntegrationTest {
 	@PersistenceContext
 	EntityManager em;
 	
-	@Ignore
 	@Test
 	public void test() {
 		Map<EmojiCategory, List<Emoji>> emojis = emojiManager.findOrganizeByCategory();

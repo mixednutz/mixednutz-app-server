@@ -4,13 +4,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import net.mixednutz.app.server.IntegrationTest;
@@ -27,10 +28,11 @@ import net.mixednutz.app.server.repository.UserRepository;
  * @author apfesta
  *
  */
-@RunWith(SpringRunner.class)
-@Category(IntegrationTest.class)
+@ExtendWith(SpringExtension.class)
+@Tag("IntegrationTest")
 @SpringBootTest
 @ActiveProfiles({"jpa-dev","db-local-hsqldb","ssl","aws-local"})
+@Disabled
 public class EmailMessageManagerIntegrationTest {
 	
 	@PersistenceContext
@@ -47,7 +49,6 @@ public class EmailMessageManagerIntegrationTest {
 	
 	@Transactional
 	@Test
-	@Ignore
 	public void test() {
 		
 		User user = new User();
