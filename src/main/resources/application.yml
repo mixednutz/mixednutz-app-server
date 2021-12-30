@@ -2,7 +2,10 @@ spring:
   
   profiles.active: jpa-dev, db-local-hsqldb, uploads-dev, mixednutz_base, twitter, discord, aws-local
 #  profiles.active: jpa-dev, db-local-hsqldb-file, uploads-dev, twitter, aws-local
-  
+
+  main:
+    allow-circular-references: true
+
   data:
     rest:
       basePath: /api
@@ -19,7 +22,7 @@ spring:
           starttls.enable: true
         debug: true
 
-  resources.addMappings: false
+  web.resources.addMappings: false
 
 site.settings.uniqueId: 1
 
@@ -43,7 +46,7 @@ ads-txt: "classpath:static/ads.txt"
 logging:
   level: 
     root: WARN
-    org.springframework.web: INFO
+    org.springframework.web: DEBUG
 #    org.hibernate.SQL: DEBUG
     net.mixednutz.app.server: INFO
   file: logs/mixednutz-app-server.log
@@ -51,11 +54,11 @@ logging:
     
 ---
 spring:
-  profiles: uploads-dev
+  config.activate.on-profile: uploads-dev
   
 ---
 spring:
-  profiles: uploads-prod
+  config.activate.on-profile: uploads-prod
   
 photoDirectory: ${PHOTO_DIRECTORY}
 
@@ -65,7 +68,7 @@ mixednutz:
 ---
 # Optionally link up with other Mixednutz instance
 spring:
-  profiles: mixednutz_base
+  config.activate.on-profile: mixednutz_base
   
   
 mixednutz:
@@ -79,7 +82,7 @@ mixednutz:
 ---
 # Optionally link up with Twitter
 spring:
-  profiles: twitter
+  config.activate.on-profile: twitter
   
 mixednutz:
   social: 
@@ -90,7 +93,7 @@ mixednutz:
 ---
 # Optionally link up with Discord
 spring:
-  profiles: discord
+  config.activate.on-profile: discord
   
 mixednutz:
   social: 
@@ -100,16 +103,16 @@ mixednutz:
 
 ---
 spring:
-  profiles: ssl
+  config.activate.on-profile: ssl
   
 server:
   tomcat:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
   ssl:
-    key-store: ${KEYSTORE_FILE}
-    key-store-type: ${KEYSTORE_TYPE}
-    key-password: ${KEYSTORE_PASS} 
+    key-store: "${KEYSTORE_FILE}"
+    key-store-type: "${KEYSTORE_TYPE}"
+    key-store-password: "${KEYSTORE_PASS}"
   
 #keystore:
 #  file: ${KEYSTORE_FILE}
@@ -118,7 +121,7 @@ server:
       
 ---
 spring:
-  profiles: jpa-dev
+  config.activate.on-profile: jpa-dev
   
   jpa:
     show-sql: true
@@ -131,7 +134,7 @@ spring:
       
 ---
 spring:
-  profiles: jpa-prod
+  config.activate.on-profile: jpa-prod
   
   jpa:
     show-sql: false
@@ -141,7 +144,7 @@ spring:
       
 ---
 spring:
-  profiles: db-docker-mysql
+  config.activate.on-profile: db-docker-mysql
   # This profile is for Docker containers  the database login configuration is abstracted out to the enviroment.
 
   jpa: 
@@ -162,12 +165,12 @@ spring:
     
 ---
 spring:
-  profiles: db-local-mysql
+  config.activate.on-profile: db-local-mysql
   # This profile is for Andy's local environment
   
 ---
 spring:
-  profiles: db-local-hsqldb
+  config.activate.on-profile: db-local-hsqldb
   # This profile is for in-memory database
   
   jpa: 
@@ -177,7 +180,7 @@ spring:
 
 ---
 spring:
-  profiles: db-local-hsqldb-file
+  config.activate.on-profile: db-local-hsqldb-file
   # This profile is for file database
 
   #datasource:
@@ -192,7 +195,7 @@ spring:
         dialect: net.mixednutz.app.server.extensions.hibernate.CustomHsqlDialect
 ---
 spring:
-  profiles: aws-local
+  config.activate.on-profile: aws-local
   # This profile is for Andy's local environment
   
 cloud:
