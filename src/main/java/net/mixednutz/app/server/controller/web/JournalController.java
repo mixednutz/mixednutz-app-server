@@ -70,7 +70,7 @@ public class JournalController extends BaseJournalController {
 	@RequestMapping(value="/journal/new", method = RequestMethod.POST, params="submit")
 	public String saveNew(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE) Journal journal, 
 //			@RequestParam("fgroup_id") Integer friendGroupId, 
-			@RequestParam("group_id") Long groupId,
+			@RequestParam(value="group_id",required=false) Long groupId,
 			@RequestParam(value="externalFeedId", required=false) Long[] externalFeedId,
 			@RequestParam(value="tagsString", defaultValue="") String tagsString,
 			@RequestParam(value="email_fgroup", defaultValue="false") boolean emailFriendGroup,
@@ -92,7 +92,7 @@ public class JournalController extends BaseJournalController {
 	public String updateModal(@ModelAttribute("journal") Journal journal, 
 			@PathVariable Long journalId, 
 //			@RequestParam("fgroup_id") Integer friendGroupId, 
-			@RequestParam("group_id") Integer groupId,
+			@RequestParam(value="group_id",required=false) Integer groupId,
 			@RequestParam(value="tagsString", defaultValue="") String tagsString,
 			@DateTimeFormat(iso=ISO.DATE_TIME) @RequestParam(value="localPublishDate", required=false) LocalDateTime localPublishDate,
 			@AuthenticationPrincipal User user, Model model, Errors errors) {
