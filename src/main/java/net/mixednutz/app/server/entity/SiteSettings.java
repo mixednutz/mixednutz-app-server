@@ -29,7 +29,7 @@ public class SiteSettings {
 	public SiteSettings(Long settingsId, User adminUser) {
 		super();
 		this.settingsId = settingsId;
-		this.adminUser = adminUser;
+//		this.adminUser = adminUser; latest hibernate doesn't like this
 		this.adminUserId = adminUser.getUserId();
 	}
 
@@ -42,7 +42,7 @@ public class SiteSettings {
 		this.settingsId = settingsId;
 	}
 
-	@Column(name="admin_user_id", nullable = false, updatable=false)
+	@Column(name="admin_user_id", nullable = false, insertable=true, updatable=false)
 	public Long getAdminUserId() {
 		return adminUserId;
 	}

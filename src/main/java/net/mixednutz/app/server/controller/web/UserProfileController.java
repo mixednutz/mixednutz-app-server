@@ -82,7 +82,7 @@ public class UserProfileController {
 		// Load entities so we can change them:
 		User user = userRepository.findById(currentUser.getUserId()).get();
 		UserProfile profile = profileRepository.findById(currentUser.getUserId())
-				.orElse(new UserProfile());
+				.orElse(new UserProfile(user));
 		
 		if (notEquals(form.getDisplayName(), user.getDisplayName())) {
 			user.setDisplayName(form.getDisplayName());
@@ -99,9 +99,6 @@ public class UserProfileController {
 				new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 				
-		if (profile.getUserId()==null) {
-			profile.setUserId(currentUser.getUserId());
-		}
 		if (notEquals(form.getBio(), profile.getBio())) {
 			profile.setBio(form.getBio());
 		}

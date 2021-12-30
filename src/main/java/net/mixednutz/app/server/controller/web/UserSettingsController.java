@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -110,7 +109,7 @@ public class UserSettingsController {
 		}
 		
 		UserSettings settings = settingsRepository.findById(user.getUserId()).orElseGet(
-				new NewUserSettingsSupplier(user));
+				()->new UserSettings(user));
 		settings.setShowCombinedExternalFeedsOnProfile(form.isShowCombinedExternalFeedsOnProfile());
 		settingsRepository.save(settings);
 		
@@ -151,24 +150,6 @@ public class UserSettingsController {
 		return "redirect:/settings";
 	}
 
-	static class NewUserSettingsSupplier implements Supplier<UserSettings> {
-
-		final User user;
-		
-		public NewUserSettingsSupplier(User user) {
-			this.user = user;
-		}
-
-		@Override
-		public UserSettings get() {
-			UserSettings settings = new UserSettings();
-			settings.setUserId(user.getUserId());
-			settings.setUser(user);
-			return settings;
-		}
-		
-	}
-	
 	public static class SettingsForm {
 		boolean showCombinedExternalFeedsOnProfile;
 		Page indexPage;

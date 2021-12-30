@@ -17,6 +17,16 @@ public class UserSettings {
 	
 	private boolean showCombinedExternalFeedsOnProfile = false;
 	
+	public UserSettings() {
+		super();
+	}
+
+	public UserSettings(User user) {
+		super();
+		//this.user = user; latest hibernate doesn't like this
+		this.userId = user.getUserId();
+	}
+
 	@Id
 	@Column(name="user_id", nullable = false, updatable=false)
 	public Long getUserId() {
