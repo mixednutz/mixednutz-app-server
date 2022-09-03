@@ -34,7 +34,7 @@
 							th:text="${#temporals.format(comment.dateCreated, #messages.msg('datetime.format.full'))}">August
 							25, 2014 at 9:30 PM</time></small>
 				</h4>
-				<div th:if="${comment.body!=null}" th:text="${comment.body}">Cras
+				<div th:if="${comment.body!=null}" th:utext="${comment.body}">Cras
 					sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
 					ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate
 					at, tempus viverra turpis. Fusce condimentum nunc acnisi vulputate
@@ -83,7 +83,7 @@
 							th:text="${#temporals.format(comment.dateCreated, #messages.msg('datetime.format.full'))}">August
 							25, 2014 at 9:30 PM</time></small>
 				</h4>
-				<div th:if="${comment.body!=null}" th:text="${comment.body}">Cras
+				<div th:if="${comment.body!=null}" th:utext="${comment.body}">Cras
 					sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
 					ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate
 					at, tempus viverra turpis. Fusce condimentum nunc acnisi vulputate
@@ -135,12 +135,35 @@
 		  <div sec:authorize="isAuthenticated()">
 	          <form role="form" th:action="@{|${post.uri}/comment/new|}" th:object="${newComment}" method="post">
 	              <div class="form-group">
-	                  <textarea class="form-control" th:field="*{body}" rows="3"></textarea>
+	              	  <div class="btn-toolbar" data-role="editor-toolbar"
+						        data-target="#editor">
+						  	<div class="btn-group">
+								<a class="btn btn-default" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fas fa-bold"></i></a>
+								<a class="btn btn-default" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fas fa-italic"></i></a>
+								<a class="btn btn-default" data-edit="strikethrough" title="Strikethrough"><i class="fas fa-strikethrough"></i></a>
+								<a class="btn btn-default" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fas fa-underline"></i></a>
+							</div>
+							
+							<div class="btn-group">
+								<a class="btn btn-default" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="fas fa-undo"></i></a>
+								<a class="btn btn-default" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fas fa-redo"></i></a>
+								<a class="btn btn-default" data-edit="html" title="Clear Formatting"><i class='glyphicon glyphicon-pencil'></i></a>
+							</div>
+						</div> 
+	                  <input type="hidden" id="comment_body" th:field="*{body}"/>
+					  <div id="comment_editor" class="form-control" data-placeholder="Start your story..."></div>
 	              </div>
-	              <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+	              <button id="comment-submit-btn" type="submit" name="submit" value="Post Now">Post Now</button>
+				  <button type="button" class="btn btn-primary" name="submit"
+				  		onclick="$('#comment_body').val($('#comment_editor').cleanHtml(true));$('#comment-submit-btn').click();">Submit</button>
+  			
 	          </form>
           </div>
 	  </div>
+	  <script th:fragment="post_comment_form_JS" >
+		$('#comment_editor').wysiwyg();
+		$('#comment-submit-btn').hide();
+	  </script>
   
   </body>
 </html>

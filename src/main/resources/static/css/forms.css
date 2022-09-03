@@ -1,5 +1,5 @@
 /** WYSIWYG Editor **/
-#editor {
+#editor, #comment_editor {
 	overflow-y:scroll; 
 	max-height:300px;
 	height:200px;
