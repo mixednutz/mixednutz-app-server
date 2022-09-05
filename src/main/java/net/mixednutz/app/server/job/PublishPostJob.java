@@ -92,12 +92,15 @@ public class PublishPostJob {
 								tags, inReplyToCrosspost,
 								scheduledPost.getExternalFeedData())
 						.ifPresent(crosspost->{
-							if (scheduledPost instanceof CrosspostsAware) {
-								CrosspostsAware crosspostAware = (CrosspostsAware) scheduledPost;
+							if (post instanceof CrosspostsAware) {
+								CrosspostsAware crosspostAware = (CrosspostsAware) post;
 								if (crosspostAware.getCrossposts()==null) {
 									crosspostAware.setCrossposts(new HashSet<>());
 								}
 								crosspostAware.getCrossposts().add(crosspost);
+							} else {
+								LOGGER.warn("Unable to crosspost to {} {} because {} doesn't implement CrosspostsAware",
+										feed.getType(),feed.getFeedId(),post.getClass());
 							}
 						});
 					} catch (Exception e) {
