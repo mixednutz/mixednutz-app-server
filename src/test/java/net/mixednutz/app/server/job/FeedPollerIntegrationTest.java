@@ -4,16 +4,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.social.mixednutz.v1_9.connect.MixednutzConnectionFactory;
 import org.springframework.social.twitter4j.connect.TwitterConnectionFactory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
@@ -28,10 +29,11 @@ import net.mixednutz.app.server.repository.ExternalFeedContentRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.ExternalFeedTimelineElementRepository;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 //@SpringBootTest
-@Category(IntegrationTest.class)
+@Tag("IntegrationTest")
 @Transactional
+@Disabled
 public class FeedPollerIntegrationTest {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(FeedPollerIntegrationTest.class);
@@ -110,7 +112,6 @@ public class FeedPollerIntegrationTest {
 	
 	
 	@Test
-	@Ignore
 	public void testPollMixedNutz() {
 		createMixedNutzFeed();
 
@@ -125,7 +126,6 @@ public class FeedPollerIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testPollTwitter() {
 		createTwitterFeed();
 		

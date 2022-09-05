@@ -1,6 +1,6 @@
 package net.mixednutz.app.server.repository;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -9,32 +9,31 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import net.mixednutz.api.core.model.Action;
 import net.mixednutz.api.core.model.Image;
 import net.mixednutz.api.core.model.Link;
 import net.mixednutz.api.core.model.TimelineElement;
 import net.mixednutz.api.core.model.UserSmall;
-import net.mixednutz.app.server.IntegrationTest;
 import net.mixednutz.app.server.entity.ExternalFeedContent;
 import net.mixednutz.app.server.entity.ExternalFeedTimelineElement;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth2AuthenticatedFeed;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("jpa-dev")
 //@DataJpaTest
-@Category(IntegrationTest.class)
+@Tag("IntegrationTest")
+@Disabled
 public class ExternalFeedContentRepositoryIntegrationTest {
 	
 	@Autowired
@@ -49,7 +48,7 @@ public class ExternalFeedContentRepositoryIntegrationTest {
 	@PersistenceContext
 	EntityManager em;
 	
-	@Before
+	@BeforeEach
 	public void setup() {
 		
 	}
@@ -96,7 +95,6 @@ public class ExternalFeedContentRepositoryIntegrationTest {
 		return element;
 	}
 
-	@Ignore
 	@Test
 	public void test() {
 		AbstractFeed feed = externalFeedRepository.save(createFeed());

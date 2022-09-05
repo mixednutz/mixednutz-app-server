@@ -3,7 +3,7 @@ package net.mixednutz.app.server.controller.api;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
 import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +19,7 @@ public class UserRestController {
 	
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
-	public @ResponseBody PersistentEntityResource create(@RequestBody Resource<User> userRes,
+	public @ResponseBody PersistentEntityResource create(@RequestBody EntityModel<User> userRes,
 			Authentication auth, PersistentEntityResourceAssembler resourceAssembler) {
 		// if (existing) {
 		// throw new Exception("Resource already exists");

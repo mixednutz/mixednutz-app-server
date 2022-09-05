@@ -1,26 +1,31 @@
 package net.mixednutz.app.server.manager.impl;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import net.mixednutz.app.server.ThymeleafConfig;
 import net.mixednutz.app.server.ThymeleafEmailConfig;
 import net.mixednutz.app.server.entity.UserEmailAddress;
 import net.mixednutz.app.server.entity.UserEmailAddressVerificationToken;
 import net.mixednutz.app.server.repository.UserEmailAddressVerificationTokenRepository;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes={
+		ThymeleafConfig.class,
 		ThymeleafEmailConfig.class, 
 		EmailMessageManagerImpl.class, 
 		UserEmailAddressVerificationTokenManagerImpl.class,
 		DefaultKeyGenerator.class})
+@Disabled
 public class UserEmailAddressVerificationTokenManagerImplTest {
 
 	@Autowired
@@ -32,7 +37,6 @@ public class UserEmailAddressVerificationTokenManagerImplTest {
 	@MockBean
 	UserEmailAddressVerificationTokenRepository repoisitory;
 	
-	@Ignore
 	@Test
 	public void test() {
 		
