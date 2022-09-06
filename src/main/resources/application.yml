@@ -42,6 +42,8 @@ mixednutz:
     log-to: andy_festa@yahoo.com
 
 ads-txt: "classpath:static/ads.txt"
+
+server.servlet.session.timeout: 60m
     
 logging:
   level: 
