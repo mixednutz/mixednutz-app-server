@@ -82,6 +82,9 @@ public class PublishPostJob {
 									.filter(cp->cp.getFeed().equals(feed)).findFirst();
 						if (first.isPresent()) {
 							inReplyToCrosspost = first.get();
+							LOGGER.info("Found {} crosspost to reply to: {}", 
+									feed.getProviderId(),
+									inReplyToCrosspost.getId());
 						}
 					}	
 					
