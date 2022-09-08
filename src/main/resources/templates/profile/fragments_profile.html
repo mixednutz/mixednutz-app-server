@@ -27,7 +27,9 @@
   		<div th:replace="profile/fragments_profile :: timeline_tabs">tabs</div>
 
 		<div th:replace="profile/fragments_profile :: timeline_input">input</div>
-
+		
+		<div th:if="${profileUser.userId==1}" th:include="~{fragments_custom_css :: custom_horizontal_ad} ?: _" class="custom_advertisement"></div>
+				
 		<div sec:authorize="!isAuthenticated()" th:replace="google_adsense :: horizontal_ad"></div>
   	
 		<div id="elements"></div>
