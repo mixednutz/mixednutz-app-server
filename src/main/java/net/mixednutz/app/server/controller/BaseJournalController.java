@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import net.mixednutz.app.server.controller.exception.NotAuthorizedException;
 import net.mixednutz.app.server.controller.exception.ResourceMovedPermanentlyException;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
@@ -116,9 +117,9 @@ public class BaseJournalController {
 				!VisibilityType.WORLD.equals(journal.getVisibility().getVisibilityType())) {
 			throw new AuthenticationCredentialsNotFoundException("This is not a public journal.");
 		} else if (auth!=null) {
-//			if (!journalManager.isVisible(journal, (User) auth.getPrincipal())) {
-//				throw new NotAuthorizedException("User does not have permission to view this journal.");
-//			}
+			if (!journalManager.isVisible(journal, (User) auth.getPrincipal())) {
+				throw new NotAuthorizedException("User does not have permission to view this journal.");
+			}
 		}
 		
 		model.addAttribute("journal", journal);
