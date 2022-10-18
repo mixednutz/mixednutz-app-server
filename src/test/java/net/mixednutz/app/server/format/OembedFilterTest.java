@@ -10,48 +10,48 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import net.mixednutz.app.server.entity.OembedFilterWhitelist;
+import net.mixednutz.app.server.entity.OembedFilterAllowlist;
 import net.mixednutz.app.server.format.AbstractUrlFilter.UrlEntity;
 import net.mixednutz.app.server.format.OembedFilter.OembedEntity;
-import net.mixednutz.app.server.manager.impl.OembedFilterWhitelistManagerImpl;
-import net.mixednutz.app.server.repository.OembedFilterWhitelistRepository;
+import net.mixednutz.app.server.manager.impl.ExternalContentManagerImpl;
+import net.mixednutz.app.server.repository.OembedFilterAllowlistRepository;
 
 public class OembedFilterTest {
 	
-	private OembedFilterWhitelistRepository oembedFilterWhitelistRepository;
-	private OembedFilterWhitelistManagerImpl oembedFilterWhitelistManager;
+	private OembedFilterAllowlistRepository oembedFilterWhitelistRepository;
+	private ExternalContentManagerImpl oembedFilterWhitelistManager;
 	
 	@BeforeEach
 	public void setup() {
-		oembedFilterWhitelistRepository = mock(OembedFilterWhitelistRepository.class);
+		oembedFilterWhitelistRepository = mock(OembedFilterAllowlistRepository.class);
 		
-		List<OembedFilterWhitelist> whitelist = List.of(
-				new OembedFilterWhitelist(
+		List<OembedFilterAllowlist> whitelist = List.of(
+				new OembedFilterAllowlist(
 						"twitter","Twitter",
 						"^https?:\\/\\/?(www\\.)?twitter.com\\/(?!i)(?<username>.*)\\/status\\/(?<id>[0-9]*)",
 						"^(http|https):\\/\\/?(publish\\.)?twitter.com\\/oembed.*",
 						"https://publish.twitter.com/oembed?url={url}"),
-				new OembedFilterWhitelist(
+				new OembedFilterAllowlist(
 						"instagram","Instagram",
 						"^(http|https):\\/\\/?(www\\.)?instagram.com\\/p.*",
 						"^(http|https):\\/\\/?(api\\.)?instagram.com\\/oembed.*",
 						"https://api.instagram.com/oembed?url={url}"),
-				new OembedFilterWhitelist(
+				new OembedFilterAllowlist(
 						"flickr","Flickr",
 						"^(http|https):\\/\\/?(www\\.)?flickr.com\\/photos\\/.*",
 						"^(http|https):\\/\\/?www.flickr.com\\/services\\/oembed.*",
 						"https://www.flickr.com/services/oembed?url={url}&format=json&maxwidth=620"),
-				new OembedFilterWhitelist(
+				new OembedFilterAllowlist(
 						"youtube","YouTube",
 						"^(http|https):\\/\\/?(www\\.)?youtube.com\\/watch.*",
 						"^(http|https):\\/\\/?www.youtube.com\\/oembed.*",
 						"http://www.youtube.com/oembed?url={url}&format=json"),
-				new OembedFilterWhitelist(
+				new OembedFilterAllowlist(
 						"imgur","Imgur",
 						"^(http|https):\\/\\/?(www\\.)?imgur.com\\/a.*",
 						"^(http|https):\\/\\/?api.imgur.com\\/oembed\\.json.*",
 						"http://api.imgur.com/oembed.json?url={url}"),
-				new OembedFilterWhitelist(
+				new OembedFilterAllowlist(
 						"imdb","Imdb",
 						"^(http|https):\\/\\/?(www\\.)?imdb.com\\/title\\/.*",
 						"^https:\\/\\/(www\\.)?mixednutz.net\\/oembed\\?url=(http|https):\\/\\/?(www\\.)?imdb.com\\/title\\/.*",
@@ -60,7 +60,7 @@ public class OembedFilterTest {
 		
 		when(oembedFilterWhitelistRepository.findAll()).thenReturn(whitelist);
 		
-		oembedFilterWhitelistManager = new OembedFilterWhitelistManagerImpl(oembedFilterWhitelistRepository);
+		oembedFilterWhitelistManager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository);
 		oembedFilterWhitelistManager.loadWhitelist();
 	}
 	

@@ -6,17 +6,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import net.mixednutz.app.server.manager.OembedFilterWhitelistManager;
+import net.mixednutz.app.server.manager.ExternalContentManager;
 
 @Component
 public class OembedFilter extends AbstractUrlFilter {
 		
-	protected final OembedFilterWhitelistManager oembedFilterWhitelistManager;
+	protected final ExternalContentManager oembedFilterAllowlistManager;
 	
 	@Autowired
-	public OembedFilter(OembedFilterWhitelistManager oembedFilterWhitelistManager) {
+	public OembedFilter(ExternalContentManager oembedFilterWhitelistManager) {
 		super();
-		this.oembedFilterWhitelistManager = oembedFilterWhitelistManager;
+		this.oembedFilterAllowlistManager = oembedFilterWhitelistManager;
 	}
 
 
@@ -48,7 +48,7 @@ public class OembedFilter extends AbstractUrlFilter {
 		List<OembedEntity> entities = new ArrayList<OembedEntity>();
 		
 		for (UrlEntity urlEntity: urlEntities) {
-			oembedFilterWhitelistManager.deriveSourceType(urlEntity.text)
+			oembedFilterAllowlistManager.deriveSourceType(urlEntity.text)
 				.ifPresent((sourceType->entities.add(new OembedEntity(urlEntity, sourceType))));
 		}
 		return entities;

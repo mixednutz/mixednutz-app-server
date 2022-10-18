@@ -6,7 +6,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="x_whitelist")
-public class OembedFilterWhitelist {
+public class OembedFilterAllowlist {
 	
 	private String name;
 	private String description;
@@ -14,11 +14,11 @@ public class OembedFilterWhitelist {
 	private String oembedUrlPattern;
 	private String oembedUrl;
 	
-	public OembedFilterWhitelist() {
+	public OembedFilterAllowlist() {
 		super();
 	}
 
-	public OembedFilterWhitelist(String name, String description, 
+	public OembedFilterAllowlist(String name, String description, 
 			String urlPattern, String oembedUrlPattern, 
 			String oembedUrl) {
 		this.name = name;
