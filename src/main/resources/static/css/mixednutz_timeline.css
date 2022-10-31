@@ -412,8 +412,79 @@
 }
 
 
+
+
 .snackbar.notificationbar {
 	border-radius: 200px;
 	background-color: #008800;
   	color: #FFFFFF;
+}
+
+/* External Content Thread Preview */
+
+.shares .shared_item {
+	width:100%; 
+	position: relative;
+	min-height: 148px;
+}
+
+.shares .shared_item {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border-radius: 2px;
+	border: 1px solid #CCC;
+	box-shadow: 0 5px 15px 0 rgba(0,0,0,0.16);
+	overflow: hidden;
+}
+.shared_item .title {
+	top:15px;
+	position: absolute;
+	right: 10px;
+	max-height: 44px;
+	overflow: hidden;
+}
+.shared_item .noImage .title {
+	left : 10px;
+}
+.shared_item .withImage .title {
+	left : 150px;
+}
+.shared_item .title a {
+	font-size: 20px;
+	font-weight: bold;
+	color: #880000;
+	text-decoration: none;
+}
+.shared_item .hostname {
+	position: absolute;
+	top: 65px;
+	height: 80px;
+}
+.shared_item .noImage .hostname {
+	left : 15px;
+}
+.shared_item .withImage .hostname {
+	left : 155px;
+}
+.shared_item .description {
+	position: absolute;
+	top: 80px;
+	height: 60px;
+	overflow: hidden;
+	margin-right: 10px;
+}
+.shared_item .noImage .description {
+	left : 15px;
+}
+.shared_item .withImage .description {
+	left : 155px;
+}
+.shared_item .image {
+	position:absolute;
+	top:10px;
+	left:10px;
+}
+.shared_item .image img {
+	width:128px;
+	border: 1px solid #EEE;
 }

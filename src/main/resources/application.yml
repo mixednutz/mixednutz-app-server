@@ -41,7 +41,7 @@ mixednutz:
     no-reply: noreply@andrewfesta.com
     log-to: andy_festa@yahoo.com
 
-ads-txt: "classpath:static/ads.txt"
+#ads-txt: "classpath:static/ads.txt"
 
 server.servlet.session.timeout: 60m
     

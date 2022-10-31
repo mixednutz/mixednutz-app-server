@@ -3,17 +3,21 @@ package net.mixednutz.app.server.format;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import net.mixednutz.app.server.manager.ExternalContentManager;
 
 @Component
 public class OembedFilter extends AbstractUrlFilter {
 		
-//	protected ExternalContentManager externalContentManager;
-//	
-//	public OembedFilter(ExternalContentManager externalContentManager) {
-//		super();
-//		this.externalContentManager = externalContentManager;
-//	}
+	protected final ExternalContentManager oembedFilterAllowlistManager;
+	
+	@Autowired
+	public OembedFilter(ExternalContentManager oembedFilterWhitelistManager) {
+		super();
+		this.oembedFilterAllowlistManager = oembedFilterWhitelistManager;
+	}
 
 
 	@Override
@@ -38,13 +42,14 @@ public class OembedFilter extends AbstractUrlFilter {
 	}
 	
 	
+	
+
 	protected List<OembedEntity> lookupOembeds(List<UrlEntity> urlEntities) {
 		List<OembedEntity> entities = new ArrayList<OembedEntity>();
+		
 		for (UrlEntity urlEntity: urlEntities) {
-//			String sourceType = externalContentManager.deriveSourceType(urlEntity.text);
-//			if (!"url".equals(sourceType)) {
-//				entities.add(new OembedEntity(urlEntity, sourceType));
-//			}
+			oembedFilterAllowlistManager.deriveSourceType(urlEntity.text)
+				.ifPresent((sourceType->entities.add(new OembedEntity(urlEntity, sourceType))));
 		}
 		return entities;
 	}

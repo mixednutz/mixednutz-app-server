@@ -112,6 +112,19 @@
 	      </div>
 		</nav>
 	</div>
+	
+	<div th:fragment="navbar_error">
+		<style th:replace="~{fragments_custom_css :: navbar} ?: _"></style>
+		<nav class="navbar navbar-default navbar-static-top">
+	      <div class="container">
+	        <div class="navbar-header">
+	          <a class="navbar-brand" th:text="#{site.title}" th:href="@{|/|}" href="/">MixedNutz</a>
+	        </div>
+	      </div>
+		</nav>
+	</div>
+	
+	
 	<script th:fragment="navbar_js" th:inline="javascript">
 	/*<![CDATA[*/
 	var notificationHostName = /*[[@{|/|}]]*/ "/";
