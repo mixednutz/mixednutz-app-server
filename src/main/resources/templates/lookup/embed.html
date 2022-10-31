@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Language" content="en" />
+        
+	
+	<!-- Bootstrap Core CSS -->
+	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
+	
+	<!-- Mixednutz CSS -->
+	<link th:href="@{|/css/mixednutz_timeline.css|}" href="../css/mixednutz_timeline.css" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/css/forms.css|}" href="../css/forms.css" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/css/default_theme.css|}" href="../css/default_theme.css" rel="stylesheet" type="text/css" />
+	
+	<!-- Custom Fonts -->
+	<link th:href="@{|/webjars/font-awesome/css/all.css|}" rel="stylesheet" type="text/css" />
+	
+</head>
+<body class="embed">
+
+	
+	<div class="container">
+		<div class="timeline">
+			<div class="elements">
+				<div class="element">
+				<div class="shares">
+					<div class=shared_item>
+						<div class="url">
+							<div th:class="${content.imageUrl!=null?'withImage':'noImage'}">
+		  				
+			  					<a class="title" th:text="${content.title}" th:href="${content.url}">title</a>
+			  					
+			  					<div class="description" th:text="${content.description}"></div>
+			  				
+			  					<a class="image" th:if="${content.imageUrl!=null}" th:href="${content.url}">
+			  						<img th:src="${content.imageUrl}" th:title="${content.title}" width="160"/>
+			  					</a>
+			  				</div>
+						</div>
+	  				</div>	
+				</div>
+				</div>
+			</div>
+        </div>
+    </div>
+	
+	<!-- JQuery 
+	================================================== -->
+	<script th:src="@{|/webjars/jquery/jquery.min.js|}"></script>
+	<script th:include="header :: navbar_js"></script>
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script th:src="@{|/webjars/bootstrap/js/bootstrap.min.js|}"></script> 
+    
+    
+	<!-- Google Analytics JavaScript 
+ 	================================================== -->
+    <script async th:src="@{|https://www.googletagmanager.com/gtag/js?id=#{google.analytics.trackingId}|}"></script>
+    <script th:replace="google_analytics :: tracking"></script>
+    
+</body>
+</html>

@@ -3,9 +3,11 @@ package net.mixednutz.app.server.manager.impl;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -25,19 +28,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.social.support.URIBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.ServletWebRequest;
 
+import net.mixednutz.app.server.controller.api.OembedController;
 import net.mixednutz.app.server.entity.OembedFilterAllowlist;
 import net.mixednutz.app.server.entity.Oembeds;
 import net.mixednutz.app.server.entity.Oembeds.Oembed;
 import net.mixednutz.app.server.manager.ExternalContentManager;
 import net.mixednutz.app.server.repository.OembedFilterAllowlistRepository;
-import java.net.URLDecoder;
 
 @Service
 public class ExternalContentManagerImpl implements ExternalContentManager {
@@ -45,15 +54,26 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 	private static final Logger LOG = LoggerFactory.getLogger(ExternalContentManagerImpl.class);
 		
 	private final OembedFilterAllowlistRepository oembedFilterWhitelistRepository;
+	
+	private final RestTemplate restTemplate;
 
 	private Map<String, ApiLookup<?>> lookupMap;
 	private Map<String, Pattern> patternMap;
-	private UrlLookup urlLookup = new UrlLookup();
+	private RestTemplateUrlLookup urlLookup;
 	
 	@Autowired
-	public ExternalContentManagerImpl(OembedFilterAllowlistRepository oembedFilterWhitelistRepository) {
+	HttpServletRequest request;
+	
+	@Autowired
+	OembedController oembedController;
+	
+	@Autowired
+	public ExternalContentManagerImpl(OembedFilterAllowlistRepository oembedFilterWhitelistRepository,
+			Optional<RestTemplate> restTemplate) {
 		super();
+		this.restTemplate = restTemplate.orElse(new RestTemplate());
 		this.oembedFilterWhitelistRepository = oembedFilterWhitelistRepository;
+		urlLookup = new RestTemplateUrlLookup();
 	}
 
 	@PostConstruct
@@ -103,6 +123,26 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 				return Optional.of(entry.getKey());
 			}
 		}
+		return Optional.empty();
+	}
+	
+	@Cacheable(value="externalContent")
+	public Optional<ExtractedOembedHtml> lookupContent(String sourceType, String sourceId) {
+				
+		ApiLookup<?> apiLookup = this.getLookup(sourceType);
+		LOG.debug("sourceType {} sourceId {}", sourceType, sourceId);
+		
+		Object content = apiLookup.lookupContent(sourceId);
+		LOG.debug("content instanceof {}", content.getClass().getName());
+		
+		if (content instanceof Oembeds.Oembed) {
+			ExtractedOembedHtml exstatus = new ExtractedOembedHtml();
+			exstatus.setUrl(sourceId);
+			exstatus.setStatusCode(200);
+			exstatus.setOembed((Oembeds.Oembed) content);
+			return Optional.of(exstatus);
+		}
+		
 		return Optional.empty();
 	}
 	
@@ -198,9 +238,9 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 		Item lookupContent(String sourceId);
 	}
 	
-	public abstract static class AbstractOEmbedLookup<Item> implements ApiLookup<Item> {
-		private static final Logger LOG = LoggerFactory.getLogger(AbstractOEmbedLookup.class);
-		
+	public abstract class AbstractOEmbedLookup<Item> implements ApiLookup<Item> {
+		private final Logger LOG = LoggerFactory.getLogger(AbstractOEmbedLookup.class);
+				
 		Map<String, Object> getUrlVariables(String sourceId) {
 			return new HashMap<String, Object>();	
 		}
@@ -212,18 +252,27 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 				throw new RuntimeException(e);
 			}
 		}
+		
+		public ResponseEntity<Oembed> lookupContentInterally(String url) {
+			return new ResponseEntity<Oembed>(oembedController.oembedJson(url, 0, 0, "json", 
+					new ServletWebRequest(request), SecurityContextHolder.getContext().getAuthentication()), 
+					HttpStatus.OK);
+		}
 
 		@Override
 		public Item lookupContent(String sourceId) {
 			validateUrlFormat(sourceId);
 			
 			//Validate url exists
-			RestTemplate rest = new RestTemplate();
 			String url = getUrl(sourceId);
 			Map<String, Object> urlVariables = getUrlVariables(sourceId);
 			ResponseEntity<Oembeds.Oembed> response;
 			try {
-				response = rest.getForEntity(url, Oembeds.Oembed.class, urlVariables);
+				if (url.startsWith("/")) {
+					response = lookupContentInterally(sourceId);
+				} else {
+					response = restTemplate.getForEntity(url, Oembeds.Oembed.class, urlVariables);
+				}
 				HttpStatus status = response.getStatusCode();
 				if (!status.is2xxSuccessful()) {
 					return parseError(sourceId, response);
@@ -232,7 +281,7 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 				return parseError(sourceId, e);
 			} catch (RestClientException e) {
 				LOG.debug("Unexpected format", e);
-				ResponseEntity<String> response2 = rest.getForEntity(url, String.class, urlVariables);
+				ResponseEntity<String> response2 = restTemplate.getForEntity(url, String.class, urlVariables);
 				LOG.debug("Actual response:\n{}",response2.getBody());
 				throw e;
 			}
@@ -249,9 +298,10 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 		abstract Item parseSuccess(String sourceId, ResponseEntity<Oembeds.Oembed> response);
 	}
 	
-	public static class AllowlistOembedLookup extends AbstractOEmbedLookup<Oembeds.Oembed> {
+	public class AllowlistOembedLookup extends AbstractOEmbedLookup<Oembeds.Oembed> {
+		
 		private Logger LOG = LoggerFactory.getLogger(AllowlistOembedLookup.class);
-
+		
 		@Override
 		String getUrl(String sourceId) {
 			return sourceId;
@@ -275,7 +325,7 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 		}
 	}
 	
-	public static class AllowlistLookup extends AllowlistOembedLookup {
+	public class AllowlistLookup extends AllowlistOembedLookup {
 		
 	
 		private String oembedUrl;
@@ -298,69 +348,75 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 		}
 	
 	}
+	
+	/**
+	 * Uses RestTemplate
+	 */
+	public class RestTemplateUrlLookup implements ApiLookup<ExtractedMetadata> {
 		
-	public static class UrlLookup implements ApiLookup<ExtractedMetadata> {
-
-		private Logger LOG = LoggerFactory.getLogger(UrlLookup.class);
-						
+		private final Logger LOG = LoggerFactory.getLogger(RestTemplateUrlLookup.class);
+		
 		@Override
 		public ExtractedMetadata lookupContent(String sourceId) {
-									
-			URL url = null;
-			try {
-				url = new URL(sourceId);
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
-			}
 			
 			//Check Content type first
-			HttpURLConnection conn;
-			String contentType;
+			MediaType contentType;
 			try {
-				conn = (HttpURLConnection) url.openConnection();
-				conn.setRequestMethod("HEAD");
-				conn.connect();
-				LOG.debug("Connection to {} returned status code {} : {}", 
-						new Object[]{url.toString(), conn.getResponseCode(), 
-						conn.getResponseMessage()});
-				
-				for (Entry<String, List<String>> entry: conn.getHeaderFields().entrySet()) {
+				ResponseEntity<String> response = restTemplate.exchange(sourceId, 
+						HttpMethod.HEAD, new HttpEntity<String>(""), String.class);
+				LOG.debug("Connection to {} returned status code {}", 
+						sourceId, response.getStatusCode());
+				for (Entry<String, List<String>> entry: response.getHeaders().entrySet()) {
 					LOG.debug(entry.getKey()+" "+entry.getValue());
 				}
 				
-				if (conn.getResponseCode()!=200) {
-					
+				if (!response.getStatusCode().is2xxSuccessful()) {
 					//If Redirect
-					if (isRedirect(conn.getResponseCode()) &&
-							notInfinteLoop(sourceId, conn.getHeaderField("location"))) {
-						
-						return lookupContent(conn.getHeaderField("location"));
+					if (response.getStatusCode().is3xxRedirection() &&
+							notInfinteLoop(sourceId, response.getHeaders().getLocation().toString())) {
+						URI location = response.getHeaders().getLocation();
+						if (!location.isAbsolute()) {
+							//Handles sites that give relative Locations for redirects
+							URI original = URIBuilder.fromUri(sourceId).build();
+							try {
+								location = new URI(original.getScheme(), original.getHost(), 
+										location.getPath(), null);
+							} catch (URISyntaxException e) {
+								return parseError(sourceId, response);
+							}
+						}
+						return lookupContent(location.toString());
 					}
-
-					return parseError(url, conn);
+					
+					return parseError(sourceId, response);
 				}
-				contentType = conn.getContentType();
-			} catch (IOException e) {
-				LOG.warn("Unabled to connect to URL "+url,e);
+				contentType = response.getHeaders().getContentType();
+			} catch (HttpStatusCodeException e) {
+				LOG.warn("Unabled to connect to URL {} {}", sourceId, e.getStatusCode(), e);
+				LOG.debug("Unabled to connect to URL {} {}: {}", 
+						sourceId, e.getStatusCode(), e.getResponseBodyAsString(), e);
 				ExtractedMetadata exurl = new ExtractedMetadata();
-				exurl.setUrl(url.toString());
+				exurl.setUrl(sourceId);
 				exurl.setTitle("Unabled to reach site: "+e.getClass().getSimpleName());
 				return exurl;
-			} 
+			}
 			
+			/**
+			 * TODO - start testing; this!
+			 */
 			ExtractedMetadata exurl = null;
-			if (contentType.startsWith("text/html")) {
-				exurl = parseHtml(url, contentType);
+			if (contentType.isCompatibleWith(MediaType.TEXT_HTML)) {
+				exurl = parseHtml(sourceId, contentType);
 			}
-			if (contentType.startsWith("image/")) {
-				exurl = parseImage(url, contentType);
+			MediaType imageType = MediaType.parseMediaType("image/*");
+			if (contentType.isCompatibleWith(imageType)) {
+				exurl = parseImage(sourceId, contentType);
 			}
+//			if (contentType.startsWith("image/")) {
+//				exurl = parseImage(url, contentType);
+//			}
 												
 			return exurl;
-		}
-		
-		private boolean isRedirect(int statusCode) {
-			return (statusCode>=300 && statusCode<400);
 		}
 		
 		private boolean notInfinteLoop(String originalUrl, String redirectUrl) {
@@ -368,31 +424,31 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 			return !redirectUrl.equalsIgnoreCase(originalUrl);
 		}
 		
-		private ExtractedMetadata parseError(URL url, HttpURLConnection conn) throws IOException {
-			LOG.warn(url+" returned a status of "+conn.getResponseCode());
+		private ExtractedMetadata parseError(String url, ResponseEntity<String> response) {
+			LOG.warn("{} returned a status of {}", url, response.getStatusCode());
 			
 			ExtractedMetadata exurl = new ExtractedMetadata();
-			exurl.setStatusCode(conn.getResponseCode());
-			exurl.setUrl(url.toString());
-			exurl.setTitle("HTTP Status Code "+conn.getResponseCode());
+			exurl.setStatusCode(response.getStatusCode().value());
+			exurl.setUrl(url);
+			exurl.setTitle("HTTP Status Code "+response.getStatusCode());
 			return exurl;
 		}
 		
-		private ExtractedMetadata parseImage(URL url, String contentType) {
+		private ExtractedMetadata parseImage(String url, MediaType contentType) {
 			ExtractedMetadata exurl = new ExtractedMetadata();
 			exurl.setStatusCode(200);
-			exurl.setUrl(url.toString());
-			exurl.setContentType(contentType);
+			exurl.setUrl(url);
+			exurl.setContentType(contentType.toString());
 			exurl.setImageUrl(url.toString());
 			exurl.setSummary("Image");
 			return exurl;
 		}
 		
-		private ExtractedMetadata parseHtml(URL url, String contentType) {
+		private ExtractedMetadata parseHtml(String url, MediaType contentType) {
 			ExtractedMetadata exurl = new ExtractedMetadata();
 			exurl.setStatusCode(200);
-			exurl.setUrl(url.toString());
-			exurl.setContentType(contentType);
+			exurl.setUrl(url);
+			exurl.setContentType(contentType.toString());
 			exurl.setSummary("Link: "+exurl.getUrl());
 			
 			Document doc = null;
@@ -477,8 +533,8 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 			
 			return exurl;
 		}
-		
 	}
+		
 	
 	class PhotoDimensions {
 		int width;

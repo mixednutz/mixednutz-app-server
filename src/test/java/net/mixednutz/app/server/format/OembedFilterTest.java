@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ public class OembedFilterTest {
 		
 		when(oembedFilterWhitelistRepository.findAll()).thenReturn(whitelist);
 		
-		oembedFilterWhitelistManager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository);
+		oembedFilterWhitelistManager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty());
 		oembedFilterWhitelistManager.loadWhitelist();
 	}
 	

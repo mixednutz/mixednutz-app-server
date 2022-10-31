@@ -7,6 +7,8 @@ import net.mixednutz.app.server.entity.Oembeds;
 
 public interface ExternalContentManager {
 	
+	Optional<ExtractedOembedHtml> lookupContent(String sourceType, String sourceId);
+	
 	ExtractedMetadata lookupMetadata(String sourceId);
 	
 	boolean isAllowListed(String sourceId);
@@ -18,6 +20,37 @@ public interface ExternalContentManager {
 	
 	Optional<Oembeds.Oembed> toOembed(String sourceType, String sourceId, Integer maxwidth,
 			Integer maxheight);
+	
+	public class ExtractedOembedHtml {
+		protected String url;
+		private int statusCode;
+		protected Oembeds.Oembed oembed;
+
+		public String getUrl() {
+			return url;
+		}
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+		public int getStatusCode() {
+			return statusCode;
+		}
+
+		public void setStatusCode(int statusCode) {
+			this.statusCode = statusCode;
+		}
+
+		public Oembeds.Oembed getOembed() {
+			return oembed;
+		}
+
+		public void setOembed(Oembeds.Oembed oembed) {
+			this.oembed = oembed;
+		}
+
+	}
 	
 	public class ExtractedMetadata {
 		protected String url;

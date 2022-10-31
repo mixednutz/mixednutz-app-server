@@ -115,7 +115,7 @@ public class JournalEntityConverter implements ApiElementConverter<Journal> {
 		StringBuffer html = new StringBuffer();
 		html.append("<iframe");
 		html.append(" height=\""+height+"\"");
-		html.append(" src=\""+networkInfo.getHostName()+EMBED_BASE_URL+journal.getUri()+"\"");
+		html.append(" src=\""+networkInfo.getBaseUrl()+EMBED_BASE_URL+journal.getUri()+"\"");
 		html.append(" style=\"max-width: "+width+"px; width: calc(100% - 2px);\"");
 		html.append(" frameborder=\"0\"></iframe>");
 		rich.setHtml(html.toString());

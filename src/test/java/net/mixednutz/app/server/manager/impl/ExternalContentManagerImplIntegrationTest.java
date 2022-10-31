@@ -1,23 +1,37 @@
 package net.mixednutz.app.server.manager.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
 import net.mixednutz.app.server.entity.OembedFilterAllowlist;
+import net.mixednutz.app.server.entity.Oembeds.Oembed;
+import net.mixednutz.app.server.entity.Oembeds.OembedRich;
 import net.mixednutz.app.server.manager.ExternalContentManager.ExtractedMetadata;
+import net.mixednutz.app.server.manager.ExternalContentManager.ExtractedOembedHtml;
 import net.mixednutz.app.server.repository.OembedFilterAllowlistRepository;
 
 public class ExternalContentManagerImplIntegrationTest {
 	
+	private RestTemplate defaultRestTemplate = new RestTemplate();
+	private RestTemplate mockRestTemplate;
 	private OembedFilterAllowlistRepository oembedFilterWhitelistRepository;
 	
 	@BeforeEach
@@ -59,11 +73,12 @@ public class ExternalContentManagerImplIntegrationTest {
 		
 		when(oembedFilterWhitelistRepository.findAll()).thenReturn(whitelist);
 		
+		mockRestTemplate = new RestTemplate();
 	}
 
 	@Test
 	public void testDerviceSourceType() {
-		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository);
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty());
 		manager.loadWhitelist();
 		assertTrue(manager.deriveSourceType("https://stopdst.com").isEmpty());
 		assertEquals("twitter", manager.deriveSourceType("https://twitter.com/klingershow/status/770399624695775236").get());
@@ -86,6 +101,41 @@ public class ExternalContentManagerImplIntegrationTest {
 		//assertEquals("mixednutz", manager.deriveSourceType("https://mixednutz.net/photo/id/719"));
 	}
 	
+	@Disabled
+	@Test
+	public void testTwitterOembedLookup() {
+//		new SslProperties(KEYSTORE_PATH, 
+//				KEYSTORE_PASS, KEYSTORE_TYPE);
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty());
+		manager.loadWhitelist();
+		
+		ExternalContentManagerImpl.RestTemplateUrlLookup lookup = 
+				manager.new RestTemplateUrlLookup();
+		
+		ExtractedMetadata url= lookup.lookupContent(
+				"https://twitter.com/i/web/status/786363977890721792"
+				);
+		System.out.println("URL:         "+url.getUrl());
+		System.out.println("ContentType: "+url.getContentType());
+		System.out.println("Title:       "+url.getTitle());
+		System.out.println("oEmbed:        "+url.getOembedUrl());
+		System.out.println("oEmbed Title:  "+url.getOembedTitle());
+		/*
+		 * Twitter doesn't put oembed in that page anymore!!!
+		 */
+		assertNotNull(url.getOembedUrl());
+		
+		//Lookup actual OEMBED endpoint
+		ExternalContentManagerImpl.AllowlistOembedLookup oembedLookup = 
+				manager.new AllowlistOembedLookup();
+		Oembed oembed = oembedLookup.lookupContent(url.getOembedUrl());
+		if (oembed instanceof OembedRich) {
+			System.out.println("HTML:        "+((OembedRich) oembed).getHtml());			
+		}
+
+	}
+	
+	
 	/**
 	 * Reads a URL and returns the metadata
 	 */
@@ -95,18 +145,71 @@ public class ExternalContentManagerImplIntegrationTest {
 //		new SslProperties(KEYSTORE_PATH, 
 //				KEYSTORE_PASS, KEYSTORE_TYPE);
 		
-		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository);
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(defaultRestTemplate));
 		manager.loadWhitelist();
 				
 		// Imdb
 		ExtractedMetadata url = manager.lookupMetadata(
-				"http://www.imdb.com/title/tt0796366/"
+				"http://www.imdb.com/title/tt0796366"
 				);
 		printExternalUrl(url);
 		assertNull(url.getOembedUrl()); //Null because IMDB doesn't have oembed.
 				
 	}
 	
+	@Disabled
+	@Test
+	public void testLookupContent_External() {
+
+		String response = "{\"type\":\"rich\",\"version\":\"1.0\",\"title\":\"Star Trek (2009) - IMDb\","
+				+ "\"html\":\"<iframe height=\\\"270\\\" src=\\\"https://andrewfesta.com/embed/lookup/url/https://www.imdb.com/title/tt0796366/\\\" style=\\\"max-width: 658px; width: calc(100% - 2px);\\\" frameborder=\\\"0\\\"></iframe>\","
+				+ "\"width\":0,\"height\":0,\"provider_name\":\"IMDb\",\"provider_url\":\"https://andrewfesta.com\",\"thumbnail_url\":\"https://m.media-amazon.com/images/M/MV5BMjE5NDQ5OTE4Ml5BMl5BanBnXkFtZTcwOTE3NDIzMw@@._V1_FMjpg_UX1000_.jpg\",\"thumbnail_width\":1000,\"thumbnail_height\":1482}";		
+		
+		MockRestServiceServer mockServer =
+				  MockRestServiceServer.bindTo(mockRestTemplate).build();
+		
+		String url = "https://mixednutz.net/oembed?url=http://www.imdb.com/title/tt0796366/";
+		mockServer.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
+		  .andRespond(withSuccess(response, MediaType.parseMediaType("application/json;charset=UTF-8")));
+		
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(mockRestTemplate));
+		manager.loadWhitelist();
+				
+		Optional<ExtractedOembedHtml> content = manager.lookupContent("imdb", "http://www.imdb.com/title/tt0796366/");
+		assertTrue(content.isPresent());
+		content.ifPresent(obj->{
+			OembedRich rich = (OembedRich) obj.getOembed();
+			System.out.println(rich.getHtml());
+		});
+						
+	}
+	
+//	@Disabled
+	@Test
+	public void testLookupContent_Internal() {
+
+		String response = "{\"type\":\"rich\",\"version\":\"1.0\",\"title\":\"Test Subject : AndrewFesta.com\",\"html\":\"<iframe height=\\\"270\\\" src=\\\"https://andrewfesta.com/embed/journal/id/null\\\" style=\\\"max-width: 658px; width: calc(100% - 2px);\\\" frameborder=\\\"0\\\"></iframe>\",\"width\":658,\"height\":270,\"provider_name\":\"AndrewFesta.com\",\"provider_url\":\"https://andrewfesta.com\",\"author_name\":\"andy\"}";		
+		
+		MockRestServiceServer mockServer =
+				  MockRestServiceServer.bindTo(mockRestTemplate).build();
+		
+		String url = "https://mixednutz.net/oembed?url=https://andrewfesta.com/andy/journal/2022/10/18/test";
+		mockServer.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
+		  .andRespond(withSuccess(response, MediaType.parseMediaType("application/json;charset=UTF-8")));
+		
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(mockRestTemplate));
+		manager.loadWhitelist();
+				
+		Optional<ExtractedOembedHtml> content = manager.lookupContent("imdb", "https://andrewfesta.com/andy/journal/2022/10/18/test");
+		assertTrue(content.isPresent());
+		content.ifPresent(obj->{
+			OembedRich rich = (OembedRich) obj.getOembed();
+			System.out.println(rich.getHtml());
+		});
+						
+	}
+	
+
 	protected void printExternalUrl(ExtractedMetadata url) {
 		System.out.println("URL:         "+url.getUrl());
 		System.out.println("ContentType: "+url.getContentType());

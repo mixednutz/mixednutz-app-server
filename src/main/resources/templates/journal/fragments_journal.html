@@ -229,6 +229,32 @@
 		</form>
 		
 	</div>
+	
+	<div th:fragment="journal_embed" class="Journal">
+		
+			<div class="row">
+				<div class="col-sm-7">
+	 				<img class="avatar" th:if="${journal.author.avatarFilename!=null}" th:src="@{|/photos-storage/${journal.author.avatarFilename}?size=avatar|}" src="../../img/nophoto.gif" width="100"/>
+					<img class="avatar" th:if="${journal.author.avatarFilename==null}" th:src="@{|/img/nophoto.gif|}" src="../../img/nophoto.gif" width="100"/>
+	 				<div class="subject">Blog: <a th:href="@{|${journal.uri}|}" href="#" th:text="${journal.subject}">Lorem ipsum dolor sit amet</a></div>
+					<div class="username hidden-xs"><a th:href="@{|/${journal.author.username}|}" href="#" th:text="${journal.author.username}">Username</a></div>
+				</div>
+				<div class="stats col-sm-5">
+					<div class="postedOn">Posted on: <time th:datetime="${#temporals.formatISO(journal.datePublished)}" th:text="${#temporals.format(journal.datePublished, #messages.msg('datetime.format.full'))}">August 24, 2013 at 9:00 PM</time></div>
+					<div class="sizeOfComments">Comments: <span th:text="${journal.comments.size()}">0</span></div>
+				</div>
+			</div>
+			<div class="preview" th:if="${journal.description!=null}">
+				<div>
+				<span class="description" th:text="${journal.description}">Description</span> [<a class="readmore" th:href="@{|${journal.uri}|}" >READ MORE</a>]
+				</div>
+			</div>
+			<!-- Tags -->
+	  		<div th:include="common/fragments_tags :: tags (${journal.uri})">tags</div>
+			<!-- Reactions -->
+			<div th:include="common/fragments_reactions :: reactions (${journal.reactions}, ${reactionScores}, ${journal.uri}, null)">reactions</div>
+        
+	</div>
   
   	<div th:fragment="journal">
 		<!-- Blog Post --> 

@@ -1,6 +1,7 @@
 package net.mixednutz.app.server.controller.api;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +42,9 @@ import net.mixednutz.app.server.repository.UserRepository;
 import net.mixednutz.app.server.security.LastonlineFilter;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(OembedController.class)
-@Import({ApiManagerImpl.class, NetworkInfoConfig.class, JournalEntityConverter.class,
+@WebMvcTest(value=OembedController.class)
+@Import({
+	ApiManagerImpl.class, NetworkInfoConfig.class, JournalEntityConverter.class,
 	Oembeds.class, ExternalContentManagerImpl.class})
 public class OembedControllerIntegrationTest {
 	
@@ -81,6 +82,7 @@ public class OembedControllerIntegrationTest {
 	@MockBean
 	OembedFilterAllowlistRepository oembedFilterWhitelistRepository;
 	
+		
 	@BeforeEach
 	public void setup() {
 				
@@ -152,7 +154,7 @@ public class OembedControllerIntegrationTest {
 				.andDo(print());
 	}
 	
-	@Disabled
+//	@Disabled
 	@Test
 	public void test_external() throws Exception {
 						
