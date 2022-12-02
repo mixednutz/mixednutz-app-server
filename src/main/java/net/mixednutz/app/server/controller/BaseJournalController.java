@@ -92,7 +92,7 @@ public class BaseJournalController {
 	private ExternalFeedManager externalFeedManager;
 	
 	@Autowired
-	private ApiManager apiManager;
+	protected ApiManager apiManager;
 	
 	protected Journal get(String username, int year, int month, int day, @PathVariable String subjectKey) {
 		User profileUser = userRepository.findByUsername(username)

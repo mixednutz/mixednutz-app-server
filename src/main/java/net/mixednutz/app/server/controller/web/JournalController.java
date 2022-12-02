@@ -2,6 +2,7 @@ package net.mixednutz.app.server.controller.web;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import net.mixednutz.api.activitypub.ActivityPubManager;
 import net.mixednutz.app.server.controller.BaseJournalController;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.entity.User;
@@ -29,6 +32,8 @@ import net.mixednutz.app.server.entity.post.series.ChapterFactory;
 @Controller
 public class JournalController extends BaseJournalController {
 	
+	@Autowired
+	private ActivityPubManager activityPubManager;
 
 	//------------
 	// View Mappings
@@ -160,4 +165,25 @@ public class JournalController extends BaseJournalController {
 		return "redirect:"+comment.getUri();
 	}
 	
+	/**
+	 * Show ActivityStream Object
+	 * 
+	 * @param username
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param subjectKey
+	 * @return
+	 */
+	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}", method = RequestMethod.GET)
+	public @ResponseBody org.w3c.activitystreams.Object getJournalActivity(
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@AuthenticationPrincipal final User user) {
+		
+		final Journal journal = get(username, year, month, day, subjectKey);
+		return activityPubManager.toNote(apiManager.toTimelineElement(journal, user), journal.getVisibility(), true);
+	}
+		
 }

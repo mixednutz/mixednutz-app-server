@@ -91,4 +91,11 @@ public class TimelineManagerImpl implements TimelineManager {
 				.build();
 	}
 
+	@Override
+	public long countUserTimeline(User profileUser, User viewer) {
+		return timelineElementManagers.stream()
+				.mapToLong(postManager -> postManager.countUserTimelineInteral(profileUser, viewer))
+				.sum();
+	}
+
 }

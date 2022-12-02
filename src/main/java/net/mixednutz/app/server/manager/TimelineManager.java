@@ -28,4 +28,7 @@ public interface TimelineManager {
 	 */
 	public IPage<? extends ITimelineElement,Instant> getUserTimeline(User profileUser, User viewer, PageRequest<String> paging);
 
+	
+	public long countUserTimeline(User profileUser, User viewer);
+	
 }
