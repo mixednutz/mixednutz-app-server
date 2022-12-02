@@ -1,5 +1,7 @@
 package org.w3c.activitypub;
 
+import static net.mixednutz.api.activitypub.ActivityPubManager.URI_PREFIX;
+
 import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
@@ -98,7 +100,7 @@ public class OutboxController {
 			User user, HttpServletRequest request) {
 		
 		URI collectionId = UriComponentsBuilder
-			.fromHttpUrl(networkInfo.getBaseUrl()+USER_OUTBOX_ENDPOINT)
+			.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+USER_OUTBOX_ENDPOINT)
 			.buildAndExpand(Map.of("username",username)).toUri();
 		
 		Optional<User> profileUser = userRepository.findByUsername(username);
@@ -125,10 +127,10 @@ public class OutboxController {
 		OrderedCollectionImpl orderedcollection = new OrderedCollectionImpl();
 		activityPubManager.initRoot(orderedcollection);
 		orderedcollection.setId(UriComponentsBuilder
-				.fromHttpUrl(networkInfo.getBaseUrl()+USER_OUTBOX_ENDPOINT)
+				.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+USER_OUTBOX_ENDPOINT)
 				.buildAndExpand(Map.of("username",username)).toUri());
 		orderedcollection.setFirst(new LinkImpl(UriComponentsBuilder
-				.fromHttpUrl(networkInfo.getBaseUrl()+USER_OUTBOX_NEXTPAGE_ENDPOINT)
+				.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+USER_OUTBOX_NEXTPAGE_ENDPOINT)
 				.buildAndExpand(Map.of("username",username)).toUri()));
 		return orderedcollection;
 	}
@@ -147,11 +149,11 @@ public class OutboxController {
 		orderedcollection.setTotalItems(totalItems); 
 		orderedcollection.setPartOf(partOf);
 		orderedcollection.setId(UriComponentsBuilder
-				.fromHttpUrl(networkInfo.getBaseUrl()+USER_OUTBOX_NEXTPAGE_ENDPOINT)
+				.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+USER_OUTBOX_NEXTPAGE_ENDPOINT)
 				.buildAndExpand(Map.of("username",username)).toUri());
 		if (page.hasNext()) {
 			orderedcollection.setNext(new LinkImpl(UriComponentsBuilder
-					.fromHttpUrl(networkInfo.getBaseUrl()+USER_OUTBOX_NEXTPAGE_ENDPOINT)
+					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+USER_OUTBOX_NEXTPAGE_ENDPOINT)
 					.queryParam("start", page.getNextPage().getStart())
 					.queryParam("pageSize", page.getNextPage().getPageSize())
 					.buildAndExpand(Map.of("username",username)).toUri()));
