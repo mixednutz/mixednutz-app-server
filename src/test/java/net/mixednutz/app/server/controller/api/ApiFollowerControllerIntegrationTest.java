@@ -45,9 +45,6 @@ import net.mixednutz.app.server.security.LastonlineFilter;
 		"spring.mail.host=smtp.mail.yahoo.com",
 		
 })
-/*
- * debug=true --spring.profiles.active=jpa-dev,db-local-hsqldb-file,twitter,discord,ssl,aws-local --PHOTO_DIRECTORY=/home/apfesta/workspace-mixednutz/photos/ --KEYSTORE_FILE=/home/apfesta/keystore.p12 --KEYSTORE_TYPE=PKCS12 --KEYSTORE_PASS=@lias1098 --TWITTER_CONSUMER_KEY=ErPS3Yil7Jisa44fEYOZFBTJz --TWITTER_CONSUMER_SECRET=oFpCkrOEkW0x3DkVbi4rCoUMQ8vuKYEXKJBA603iG9Tpaz7Szp --DISCORD_TOKEN=ODE2ODgwNDkzOTA2NjI0NTEz.YEBZPg.Cvv7KrUJxptS7kdJhItR8Gu1tEU --DISCORD_CHANNEL_ID=816882378085367818 --AWS_ACCESS_KEY_ID=AKIATME23SLKRPS3QEVF --AWS_SECRET_ACCESS_KEY=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 --SMTP_HOST=smtp.mail.yahoo.com --SMTP_USERNAME=tfes8@yahoo.com --SMTP_PASSWORD=wywxxthxvblapwyt --server.port=8443 --applicationUrl=https://127.0.0.1:8443 --externalTemplateFolder=/home/apfesta/git/mixednutz/tfemily.com/templates/
- */
 public class ApiFollowerControllerIntegrationTest {
 	
 	@PersistenceContext
