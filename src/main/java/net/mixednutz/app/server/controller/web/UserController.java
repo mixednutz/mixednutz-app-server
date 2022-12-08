@@ -61,7 +61,7 @@ public class UserController extends BaseUserController {
 			HttpServletRequest request,
 			SessionStatus sessionStatus) {
 		
-		user = save(user);
+		user = saveNewUser(user);
 		
 		return "redirect:/"; 
 	} 

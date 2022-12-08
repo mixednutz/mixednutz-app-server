@@ -20,6 +20,7 @@ import net.mixednutz.app.server.entity.Lastonline;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.manager.ApiManager;
+import net.mixednutz.app.server.manager.FollowerManager;
 import net.mixednutz.app.server.repository.LastonlineRepository;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
@@ -42,6 +43,9 @@ public class ApiUserController {
 	
 	@Autowired
 	private ExternalFeedApiController externalFeedApi;
+	
+	@Autowired
+	private FollowerManager followerManager;
 	
 	@Autowired
 	private ApiManager apiManager;
@@ -83,13 +87,13 @@ public class ApiUserController {
 		UserProfile profileData = profileRepository.findById(profileUser.getUserId()).orElse(null);
 				
 		Lastonline lastonline = lastonlineRepository.findById(profileUser.getUserId()).orElse(null);
-		
+
 		UserProfileBundle bundle = new UserProfileBundle()
 				.addUser(apiManager.toUser(profileUser, profileData))
 				.addExternalFeedsList(externalFeedApi.externalFeeds(username))
-				.addLastonline(lastonline);
-//				.addFollowerCount(friendManager.countFollowers(account, false))
-//				.addFollowingCount(friendManager.countFollowing(account, false));
+				.addLastonline(lastonline)
+				.addFollowerCount(followerManager.countFollowers(profileUser))
+				.addFollowingCount(followerManager.countFollowing(profileUser));
 				
 //		if (user !=null) {
 //			bundle
@@ -132,14 +136,14 @@ public class ApiUserController {
 			this.putAll(list);
 			return this;
 		}
-//		UserProfileBundle addFollowerCount(int followerCount) {
-//			this.put("followerCount", followerCount);
-//			return this;
-//		}
-//		UserProfileBundle addFollowingCount(int followingCount) {
-//			this.put("followingCount", followingCount);
-//			return this;
-//		}
+		UserProfileBundle addFollowerCount(long followerCount) {
+			this.put("followerCount", followerCount);
+			return this;
+		}
+		UserProfileBundle addFollowingCount(long followingCount) {
+			this.put("followingCount", followingCount);
+			return this;
+		}
 		UserProfileBundle addUser(IUserSmall user) {
 			this.put("user", user);
 			return this;

@@ -22,6 +22,8 @@ public class SiteSettings {
 	
 	private Boolean commentsAllowedDefault = false;
 	
+	private Boolean newUsersAutoFollowAdminUser = false;
+	
 	public SiteSettings() {
 		super();
 	}
@@ -76,6 +78,14 @@ public class SiteSettings {
 
 	public void setCommentsAllowedDefault(Boolean commentsAllowedDefault) {
 		this.commentsAllowedDefault = commentsAllowedDefault;
+	}
+
+	public Boolean getNewUsersAutoFollowAdminUser() {
+		return newUsersAutoFollowAdminUser;
+	}
+
+	public void setNewUsersAutoFollowAdminUser(Boolean newUsersAutoFollowAdminUser) {
+		this.newUsersAutoFollowAdminUser = newUsersAutoFollowAdminUser;
 	}
 
 	public enum Page {

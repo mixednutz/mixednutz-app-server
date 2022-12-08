@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.w3c.activitystreams.model.LinkImpl;
 import org.w3c.activitystreams.model.OrderedCollectionImpl;
@@ -35,7 +34,7 @@ import net.mixednutz.app.server.manager.TimelineManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
 @Controller
-@RequestMapping("/activitypub")
+@RequestMapping(URI_PREFIX)
 public class OutboxController {
 	
 	public static final String USER_OUTBOX_ENDPOINT = 
@@ -60,7 +59,7 @@ public class OutboxController {
 	
 	@RequestMapping(value={USER_OUTBOX_ENDPOINT}, 
 			method = RequestMethod.GET)
-	public @ResponseBody OrderedCollectionImpl getUserOutbox(
+	public OrderedCollectionImpl getUserOutbox(
 			@PathVariable String username,
 			@AuthenticationPrincipal User user, HttpServletRequest request) {
 		return toOrderedCollection(PageRequest.first(30, Direction.LESS_THAN, String.class), username);
@@ -69,7 +68,7 @@ public class OutboxController {
 	@RequestMapping(value={USER_OUTBOX_NEXTPAGE_ENDPOINT}, 
 			method = RequestMethod.GET,
 			params = {"!start"})
-	public @ResponseBody OrderedCollectionPageImpl getUserOutboxFirstPage(
+	public OrderedCollectionPageImpl getUserOutboxFirstPage(
 			@PathVariable String username,
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
 			@AuthenticationPrincipal User user, HttpServletRequest request) {
@@ -82,7 +81,7 @@ public class OutboxController {
 	@RequestMapping(value={USER_OUTBOX_NEXTPAGE_ENDPOINT}, 
 			method = RequestMethod.GET,
 			params = {"start"})
-	public @ResponseBody OrderedCollectionPageImpl getUserOutboxNextPage(
+	public OrderedCollectionPageImpl getUserOutboxNextPage(
 			@PathVariable String username,
 			@RequestParam(value="start") String start, 
 			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,

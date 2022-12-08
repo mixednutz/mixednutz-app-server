@@ -25,7 +25,7 @@ import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
 @Controller
-@RequestMapping("/activitypub")
+@RequestMapping(URI_PREFIX)
 public class ActorController extends BaseUserController {
 	
 	@Autowired

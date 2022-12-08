@@ -55,6 +55,7 @@ public class UserSettingsController {
 		SettingsForm form = new SettingsForm();
 		form.setIndexPage(siteSettings.getIndexPage());
 		form.setCommentsAllowedDefault(siteSettings.getCommentsAllowedDefault());
+		form.setNewUsersAutoFollowAdminUser(siteSettings.getNewUsersAutoFollowAdminUser());
 		model.addAttribute("form", form);
 		
 		// Menu
@@ -105,6 +106,7 @@ public class UserSettingsController {
 			siteSettings = siteSettingsRepository.findById(user.getUserId()).get();
 			siteSettings.setIndexPage(form.getIndexPage());
 			siteSettings.setCommentsAllowedDefault(form.isCommentsAllowedDefault());
+			siteSettings.setNewUsersAutoFollowAdminUser(form.isNewUsersAutoFollowAdminUser());
 			siteSettingsManager.save(siteSettings);
 		}
 		
@@ -156,6 +158,7 @@ public class UserSettingsController {
 		Long[] feedId;
 		VisibilityType[] visibility;
 		boolean commentsAllowedDefault;
+		boolean newUsersAutoFollowAdminUser;
 		
 		public Map<Long, VisibilityType> visibilityMap() {
 			Map<Long, VisibilityType> map = new LinkedHashMap<>();
@@ -193,6 +196,12 @@ public class UserSettingsController {
 		}
 		public void setCommentsAllowedDefault(boolean commentsAllowedDefault) {
 			this.commentsAllowedDefault = commentsAllowedDefault;
+		}
+		public boolean isNewUsersAutoFollowAdminUser() {
+			return newUsersAutoFollowAdminUser;
+		}
+		public void setNewUsersAutoFollowAdminUser(boolean newUsersAutoFollowAdminUser) {
+			this.newUsersAutoFollowAdminUser = newUsersAutoFollowAdminUser;
 		}
 	}
 	
