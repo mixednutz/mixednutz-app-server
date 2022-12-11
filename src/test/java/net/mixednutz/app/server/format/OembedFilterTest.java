@@ -74,10 +74,12 @@ public class OembedFilterTest {
 				+ "https://www.mixednutz.net/photo/_id/1<br>"
 				+ "Testing<br />"
 				+ "http://youtube.com?watch=asdfafd<br>\n"
-				+ "https://www.mixednutz.net/photo/_id/1<br>"
+				+ "https://www.mixednutz.net/photo/_id/1<br>\n"
+				+ "https://www.amazon.com/dp/B0BMXYLXW1<br>"
 				+ "<a href=\"www.flickr.com\">Flicker</a><br>"
 				+ "<a href='www.picasa.com'>Picasa</a>"
 				+ "<div>https://www.imdb.com/title/tt0160862</div>";
+				
 		
 		OembedFilter filter = new OembedFilter(null);
 		List<UrlEntity> urlEntities = filter.findUrls(html);
@@ -89,7 +91,8 @@ public class OembedFilterTest {
 		assertEquals("https://www.mixednutz.net/photo/_id/1", urlEntities.get(2).text);
 		assertEquals("http://youtube.com?watch=asdfafd", urlEntities.get(3).text);
 		assertEquals("https://www.mixednutz.net/photo/_id/1", urlEntities.get(4).text);
-		assertEquals("https://www.imdb.com/title/tt0160862", urlEntities.get(5).text);
+		assertEquals("https://www.amazon.com/dp/B0BMXYLXW1", urlEntities.get(5).text);
+		assertEquals("https://www.imdb.com/title/tt0160862", urlEntities.get(6).text);
 	}
 	
 	@Test
@@ -105,9 +108,15 @@ public class OembedFilterTest {
 		
 		OembedFilter filter = new OembedFilter(oembedFilterWhitelistManager);
 		
-		List<OembedEntity> oembedEntities = filter.lookupOembeds(urlEntities);
-		for (OembedEntity entity: oembedEntities) {
-			System.out.println(entity.text+" "+entity.start+" "+entity.end+" "+entity.type);
+		List<UrlEntity> oembedEntities = filter.lookupOembeds(urlEntities);
+		for (UrlEntity entity: oembedEntities) {
+			if (entity instanceof OembedEntity) {
+				OembedEntity oEntity = (OembedEntity) entity;
+				System.out.println(entity.text+" "+entity.start+" "+entity.end+" "+oEntity.type);
+			} else {
+				System.out.println(entity.text+" "+entity.start+" "+entity.end);
+			}
+			
 		}
 	}
 	
@@ -125,7 +134,8 @@ public class OembedFilterTest {
 				+ "http://imgur.com/a/NFO8l<br>"
 				+ "<a href=\"www.flickr.com\">Flicker</a><br>"
 				+ "<a href='www.picasa.com'>Picasa</a><br>\n"
-				+ "http://www.imdb.com/title/tt0796366/<br/>";
+				+ "http://www.imdb.com/title/tt0796366/<br/>\n"
+				+ "https://www.amazon.com/dp/B0BMXYLXW1<br/>";
 		String newHtml = filter.filter(html);
 		System.out.println("\nFILTER TAKE #1");
 		System.out.println(newHtml);
@@ -145,7 +155,9 @@ public class OembedFilterTest {
 				+ "<div>https://twitter.com/andrewpfesta/status/760781827309121537</div>"
 				+ "<div><br></div>"
 				+ "<div>Here's a IMDB Example: (http://www.imdb.com/title/tt0796366/)</div>"
-				+ "<div>http://www.imdb.com/title/tt0796366/</div>";
+				+ "<div>http://www.imdb.com/title/tt0796366/</div>"
+				+ "<div>Here's an example of Just a URL that doesn't have an Oembed:</div>"
+				+ "<div>https://www.amazon.com/dp/B0BMXYLXW1</div>";
 		System.out.println("\nFILTER TAKE #2");
 		System.out.println("=Original Text:");
 		System.out.println(html);
