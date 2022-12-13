@@ -204,7 +204,7 @@ page.setupProfile = function() {
 		
 		$('.profile .followers .followingCount').text(page.ownerBundle.followingCount);
 		$('.profile .followers .followerCount').text(page.ownerBundle.followerCount);
-		$('.profile .followers').attr('href',page.owner.url+'/friends');
+		$('.profile .followers').attr('href',page.owner.url+'/followers');
 		
 		$('.socmed-author-rss a').attr('href','/rss/'+page.owner.username);
 		if (page.ownerBundle.user.profileData.twitterAccount!=null) {

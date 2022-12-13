@@ -12,22 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.mixednutz.api.core.model.ApiList;
 import net.mixednutz.api.model.IUserSmall;
+import net.mixednutz.app.server.controller.BaseFollowerController;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.Follower;
 import net.mixednutz.app.server.entity.Follower.FollowerPK;
 import net.mixednutz.app.server.entity.SiteSettings;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ApiManager;
-import net.mixednutz.app.server.manager.FollowerManager;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
 @RestController
 @RequestMapping(value="/api")
-public class ApiFollowerController {
-	
-	@Autowired
-	private FollowerManager followerManager;
+public class ApiFollowerController extends BaseFollowerController {
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -39,7 +36,7 @@ public class ApiFollowerController {
 	private ApiManager apiManager;
 	
 	@RequestMapping(value="/following", method = RequestMethod.GET)
-	public FollowingList getFollowing(@AuthenticationPrincipal User user) {
+	public FollowingList apiGetFollowing(@AuthenticationPrincipal User user) {
 		FollowingList following = new FollowingList();
 
 		followerManager.getFollowing(user)
@@ -47,6 +44,41 @@ public class ApiFollowerController {
 			.map(f->apiManager.toUser(f.getUser()))
 			.forEach(u->following.add(u));
 		return following;
+	}
+	
+	@RequestMapping(value="/followers", method = RequestMethod.GET)
+	public FollowersList apiGetFollowers(@AuthenticationPrincipal User user) {
+		FollowersList followers = new FollowersList();
+
+		followerManager.getFollowers(user)
+			.stream()
+			.map(f->apiManager.toUser(f.getUser()))
+			.forEach(u->followers.add(u));
+		return followers;
+	}
+	
+	@RequestMapping(value="/{username}/following", method = RequestMethod.GET)
+	public FollowingList apiGetFollowing(@PathVariable String username, 
+			@AuthenticationPrincipal User user) {
+		FollowingList following = new FollowingList();
+
+		getFollowing(username)
+			.stream()
+			.map(f->apiManager.toUser(f.getUser()))
+			.forEach(u->following.add(u));
+		return following;
+	}
+	
+	@RequestMapping(value="/{username}/followers", method = RequestMethod.GET)
+	public FollowersList apiGetFollowers(@PathVariable String username, 
+			@AuthenticationPrincipal User user) {
+		FollowersList followers = new FollowersList();
+
+		getFollowers(username)
+			.stream()
+			.map(f->apiManager.toUser(f.getUser()))
+			.forEach(u->followers.add(u));
+		return followers;
 	}
 	
 	@RequestMapping(value="/{username}/follow", method = RequestMethod.POST)
@@ -92,6 +124,19 @@ public class ApiFollowerController {
 
 		public FollowingList() {
 			super("following");
+		}
+		
+	}
+	
+	public static class FollowersList extends ApiList<IUserSmall> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7694872710549850417L;
+
+		public FollowersList() {
+			super("followers");
 		}
 		
 	}
