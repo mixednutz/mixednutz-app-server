@@ -8,9 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Language" content="en" />
-	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${profileUser.userId}" th:text="|#{profile.window-title} - #{site.title}|">My Profile - MixedNutz.net</title>
-	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}!=${profileUser.userId}" th:text="@{|${profileUser.username}'s Profile - #{site.title}|}">My Profile - MixedNutz.net</title>
-	<title sec:authorize="!isAuthenticated()" th:if="${isRoot==null}" th:text="@{|${profileUser.username}'s Profile - #{site.title}|}">My Profile - MixedNutz.net</title>
+	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${profileUser.userId}" th:text="|#{profile.window-title} - #{site.title}|">My Followers - MixedNutz.net</title>
+	<title sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}!=${profileUser.userId}" th:text="@{|${profileUser.username}'s Followers - #{site.title}|}">My Followers - MixedNutz.net</title>
+	<title sec:authorize="!isAuthenticated()" th:if="${isRoot==null}" th:text="@{|${profileUser.username}'s Followers - #{site.title}|}">My Followers - MixedNutz.net</title>
 	<title sec:authorize="!isAuthenticated()" th:if="${isRoot!=null}" th:text="#{site.title}">MixedNutz.net</title>
 	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
@@ -38,20 +38,51 @@
 	<!-- Banner -->
 	<div th:replace="header :: navbar">navbar</div>
 	
-	<div class="container">
-			
-        <div class="row">
-	  		<div class="col-lg-3"> 
-	  			<div th:replace="profile/fragments_profile :: viewuser_picture">viewuser_picture</div>
-	  			<div th:replace="profile/fragments_profile :: viewuser_path">viewuser_picture</div>
-	  			<div th:replace="profile/fragments_profile :: viewuser_profile">viewuser_profile</div>
-	  		</div>
-	  		<div class="col-lg-9">					  			
-      			<div th:replace="profile/fragments_profile :: timeline">timeline</div>
-	  		</div>
-	  	</div>
-
-    </div>
+	<div class="container followers">
+	
+		<!-- All Following -->
+		<div class="panel panel-default fgroup">
+			<div th:if="${#authentication.principal.userId}==${profileUser.userId}" class="panel-heading">Following</div>
+			<div th:if="${#authentication.principal.userId}!=${profileUser.userId}" class="panel-heading">Following <span th:text="${account.firstname}">firstname</span></div>
+			<div class="panel-body list-group">
+				<div th:each="friendWeb: ${following}" class="list-group-item">
+					<div th:with="friend = ${friendWeb.follower}">
+						<img 
+							th:if="${friend.avatarFilename!=null}"
+							th:src="@{|/photos-storage/${friend.avatarFilename}?size=avatar|}" src="../img/nophoto.gif" 
+							width="48" >
+						<img
+							th:if="${friend.avatarFilename==null}"
+							th:src="@{|/img/nophoto.gif|}" src="../../img/nophoto.gif"
+							width="48" />
+						<a th:href='@{|/${formatter.removeSpaces(friend.username)}|}' href="#"><span th:text="${friend.displayName!=null?friend.displayName:friend.username}">Name</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		<!-- All Followers -->
+		<div class="panel panel-default fgroup">
+			<div th:if="${#authentication.principal.userId}==${profileUser.userId}" class="panel-heading">Followers</div>
+			<div th:if="${#authentication.principal.userId}!=${profileUser.userId}" class="panel-heading">Followers<span th:text="${account.firstname}">firstname</span></div>
+			<div class="panel-body list-group">
+				<div th:each="friendWeb: ${followers}" class="list-group-item">
+					<div th:with="friend = ${friendWeb.follower}">
+						<img 
+							th:if="${friend.avatarFilename!=null}"
+							th:src="@{|/photos-storage/${friend.avatarFilename}?size=avatar|}" src="../img/nophoto.gif" 
+							width="48" >
+						<img
+							th:if="${friend.avatarFilename==null}"
+							th:src="@{|/img/nophoto.gif|}" src="../../img/nophoto.gif"
+							width="48" />
+						<a th:href='@{|/${formatter.removeSpaces(friend.username)}|}' href="#"><span th:text="${friend.displayName!=null?friend.displayName:friend.username}">Name</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	</div>
 
 
 	

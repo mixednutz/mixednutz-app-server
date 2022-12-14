@@ -10,7 +10,7 @@ public abstract class AbstractUrlFilter implements HtmlFilter {
 	private static final Pattern URL_PATTERN=Pattern.compile(
 			".?(\\A|<div>|<br ?>|<br ?\\/>|[\\r\\n])"
 			+ "(?<url>https?:\\/\\/[\\w\\d:#@%\\/;$()~?\\\\+-=.\\/]*)"
-			+ "(</div>|<br>|<br\\/>|[\\r\\n]|\\Z).?",
+			+ "(<\\/div>|<br ?>|<br ?\\/>|[\\r\\n]|\\Z).?",
 			Pattern.CASE_INSENSITIVE);
 	private static final String URL_GROUP_NAME = "url";
 	

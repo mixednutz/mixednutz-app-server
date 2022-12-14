@@ -1,5 +1,7 @@
 package org.w3c.activitypub;
 
+import static net.mixednutz.api.activitypub.ActivityPubManager.URI_PREFIX;
+
 import java.net.URI;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -23,7 +25,7 @@ import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
 @Controller
-@RequestMapping("/activitypub")
+@RequestMapping(URI_PREFIX)
 public class ActorController extends BaseUserController {
 	
 	@Autowired
@@ -48,7 +50,7 @@ public class ActorController extends BaseUserController {
 		return userRepository.findByUsername(username)
 		.map(user->{
 			URI outbox = UriComponentsBuilder
-					.fromHttpUrl(networkInfo.getBaseUrl()+OutboxController.USER_OUTBOX_ENDPOINT)
+					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+OutboxController.USER_OUTBOX_ENDPOINT)
 					.buildAndExpand(Map.of("username",username)).toUri();
 			
 			Person person = activityPubManager.toPerson(apiManager.toUser(user), user, request, outbox, true);
