@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,8 +44,8 @@ import net.mixednutz.app.server.security.LastonlineFilter;
 @ActiveProfiles({"jpa-dev","db-local-hsqldb","ssl","aws-local"})
 @TestPropertySource(properties= {
 		"spring.mail.host=smtp.mail.yahoo.com",
-		
 })
+@Disabled
 public class ApiFollowerControllerIntegrationTest {
 	
 	@PersistenceContext
