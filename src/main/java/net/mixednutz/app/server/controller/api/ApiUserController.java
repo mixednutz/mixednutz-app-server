@@ -21,7 +21,6 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
 import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.FollowerManager;
-import net.mixednutz.app.server.repository.LastonlineRepository;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -37,9 +36,6 @@ public class ApiUserController {
 	
 	@Autowired
 	private UserProfileRepository profileRepository;
-	
-	@Autowired
-	private LastonlineRepository lastonlineRepository;
 	
 	@Autowired
 	private ExternalFeedApiController externalFeedApi;
@@ -86,7 +82,7 @@ public class ApiUserController {
 		
 		UserProfile profileData = profileRepository.findById(profileUser.getUserId()).orElse(null);
 				
-		Lastonline lastonline = lastonlineRepository.findById(profileUser.getUserId()).orElse(null);
+		Lastonline lastonline = profileUser.getLastonline();
 
 		UserProfileBundle bundle = new UserProfileBundle()
 				.addUser(apiManager.toUser(profileUser, profileData))
