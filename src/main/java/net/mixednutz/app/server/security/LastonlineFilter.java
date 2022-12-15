@@ -73,7 +73,7 @@ public class LastonlineFilter {
 	
 	protected Lastonline onAuthorized(Authentication auth, User user) {
 		Lastonline lastonline = lastonlineRepository.findById(user.getUserId())
-				.orElse(new Lastonline(user));
+				.orElse(Lastonline.firstTimeOnline(user));
 		
 		lastonline.setTimestamp(ZonedDateTime.now());
 		lastonline.setIpAddress(getClientIpAddress());
