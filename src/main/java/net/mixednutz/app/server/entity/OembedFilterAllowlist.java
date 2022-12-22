@@ -4,6 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import net.mixednutz.app.server.manager.ExternalContentManager.ExtractedMetadata;
+import net.mixednutz.app.server.manager.impl.ExternalContentManagerImpl.ApiLookup;
+
 @Entity
 @Table(name="x_whitelist")
 public class OembedFilterAllowlist {
@@ -13,6 +16,7 @@ public class OembedFilterAllowlist {
 	private String urlPattern;
 	private String oembedUrlPattern;
 	private String oembedUrl;
+	private Class<?> customLookupClass;
 	
 	public OembedFilterAllowlist() {
 		super();
@@ -20,12 +24,19 @@ public class OembedFilterAllowlist {
 
 	public OembedFilterAllowlist(String name, String description, 
 			String urlPattern, String oembedUrlPattern, 
-			String oembedUrl) {
+			String oembedUrl, Class<? extends ApiLookup<ExtractedMetadata>> customLookupClass) {
 		this.name = name;
 		this.description = description;
 		this.urlPattern = urlPattern;
 		this.oembedUrlPattern = oembedUrlPattern;
 		this.oembedUrl = oembedUrl;
+		this.customLookupClass = customLookupClass;
+	}
+	
+	public OembedFilterAllowlist(String name, String description, 
+			String urlPattern, String oembedUrlPattern, 
+			String oembedUrl) {
+		this(name, description, urlPattern, oembedUrlPattern, oembedUrl, null);
 	}
 	
 	@Id
@@ -58,6 +69,13 @@ public class OembedFilterAllowlist {
 	}
 	public void setOembedUrl(String oembedUrl) {
 		this.oembedUrl = oembedUrl;
+	}
+	@SuppressWarnings("unchecked")
+	public Class<? extends ApiLookup<ExtractedMetadata>> getCustomLookupClass() {
+		return (Class<ApiLookup<ExtractedMetadata>>) customLookupClass;
+	}
+	public void setCustomLookupClass(Class<? extends ApiLookup<ExtractedMetadata>> customLookupClass) {
+		this.customLookupClass = customLookupClass;
 	}
 	
 }

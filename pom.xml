@@ -76,6 +76,8 @@
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
 		
+		<version.themoviedb-api>1.12</version.themoviedb-api>
+		
 		<version.commons-codec>1.4</version.commons-codec>
 		<version.webjars-locator>0.30</version.webjars-locator>
 		<version.bootstrap>3.3.7-1</version.bootstrap>
@@ -203,6 +205,13 @@
 		    <groupId>com.rometools</groupId>
 		    <artifactId>rome</artifactId>
 		    <version>${version.rome}</version>
+		</dependency>
+		
+		<!--  TheMovieDBApi -->
+		<dependency>
+		    <groupId>com.github.holgerbrandl</groupId>
+		    <artifactId>themoviedbapi</artifactId>
+		    <version>${version.themoviedb-api}</version>
 		</dependency>
 		
 		<!-- JAXB API for Java 8 compatibility -->

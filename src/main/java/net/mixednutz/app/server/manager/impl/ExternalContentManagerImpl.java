@@ -59,6 +59,7 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 
 	private Map<String, ApiLookup<?>> lookupMap;
 	private Map<String, Pattern> patternMap;
+	private Map<String, ApiLookup<ExtractedMetadata>> urlLookups;
 	private RestTemplateUrlLookup urlLookup;
 	
 	@Autowired
@@ -67,25 +68,41 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 	@Autowired
 	OembedController oembedController;
 	
+	private List<ApiLookup<ExtractedMetadata>> customApiLookups;
+	
 	@Autowired
 	public ExternalContentManagerImpl(OembedFilterAllowlistRepository oembedFilterWhitelistRepository,
-			Optional<RestTemplate> restTemplate) {
+			Optional<RestTemplate> restTemplate, List<ApiLookup<ExtractedMetadata>> customApiLookups) {
 		super();
 		this.restTemplate = restTemplate.orElse(new RestTemplate());
 		this.oembedFilterWhitelistRepository = oembedFilterWhitelistRepository;
+		this.customApiLookups = customApiLookups;
 		urlLookup = new RestTemplateUrlLookup();
+	}
+	
+	private Optional<ApiLookup<ExtractedMetadata>> loadCustomClass(OembedFilterAllowlist whitelisted) {
+		return this.customApiLookups.stream()
+			.filter(instance->instance.getClass().equals(whitelisted.getCustomLookupClass()))
+			.findFirst();
 	}
 
 	@PostConstruct
 	public void loadWhitelist() {
-		lookupMap = new HashMap<String, ApiLookup<?>>();
-		patternMap = new HashMap<String, Pattern>();
+		lookupMap = new HashMap<>();
+		patternMap = new HashMap<>();
+		urlLookups = new HashMap<>();
 		
 		for (OembedFilterAllowlist whitelisted: oembedFilterWhitelistRepository.findAll()) {
 			try {
 				this.lookupMap.put(whitelisted.getName(), new AllowlistLookup(whitelisted.getOembedUrl()));
 				this.patternMap.put(whitelisted.getName(), 
 						Pattern.compile(whitelisted.getUrlPattern(), Pattern.CASE_INSENSITIVE));
+				if (whitelisted.getCustomLookupClass()!=null) {
+					this.loadCustomClass(whitelisted).ifPresent(instance->this.urlLookups.put(whitelisted.getName(), 
+							instance));
+				} else {
+					this.urlLookups.put(whitelisted.getName(),urlLookup);
+				}
 				LOG.debug("Registered Oembed Whitelist Pattern for {} : {} {}",
 						whitelisted.getDescription(), whitelisted.getUrlPattern(), whitelisted.getOembedUrlPattern());
 			} catch (PatternSyntaxException e) {
@@ -148,7 +165,11 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 	
 	@Cacheable(value="externalMetaData")
 	public ExtractedMetadata lookupMetadata(String sourceId) {
-		return urlLookup.lookupContent(sourceId);
+		Optional<ExtractedMetadata> content = deriveSourceType(sourceId)
+				.<ApiLookup<ExtractedMetadata>>map(sourceType->urlLookups.get(sourceType))
+				.<ExtractedMetadata>map(urlLookup->urlLookup.lookupContent(sourceId));
+		
+		return content.orElse(null);
 	}
 	
 	/**

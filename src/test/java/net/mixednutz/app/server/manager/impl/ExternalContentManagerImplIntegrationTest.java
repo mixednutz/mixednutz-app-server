@@ -43,32 +43,39 @@ public class ExternalContentManagerImplIntegrationTest {
 						"twitter","Twitter",
 						"^https?:\\/\\/?(www\\.)?twitter.com\\/(?!i)(?<username>.*)\\/status\\/(?<id>[0-9]*)",
 						"^(http|https):\\/\\/?(publish\\.)?twitter.com\\/oembed.*",
-						"https://publish.twitter.com/oembed?url={url}"),
+						"https://publish.twitter.com/oembed?url={url}",null),
 				new OembedFilterAllowlist(
 						"instagram","Instagram",
 						"^(http|https):\\/\\/?(www\\.)?instagram.com\\/p.*",
 						"^(http|https):\\/\\/?(api\\.)?instagram.com\\/oembed.*",
-						"https://api.instagram.com/oembed?url={url}"),
+						"https://api.instagram.com/oembed?url={url}",null),
 				new OembedFilterAllowlist(
 						"flickr","Flickr",
 						"^(http|https):\\/\\/?(www\\.)?flickr.com\\/photos\\/.*",
 						"^(http|https):\\/\\/?www.flickr.com\\/services\\/oembed.*",
-						"https://www.flickr.com/services/oembed?url={url}&format=json&maxwidth=620"),
+						"https://www.flickr.com/services/oembed?url={url}&format=json&maxwidth=620",null),
 				new OembedFilterAllowlist(
 						"youtube","YouTube",
 						"^(http|https):\\/\\/?(www\\.)?youtube.com\\/watch.*",
 						"^(http|https):\\/\\/?www.youtube.com\\/oembed.*",
-						"http://www.youtube.com/oembed?url={url}&format=json"),
+						"http://www.youtube.com/oembed?url={url}&format=json",null),
 				new OembedFilterAllowlist(
 						"imgur","Imgur",
 						"^(http|https):\\/\\/?(www\\.)?imgur.com\\/a.*",
 						"^(http|https):\\/\\/?api.imgur.com\\/oembed\\.json.*",
-						"http://api.imgur.com/oembed.json?url={url}"),
+						"http://api.imgur.com/oembed.json?url={url}",null),
 				new OembedFilterAllowlist(
 						"imdb","Imdb",
 						"^(http|https):\\/\\/?(www\\.)?imdb.com\\/title\\/.*",
 						"^https:\\/\\/(www\\.)?mixednutz.net\\/oembed\\?url=(http|https):\\/\\/?(www\\.)?imdb.com\\/title\\/.*",
-						"https://mixednutz.net/oembed?url={url}")
+						"https://mixednutz.net/oembed?url={url}",
+						ThemoviedbApi.class),
+				new OembedFilterAllowlist(
+						"tmdb","TMDB",
+						"^(http|https):\\/\\/?(www\\.)?themoviedb.org\\/movie\\/.*",
+						"^https:\\/\\/(www\\.)?mixednutz.net\\/oembed\\?url=(http|https):\\/\\/?(www\\.)?themoviedb.org\\/movie\\/.*",
+						"https://mixednutz.net/oembed?url={url}",
+						ThemoviedbApi.class)
 		);
 		
 		when(oembedFilterWhitelistRepository.findAll()).thenReturn(whitelist);
@@ -78,7 +85,7 @@ public class ExternalContentManagerImplIntegrationTest {
 
 	@Test
 	public void testDerviceSourceType() {
-		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty());
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty(), List.of());
 		manager.loadWhitelist();
 		assertTrue(manager.deriveSourceType("https://stopdst.com").isEmpty());
 		assertEquals("twitter", manager.deriveSourceType("https://twitter.com/klingershow/status/770399624695775236").get());
@@ -97,6 +104,7 @@ public class ExternalContentManagerImplIntegrationTest {
 		assertEquals("imgur_oembed", manager.deriveSourceType("https://api.imgur.com/oembed.json?url=http://imgur.com/a/NFO8l").get());
 		assertEquals("imdb", manager.deriveSourceType("http://www.imdb.com/title/tt0796366/").get());
 		assertEquals("imdb_oembed", manager.deriveSourceType("https://mixednutz.net/oembed?url=http://www.imdb.com/title/tt0796366/").get());
+		assertEquals("tmdb", manager.deriveSourceType("https://www.themoviedb.org/movie/13475-star-trek").get());
 		
 		//assertEquals("mixednutz", manager.deriveSourceType("https://mixednutz.net/photo/id/719"));
 	}
@@ -106,7 +114,7 @@ public class ExternalContentManagerImplIntegrationTest {
 	public void testTwitterOembedLookup() {
 //		new SslProperties(KEYSTORE_PATH, 
 //				KEYSTORE_PASS, KEYSTORE_TYPE);
-		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty());
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty(), List.of());
 		manager.loadWhitelist();
 		
 		ExternalContentManagerImpl.RestTemplateUrlLookup lookup = 
@@ -141,11 +149,16 @@ public class ExternalContentManagerImplIntegrationTest {
 	 */
 	@Disabled
 	@Test
-	public void testMetadataLookup() {
+	public void testMetadataLookup_imdb() {
 //		new SslProperties(KEYSTORE_PATH, 
 //				KEYSTORE_PASS, KEYSTORE_TYPE);
 		
-		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(defaultRestTemplate));
+		ThemoviedbApi customLookup = new ThemoviedbApi("test");
+				
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(
+				oembedFilterWhitelistRepository, 
+				Optional.of(defaultRestTemplate), 
+				List.of(customLookup));
 		manager.loadWhitelist();
 				
 		// Imdb
@@ -154,7 +167,7 @@ public class ExternalContentManagerImplIntegrationTest {
 				);
 		printExternalUrl(url);
 		assertNull(url.getOembedUrl()); //Null because IMDB doesn't have oembed.
-				
+		assertEquals("Star Trek (2009) - TMDB", url.getTitle());	
 	}
 	
 	@Disabled
@@ -172,7 +185,7 @@ public class ExternalContentManagerImplIntegrationTest {
 		mockServer.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
 		  .andRespond(withSuccess(response, MediaType.parseMediaType("application/json;charset=UTF-8")));
 		
-		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(mockRestTemplate));
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(mockRestTemplate), List.of());
 		manager.loadWhitelist();
 				
 		Optional<ExtractedOembedHtml> content = manager.lookupContent("imdb", "http://www.imdb.com/title/tt0796366/");
@@ -197,7 +210,7 @@ public class ExternalContentManagerImplIntegrationTest {
 		mockServer.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
 		  .andRespond(withSuccess(response, MediaType.parseMediaType("application/json;charset=UTF-8")));
 		
-		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(mockRestTemplate));
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.of(mockRestTemplate), List.of());
 		manager.loadWhitelist();
 				
 		Optional<ExtractedOembedHtml> content = manager.lookupContent("imdb", "https://andrewfesta.com/andy/journal/2022/10/18/test");

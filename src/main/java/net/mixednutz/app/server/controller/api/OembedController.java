@@ -128,20 +128,22 @@ public class OembedController {
 				ExtractedMetadata xurl = externalContentManager.lookupMetadata(path);
 	
 				//Add oembed attributes
-				Oembed oembed = externalContentManager.toOembed(xurl, maxwidth, maxheight);
-				if (oembed instanceof OembedRich) {
-					int height = (maxheight > 270 || maxheight <=0) ? 270 : maxheight;
-					int width = (maxwidth > 658 || maxwidth <= 0) ? 658 : maxwidth;
-					
-					StringBuffer html = new StringBuffer();
-					html.append("<iframe");
-					html.append(" height=\""+height+"\"");
-					html.append(" src=\""+networkInfo.getBaseUrl()+EMBED_BASE_URL+xurl.getUrl()+"\"");
-					html.append(" style=\"max-width: "+width+"px; width: calc(100% - 2px);\"");
-					html.append(" frameborder=\"0\"></iframe>");
-					((OembedRich) oembed).setHtml(html.toString());
+				if (xurl!=null) {
+					Oembed oembed = externalContentManager.toOembed(xurl, maxwidth, maxheight);
+					if (oembed instanceof OembedRich) {
+						int height = (maxheight > 270 || maxheight <=0) ? 270 : maxheight;
+						int width = (maxwidth > 658 || maxwidth <= 0) ? 658 : maxwidth;
+						
+						StringBuffer html = new StringBuffer();
+						html.append("<iframe");
+						html.append(" height=\""+height+"\"");
+						html.append(" src=\""+networkInfo.getBaseUrl()+EMBED_BASE_URL+xurl.getUrl()+"\"");
+						html.append(" style=\"max-width: "+width+"px; width: calc(100% - 2px);\"");
+						html.append(" frameborder=\"0\"></iframe>");
+						((OembedRich) oembed).setHtml(html.toString());
+					}
+					return oembed;
 				}
-				return oembed;
 			}
 			return null;
 		}
