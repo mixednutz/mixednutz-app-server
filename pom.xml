@@ -4,7 +4,7 @@
 
 	<groupId>net.mixednutz.app.server</groupId>
 	<artifactId>mixednutz-app-server</artifactId>
-	<version>2.1.9</version>
+	<version>2.1.10</version>
 	<packaging>jar</packaging>
 
 	<name>mixednutz-app-server</name>
@@ -26,7 +26,7 @@
 		<connection>scm:git:ssh://git@github.com/mixednutz/mixednutz-app-server.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/mixednutz/mixednutz-app-server.git</developerConnection>
 		<url>https://github.com/mixednutz/mixednutz-app-server</url>
-		<tag>mixednutz-app-server-2.1.9</tag>
+		<tag>mixednutz-app-server-2.1.10</tag>
     </scm>
 	
 	<!-- 
@@ -75,6 +75,8 @@
 		<io-utils.version>0.2.3</io-utils.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
+		
+		<version.themoviedb-api>1.12</version.themoviedb-api>
 		
 		<version.commons-codec>1.4</version.commons-codec>
 		<version.webjars-locator>0.30</version.webjars-locator>
@@ -203,6 +205,13 @@
 		    <groupId>com.rometools</groupId>
 		    <artifactId>rome</artifactId>
 		    <version>${version.rome}</version>
+		</dependency>
+		
+		<!--  TheMovieDBApi -->
+		<dependency>
+		    <groupId>com.github.holgerbrandl</groupId>
+		    <artifactId>themoviedbapi</artifactId>
+		    <version>${version.themoviedb-api}</version>
 		</dependency>
 		
 		<!-- JAXB API for Java 8 compatibility -->

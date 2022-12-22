@@ -61,7 +61,7 @@ public class OembedFilterTest {
 		
 		when(oembedFilterWhitelistRepository.findAll()).thenReturn(whitelist);
 		
-		oembedFilterWhitelistManager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty());
+		oembedFilterWhitelistManager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty(), List.of());
 		oembedFilterWhitelistManager.loadWhitelist();
 	}
 	

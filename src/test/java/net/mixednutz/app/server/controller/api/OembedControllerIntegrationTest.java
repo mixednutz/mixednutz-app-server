@@ -21,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,6 +36,7 @@ import net.mixednutz.app.server.manager.TagManager;
 import net.mixednutz.app.server.manager.UserService;
 import net.mixednutz.app.server.manager.impl.ApiManagerImpl;
 import net.mixednutz.app.server.manager.impl.ExternalContentManagerImpl;
+import net.mixednutz.app.server.manager.impl.ThemoviedbApi;
 import net.mixednutz.app.server.manager.post.journal.impl.JournalEntityConverter;
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.MenuItemRepository;
@@ -46,7 +48,8 @@ import net.mixednutz.app.server.security.LastonlineFilter;
 @WebMvcTest(value=OembedController.class)
 @Import({
 	ApiManagerImpl.class, NetworkInfoConfig.class, JournalEntityConverter.class,
-	Oembeds.class, ExternalContentManagerImpl.class})
+	Oembeds.class, ExternalContentManagerImpl.class, ThemoviedbApi.class})
+@TestPropertySource(properties="themoviedb.apikey=test")
 public class OembedControllerIntegrationTest {
 	
 	@Autowired
@@ -117,7 +120,8 @@ public class OembedControllerIntegrationTest {
 						"imdb","Imdb",
 						"^(http|https):\\/\\/?(www\\.)?imdb.com\\/title\\/.*",
 						"^https:\\/\\/(www\\.)?mixednutz.net\\/oembed\\?url=(http|https):\\/\\/?(www\\.)?imdb.com\\/title\\/.*",
-						"https://mixednutz.net/oembed?url={url}")
+						"https://mixednutz.net/oembed?url={url}",
+						ThemoviedbApi.class)
 		);
 		
 		when(oembedFilterWhitelistRepository.findAll()).thenReturn(whitelist);
@@ -157,7 +161,7 @@ public class OembedControllerIntegrationTest {
 	
 	@Disabled
 	@Test
-	public void test_external() throws Exception {
+	public void test_external_imdb() throws Exception {
 						
 		mockMvc.perform(get("/oembed")
 					.param("url", "http://www.imdb.com/title/tt0796366/")
@@ -165,11 +169,11 @@ public class OembedControllerIntegrationTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType("application/json;charset=UTF-8"))
 				.andExpect(jsonPath("type").value("rich"))
-				.andExpect(jsonPath("title").value("Star Trek (2009) - IMDb"))
-				.andExpect(jsonPath("provider_name").value("IMDb"))
+				.andExpect(jsonPath("title").value("Star Trek (2009) - TMDB"))
+				.andExpect(jsonPath("provider_name").value("The Movie Database (TMDB)"))
 				.andExpect(jsonPath("provider_url").value("https://andrewfesta.com"))
-				.andExpect(jsonPath("thumbnail_url").value("https://m.media-amazon.com/images/M/MV5BMjE5NDQ5OTE4Ml5BMl5BanBnXkFtZTcwOTE3NDIzMw@@._V1_FMjpg_UX1000_.jpg"))
+				.andExpect(jsonPath("thumbnail_url").value("https://www.themoviedb.org/t/p/w600_and_h900_bestv2/9vaRPXj44Q2meHgt3VVfQufiHOJ.jpg"))
 				.andDo(print());
 	}
-
+	
 }

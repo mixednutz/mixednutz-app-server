@@ -56,8 +56,8 @@
 							th:src="@{|/img/nophoto.gif|}" src="../../img/nophoto.gif"
 							width="48" />
 						<a th:href='@{|/${formatter.removeSpaces(friend.username)}|}' href="#">
-							<span th:if="${friend.displayName!=null}" th:text="${friend.displayName}">Name</span> 
-							<span th:text="${friend.username}">Name</span></a>
+							<span th:if="${!#strings.isEmpty(friend.displayName)}" th:text="@{|${friend.displayName} (${friend.username})|}">Name</span> 
+							<span th:if="${#strings.isEmpty(friend.displayName)}" th:text="${friend.username}">Name</span></a>
 						
 						<time
 							th:datetime="${#temporals.format(friend.lastonline.timestamp, #messages.msg('datetime.format.iso'))}"
@@ -85,8 +85,8 @@
 							th:src="@{|/img/nophoto.gif|}" src="../../img/nophoto.gif"
 							width="48" />
 						<a th:href='@{|/${formatter.removeSpaces(friend.username)}|}' href="#">
-							<span th:if="${friend.displayName!=null}" th:text="@{|${friend.displayName} (${friend.username})|}">Name</span> 
-							<span th:if="${friend.displayName==null}" th:text="${friend.username}">Name</span></a>
+							<span th:if="${!#strings.isEmpty(friend.displayName)}" th:text="@{|${friend.displayName} (${friend.username})|}">Name</span> 
+							<span th:if="${#strings.isEmpty(friend.displayName)}" th:text="${friend.username}">Name</span></a>
 						
 						<time hidden="hidden" th:if="${friend.lastonline!=null}"
 							th:datetime="${#temporals.format(friend.lastonline.timestamp, #messages.msg('datetime.format.iso'))}"
