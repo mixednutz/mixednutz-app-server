@@ -356,6 +356,7 @@ public class BaseJournalController {
 	protected JournalComment saveComment(JournalComment form, Journal journal, User user) {
 		form.setJournal(journal);
 		form.setAuthor(user);
+		form.setAuthorId(user.getUserId());
 		
 		JournalComment comment = journalCommentRepository.save(form);
 		notificationManager.notifyNewComment(journal, comment);
