@@ -112,6 +112,14 @@ public class BaseJournalController {
 				});
 	}
 	
+	protected JournalComment get(Journal journal, long commentId) {
+		return journal.getComments()
+			.stream()
+			.filter(comment->comment.getCommentId().equals(commentId))
+			.findAny()
+			.orElseThrow(()->new ResourceNotFoundException("Comment not found"));
+	}
+	
 	protected String getJournal(final Journal journal, Authentication auth, Model model) {		
 		if (auth==null &&
 				!VisibilityType.WORLD.equals(journal.getVisibility().getVisibilityType())) {
