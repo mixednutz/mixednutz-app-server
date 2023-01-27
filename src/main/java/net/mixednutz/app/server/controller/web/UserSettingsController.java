@@ -113,6 +113,7 @@ public class UserSettingsController {
 		UserSettings settings = settingsRepository.findById(user.getUserId()).orElseGet(
 				()->new UserSettings(user));
 		settings.setShowCombinedExternalFeedsOnProfile(form.isShowCombinedExternalFeedsOnProfile());
+		settings.setShowCommentsOnProfile(form.isShowCommentsOnProfile());
 		settingsRepository.save(settings);
 		
 		List<AbstractFeed> feeds = externalFeedRepository.findByUser(user);
@@ -154,6 +155,7 @@ public class UserSettingsController {
 
 	public static class SettingsForm {
 		boolean showCombinedExternalFeedsOnProfile;
+		boolean showCommentsOnProfile;
 		Page indexPage;
 		Long[] feedId;
 		VisibilityType[] visibility;
@@ -172,6 +174,12 @@ public class UserSettingsController {
 		}
 		public void setShowCombinedExternalFeedsOnProfile(boolean showCombinedExternalFeedsOnProfile) {
 			this.showCombinedExternalFeedsOnProfile = showCombinedExternalFeedsOnProfile;
+		}
+		public boolean isShowCommentsOnProfile() {
+			return showCommentsOnProfile;
+		}
+		public void setShowCommentsOnProfile(boolean showCommentsOnProfile) {
+			this.showCommentsOnProfile = showCommentsOnProfile;
 		}
 		public Page getIndexPage() {
 			return indexPage;

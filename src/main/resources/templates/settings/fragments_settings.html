@@ -50,6 +50,12 @@
 				  <small id="showCombinedExternalFeedsOnProfileHelp" class="form-text text-muted"></small>
 			</div>
 			
+			<div class="showCommentsOnProfile form-check" sec:authorize="isAuthenticated() and hasAnyRole('ROLE_TIMELINE','ROLE_ADMIN')">
+				  <input class="form-check-input" type="checkbox" th:field="*{showCommentsOnProfile}" id="showCommentsOnProfile">
+				  <label class="form-check-label" for="showCommentsOnProfile">Show Comments on Timeline</label>
+				  <small id="showCommentsOnProfileHelp" class="form-text text-muted"></small>
+			</div>
+			
 			<h3>Feed Visibility</h3>
 			
 			<div id="feed_visibility"></div>

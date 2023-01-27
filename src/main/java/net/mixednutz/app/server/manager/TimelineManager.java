@@ -26,7 +26,7 @@ public interface TimelineManager {
 	 * @param paging
 	 * @return
 	 */
-	public IPage<? extends ITimelineElement,Instant> getUserTimeline(User profileUser, User viewer, PageRequest<String> paging);
+	public IPage<? extends ITimelineElement,Instant> getUserTimeline(User profileUser, User viewer, PageRequest<String> paging, boolean includeCommentsAsElements);
 
 	
 	public long countUserTimeline(User profileUser, User viewer);

@@ -115,7 +115,8 @@ public class OutboxController {
 		final long totalItems = timelineManager.countUserTimeline(profileUser.get(), user);
 		
 		final IPage<? extends ITimelineElement,Instant> internalContent = 
-				timelineManager.getUserTimeline(profileUser.get(), user, prevPage);
+				timelineManager.getUserTimeline(profileUser.get(), user, prevPage, 
+						false);
 				
 		return toOrderedCollectionPage(collectionId, request, internalContent, totalItems, username);
 	}

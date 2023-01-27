@@ -16,6 +16,7 @@ public class UserSettings {
 	private User user;
 	
 	private boolean showCombinedExternalFeedsOnProfile = false;
+	private boolean showCommentsOnProfile = true;
 	
 	public UserSettings() {
 		super();
@@ -54,6 +55,14 @@ public class UserSettings {
 
 	public void setShowCombinedExternalFeedsOnProfile(boolean showCombinedExternalFeedsOnProfile) {
 		this.showCombinedExternalFeedsOnProfile = showCombinedExternalFeedsOnProfile;
+	}
+
+	public boolean isShowCommentsOnProfile() {
+		return showCommentsOnProfile;
+	}
+
+	public void setShowCommentsOnProfile(boolean showCommentsOnProfile) {
+		this.showCommentsOnProfile = showCommentsOnProfile;
 	}
 	
 }
