@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.w3c.activitystreams.model.LinkImpl;
 import org.w3c.activitystreams.model.OrderedCollectionImpl;
@@ -33,7 +33,7 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.TimelineManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
-@Controller
+@RestController
 @RequestMapping(URI_PREFIX)
 public class OutboxController {
 	
