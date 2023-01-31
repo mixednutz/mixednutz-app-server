@@ -43,10 +43,10 @@
 		<!-- All Following -->
 		<div class="panel panel-default fgroup">
 			<div th:if="${#authentication.principal.userId}==${profileUser.userId}" class="panel-heading">Following</div>
-			<div th:if="${#authentication.principal.userId}!=${profileUser.userId}" class="panel-heading">Following <span th:text="${account.firstname}">firstname</span></div>
+			<div th:if="${#authentication.principal.userId}!=${profileUser.userId}" class="panel-heading"><span th:text="${profileUser.displayName}">firstname</span> is following</div>
 			<div class="panel-body list-group">
 				<div th:each="friendWeb: ${following}" class="list-group-item">
-					<div th:with="friend = ${friendWeb.follower}">
+					<div th:with="friend = ${friendWeb.user}">
 						<img 
 							th:if="${friend.avatarFilename!=null}"
 							th:src="@{|/photos-storage/${friend.avatarFilename}?size=avatar|}" src="../img/nophoto.gif" 
@@ -72,7 +72,7 @@
 		<!-- All Followers -->
 		<div class="panel panel-default fgroup">
 			<div th:if="${#authentication.principal.userId}==${profileUser.userId}" class="panel-heading">Followers</div>
-			<div th:if="${#authentication.principal.userId}!=${profileUser.userId}" class="panel-heading">Followers<span th:text="${account.firstname}">firstname</span></div>
+			<div th:if="${#authentication.principal.userId}!=${profileUser.userId}" class="panel-heading">Is following <span th:text="${profileUser.displayName}">firstname</span></div>
 			<div class="panel-body list-group">
 				<div th:each="friendWeb: ${followers}" class="list-group-item">
 					<div th:with="friend = ${friendWeb.follower}">

@@ -17,6 +17,7 @@ import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.TimelineElementManager;
 import net.mixednutz.app.server.manager.TimelineManager;
+import net.mixednutz.app.server.manager.post.CommentManager;
 
 @Transactional
 @Service
@@ -61,7 +62,7 @@ public class TimelineManagerImpl implements TimelineManager {
 
 	@Override
 	public IPage<? extends ITimelineElement, Instant> getUserTimeline(User profileUser, User viewer,
-			PageRequest<String> paging) {
+			PageRequest<String> paging, boolean includeCommentsAsElements) {
 		List<InternalTimelineElement> timeline = new ArrayList<>();
 		
 		PageRequest<Instant> pageRequest = PageRequest.convert(paging, Instant.class,
@@ -70,14 +71,13 @@ public class TimelineManagerImpl implements TimelineManager {
 				});
 				
 		// Query Posts
-		for (TimelineElementManager postManager: timelineElementManagers) {
-			final IPage<InternalTimelineElement, Instant> journals = 
-					postManager.getUserTimelineInternal(profileUser, viewer, paging);
-			for (InternalTimelineElement journal : journals.getItems()) {
-				timeline.add(journal);
-			}
-		}
-		
+		timelineElementManagers.stream()
+			.filter(manager->
+				includeCommentsAsElements || !(manager instanceof CommentManager))
+			.map(postManager->postManager.getUserTimelineInternal(profileUser, viewer, paging))
+			.flatMap(journals->journals.getItems().stream())
+			.forEach(journal->timeline.add(journal));
+				
 		return new PageBuilder<InternalTimelineElement, Instant>()
 				.setItems(timeline)
 				.setPageRequest(pageRequest)

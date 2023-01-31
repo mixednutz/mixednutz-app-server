@@ -43,6 +43,11 @@ public class JournalComment extends AbstractPostComment {
 		return journal.getUri()+"#"+getCommentId();
 	}
 
+	@Transient
+	public String getUriNoAnchor() {
+		return journal.getUri()+"/comment/"+getCommentId();
+	}
+
 	@Override
 	public <P extends Post<C>, C extends PostComment> void setPost(P post) {
 		this.journal = (Journal) post;

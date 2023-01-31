@@ -111,7 +111,7 @@ public class RssTimelineController {
 				
 		//Get local data
 		final IPage<? extends ITimelineElement,Instant> internalContent = 
-				timelineManager.getUserTimeline(profileUser.get(), user, prevPage);
+				timelineManager.getUserTimeline(profileUser.get(), user, prevPage, false);
 		
 		return toChannel(request, internalContent, username);
 	}

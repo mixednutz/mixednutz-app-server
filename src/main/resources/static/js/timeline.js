@@ -332,6 +332,11 @@ function buildInternalTimelineElement(element) {
 	template.find(".subject a, .title a")
 		.attr('href',element.url)
 		.text(element.title);
+	console.log(template.find(".inReplyToTitle"));
+	console.log(element.inReplyToTitle);
+	template.find(".inReplyToTitle")
+		.attr('href',element.url)
+		.text(element.inReplyToTitle);
 	template.find(".preview a.readmore").attr('href',getRelativePath(element.uri));
 	//Preview
 	var preview = template.find(".preview");

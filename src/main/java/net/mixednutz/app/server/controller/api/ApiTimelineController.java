@@ -154,7 +154,8 @@ public class ApiTimelineController {
 		
 		//Get local data
 		final IPage<? extends ITimelineElement,Instant> internalContent = 
-				timelineManager.getUserTimeline(profileUser.get(), user, prevPage);
+				timelineManager.getUserTimeline(profileUser.get(), user, prevPage, 
+						settings.isShowCommentsOnProfile());
 		
 		if (settings.isShowCombinedExternalFeedsOnProfile()) {
 			

@@ -144,7 +144,12 @@ public class ApiManagerImpl implements ApiManager{
 
 	@Override
 	public <E> InternalTimelineElement toTimelineElement(E entity, User viewer, String baseUrl) {
-		InternalTimelineElement api = toTimelineElement((Post<?>)entity, baseUrl);
+		InternalTimelineElement api = null;
+		if (entity instanceof Post) {
+			api = toTimelineElement((Post<?>)entity, baseUrl);
+		} else if (entity instanceof PostComment) {
+			api = toTimelineElement((PostComment)entity, baseUrl);
+		}
 		if (entity instanceof CommentsAware) {
 			CommentsAware<?> hasComments = (CommentsAware<?>)entity;
 			setComments(api, hasComments.getComments());

@@ -186,4 +186,26 @@ public class JournalController extends BaseJournalController {
 		return activityPubManager.toNote(apiManager.toTimelineElement(journal, user), journal.getVisibility(), true);
 	}
 		
+	/**
+	 * Show ActivityStream Object
+	 * 
+	 * @param username
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param subjectKey
+	 * @return
+	 */
+	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", method = RequestMethod.GET)
+	public @ResponseBody org.w3c.activitystreams.Object getJournalCommentActivity(
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@PathVariable long commentId,
+			@AuthenticationPrincipal final User user) {
+		
+		final Journal journal = get(username, year, month, day, subjectKey);
+		final JournalComment comment = get(journal, commentId);
+		return activityPubManager.toNote(apiManager.toTimelineElement(comment, user), journal.getVisibility(), true);
+	}
 }
