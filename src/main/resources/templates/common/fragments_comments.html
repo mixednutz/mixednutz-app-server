@@ -39,6 +39,12 @@
 					ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate
 					at, tempus viverra turpis. Fusce condimentum nunc acnisi vulputate
 					fringilla. Donec lacinia congue felis in faucibus.</div>
+				<div th:if="${comment.dateUpdated!=null}">
+					<small>Edited on <time
+							th:datetime="${#temporals.format(comment.dateUpdated, #messages.msg('datetime.format.iso'))}"
+							th:text="${#temporals.format(comment.dateUpdated, #messages.msg('datetime.format.full'))}">August
+							25, 2014 at 9:30 PM</time></small>
+				</div>
 				<div th:if="${comment.body==null and comment.shared!=null}">
 					<small><span
 						th:text="${authors[comment.author.userId].username}">author</span>
@@ -94,7 +100,8 @@
 					<small>Edited on <time
 							th:datetime="${#temporals.format(comment.dateUpdated, #messages.msg('datetime.format.iso'))}"
 							th:text="${#temporals.format(comment.dateUpdated, #messages.msg('datetime.format.full'))}">August
-							25, 2014 at 9:30 PM</time></small></div>
+							25, 2014 at 9:30 PM</time></small>
+				</div>
 				<div th:if="${comment.body==null and comment.shared!=null}">
 					<small><span
 						th:text="${authors[comment.author.userId].username}">author</span>

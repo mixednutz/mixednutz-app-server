@@ -27,7 +27,6 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalComment;
 import net.mixednutz.app.server.entity.post.journal.JournalFactory;
-import net.mixednutz.app.server.entity.post.series.ChapterFactory;
 
 
 @Controller
@@ -130,7 +129,7 @@ public class JournalController extends BaseJournalController {
 	//------------
 	
 	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/new", method = RequestMethod.POST, params="submit")
-	public String comment(@ModelAttribute(ChapterFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+	public String comment(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
@@ -147,7 +146,7 @@ public class JournalController extends BaseJournalController {
 	}
 	
 	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{inReplyToId}/reply", method = RequestMethod.POST, params="submit")
-	public String commentReply(@ModelAttribute(ChapterFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+	public String commentReply(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
@@ -167,7 +166,7 @@ public class JournalController extends BaseJournalController {
 	}
 	
 	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", method = RequestMethod.POST, params="submit")
-	public String commentEdit(@ModelAttribute(ChapterFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+	public String commentEdit(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
