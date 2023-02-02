@@ -199,6 +199,7 @@ public class ApiManagerImpl implements ApiManager{
 		api.setUrl(baseUrl+entity.getUri());
 		api.setPostedByUser(toUser(entity.getAuthor(), baseUrl));
 		api.setPostedOnDate(entity.getDateCreated());
+		api.setUpdatedOnDate(entity.getDateUpdated());
 		api.setDescription(entity.getBody());
 		api.setAlternateLinks(new ArrayList<>());
 		api.getAlternateLinks().add(new AlternateLink(

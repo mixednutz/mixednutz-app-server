@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,6 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalComment;
 import net.mixednutz.app.server.entity.post.journal.JournalFactory;
-import net.mixednutz.app.server.entity.post.series.ChapterFactory;
 
 
 @Controller
@@ -129,7 +129,7 @@ public class JournalController extends BaseJournalController {
 	//------------
 	
 	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/new", method = RequestMethod.POST, params="submit")
-	public String comment(@ModelAttribute(ChapterFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+	public String comment(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
@@ -146,7 +146,7 @@ public class JournalController extends BaseJournalController {
 	}
 	
 	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{inReplyToId}/reply", method = RequestMethod.POST, params="submit")
-	public String commentReply(@ModelAttribute(ChapterFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+	public String commentReply(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
@@ -161,6 +161,29 @@ public class JournalController extends BaseJournalController {
 		
 		comment.setInReplyTo(getComment(inReplyToId));
 		comment = saveComment(comment, journal, user);
+				
+		return "redirect:"+comment.getUri();
+	}
+	
+	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", method = RequestMethod.POST, params="submit")
+	public String commentEdit(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE_COMMENT) JournalComment comment, 
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@PathVariable Long commentId,
+			@AuthenticationPrincipal User user, Model model, Errors errors) {
+		if (user==null) {
+			throw new AuthenticationCredentialsNotFoundException("You have to be logged in to do that");
+		}
+		
+		Journal journal = get(username, year, month, day, subjectKey);
+		JournalComment existingComment = get(journal, commentId);
+		if (!existingComment.getAuthor().equals(user)) {
+			throw new AccessDeniedException("Comment #"+commentId+" - That's not yours to edit!");
+		}
+		
+		existingComment.setBody(comment.getBody());
+		comment = updateComment(existingComment);
 				
 		return "redirect:"+comment.getUri();
 	}
