@@ -372,6 +372,10 @@ public class BaseJournalController {
 		return comment;
 	}
 	
+	protected JournalComment updateComment(JournalComment comment) {
+		return journalCommentRepository.save(comment);
+	}
+	
 	@ExceptionHandler(ResourceMovedPermanentlyException.class)
 	public String handleException(final ResourceMovedPermanentlyException e) {
 	    return "redirect:"+e.getRedirectUri();

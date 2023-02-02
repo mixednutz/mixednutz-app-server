@@ -46,7 +46,9 @@
 				</div>
 				<div>
 					<button type="button" class="btn btn-default btn-sm" data-toggle="collapse" th:data-target="@{|#replyForm_${comment.commentId}|}">Reply</button>
-					<div th:replace="common/fragments_comments::editForm(${comment})">Edit Form</div>
+					<button type="button" class="btn btn-default btn-sm" data-toggle="collapse" th:data-target="@{|#editForm_${comment.commentId}|}" 
+						sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${comment.author.userId}">Edit</button>
+					<div th:replace="common/fragments_comments::editForm(${post}, ${comment})">Edit Form</div>
 					<div th:replace="common/fragments_comments::replyForm(${post}, ${comment})">Reply Form</div>
 					<!-- Replies -->
 					<div th:replace="common/fragments_comments::replies(${comment})" >Replies</div>
@@ -88,6 +90,11 @@
 					ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate
 					at, tempus viverra turpis. Fusce condimentum nunc acnisi vulputate
 					fringilla. Donec lacinia congue felis in faucibus.</div>
+				<div th:if="${comment.dateUpdated!=null}">
+					<small>Edited on <time
+							th:datetime="${#temporals.format(comment.dateUpdated, #messages.msg('datetime.format.iso'))}"
+							th:text="${#temporals.format(comment.dateUpdated, #messages.msg('datetime.format.full'))}">August
+							25, 2014 at 9:30 PM</time></small></div>
 				<div th:if="${comment.body==null and comment.shared!=null}">
 					<small><span
 						th:text="${authors[comment.author.userId].username}">author</span>
@@ -95,7 +102,9 @@
 				</div>
 				<div>
 					<button type="button" class="btn btn-default btn-sm" data-toggle="collapse" th:data-target="@{|#replyForm_${comment.commentId}|}">Reply</button>
-					<div th:replace="common/fragments_comments::editForm(${comment})">Edit Form</div>
+					<button type="button" class="btn btn-default btn-sm" data-toggle="collapse" th:data-target="@{|#editForm_${comment.commentId}|}" 
+						sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${comment.author.userId}">Edit</button>
+					<div th:replace="common/fragments_comments::editForm(${post}, ${comment})">Edit Form</div>
 					<div th:replace="common/fragments_comments::replyForm(${post}, ${comment})">Reply Form</div>
 					<!-- Replies -->				
 					<div th:replace="common/fragments_comments::replies(${comment})" >Replies</div>
@@ -104,7 +113,26 @@
 		</div>
 	  </div>
   
-	  <div th:fragment="editForm(comment)" style="display:none;" th:id="@{|editForm_${comment.commentId}|}">
+	  <div th:fragment="editForm(post, comment)" class="well collapse" th:id="@{|editForm_${comment.commentId}|}">
+	  	<!-- Edit Form -->
+		<h5>Edit:</h5>
+		<div sec:authorize="isAuthenticated()">
+			<form role="form" th:action="@{|${post.uri}/comment/${comment.commentId}|}"
+				method="post">
+				<div class="form-group">
+					<textarea class="form-control" name="body" th:text="${comment.body}" rows="3"></textarea>
+				</div>
+				<button type="button" class="btn btn-danger" name="submit">Cancel</button>
+				
+				<button th:id="@{|comment-update-btn-${comment.commentId}|}" type="submit" name="submit" value="Post Now">Post Now</button>
+				<button type="button" class="btn btn-primary" name="submit"
+				  		th:onclick="$(this).prop('disabled', true);$('#comment-update-btn-[[${comment.commentId}]]').click();">Update</button>
+  			
+			</form>
+			<script th:inline="javascript">
+				document.getElementById('comment-update-btn-[[${comment.commentId}]]').hidden=true;
+			</script>
+		</div>
 	  </div>
 	  
 	  <div th:fragment="replyForm(post, comment)" class="well collapse" th:id="@{|replyForm_${comment.commentId}|}">
