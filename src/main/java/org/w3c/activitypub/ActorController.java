@@ -43,17 +43,22 @@ public class ActorController extends BaseUserController {
 	@Autowired
 	private ActivityPubManager activityPubManager;
 	
+
 	
-	@RequestMapping(value="/{username}", method = RequestMethod.GET)
+	@RequestMapping(value=ActivityPubManager.USER_ACTOR_ENDPOINT, method = RequestMethod.GET)
 	public @ResponseBody Actor getActor(@PathVariable String username) {
 		
 		return userRepository.findByUsername(username)
 		.map(user->{
+			URI id = activityPubManager.getActorUri(username);
 			URI outbox = UriComponentsBuilder
 					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+OutboxController.USER_OUTBOX_ENDPOINT)
 					.buildAndExpand(Map.of("username",username)).toUri();
+			URI inbox = UriComponentsBuilder
+					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+InboxController.USER_INBOX_ENDPOINT)
+					.buildAndExpand(Map.of("username",username)).toUri();
 			
-			Person person = activityPubManager.toPerson(apiManager.toUser(user), user, request, outbox, true);
+			Person person = activityPubManager.toPerson(apiManager.toUser(user), user, request, id, outbox, inbox, true);
 			return person;
 		})
 		.orElseThrow(new Supplier<UserNotFoundException>() {

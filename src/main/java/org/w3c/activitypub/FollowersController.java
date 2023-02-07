@@ -58,8 +58,8 @@ public class FollowersController {
 		activityPubManager.initRoot(orderedcollection);
 		List<BaseObjectOrLink> followerIds = followers.stream()
 			.map(f->profileRepository.findById(f.getId().getFollowerId()).orElse(new UserProfile()))
-			.filter(p->p.getActivityPubId()!=null)
-			.map(p->new LinkImpl(p.getActivityPubId()))
+			.filter(p->p.getActivityPubActorUri()!=null)
+			.map(p->new LinkImpl(p.getActivityPubActorUri()))
 			.collect(Collectors.toList());
 		orderedcollection.setTotalItems((long) followerIds.size()); 
 		orderedcollection.setItems(followerIds);

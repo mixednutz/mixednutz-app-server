@@ -34,7 +34,7 @@ public class JournalController extends BaseJournalController {
 	
 	@Autowired
 	private ActivityPubManager activityPubManager;
-
+	
 	//------------
 	// View Mappings
 	//------------
@@ -206,7 +206,10 @@ public class JournalController extends BaseJournalController {
 			@AuthenticationPrincipal final User user) {
 		
 		final Journal journal = get(username, year, month, day, subjectKey);
-		return activityPubManager.toNote(apiManager.toTimelineElement(journal, user), journal.getVisibility(), true);
+		
+		return activityPubManager.toNote(apiManager.toTimelineElement(journal, user), 
+				user.getUsername(),
+				journal.getVisibility(), true);
 	}
 		
 	/**
@@ -229,6 +232,8 @@ public class JournalController extends BaseJournalController {
 		
 		final Journal journal = get(username, year, month, day, subjectKey);
 		final JournalComment comment = get(journal, commentId);
-		return activityPubManager.toNote(apiManager.toTimelineElement(comment, user), journal.getVisibility(), true);
+		return activityPubManager.toNote(apiManager.toTimelineElement(comment, user), 
+				user.getUsername(),
+				journal.getVisibility(), true);
 	}
 }
