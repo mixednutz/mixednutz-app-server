@@ -142,7 +142,7 @@ public class UserController extends BaseUserController {
 	}
 	
 	protected ResetPasswordToken createResetPasswordToken(ForgotPasswordForm form, Errors errors) {
-		if (StringUtils.isEmpty(form.getUsername()) && StringUtils.isEmpty(form.getEmail())) {
+		if (StringUtils.hasText(form.getUsername()) && StringUtils.hasText(form.getEmail())) {
 			errors.reject("email_or_username_required","You must enter either a user name or an e-mail address.");
 			return null;
 		}
