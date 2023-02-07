@@ -31,6 +31,8 @@ public class WebfingerController {
 	
 	@Autowired
 	private ActivityPubManager activityPubManager;
+	
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@GetMapping(path="/.well-known/webfinger",produces={"application/jrd+json"})
 	public ResponseEntity<String> webfinger(@RequestParam("resource")URI resource) throws JsonProcessingException {
@@ -39,11 +41,18 @@ public class WebfingerController {
 		if ("acct".equals(scheme)) {
 			String acc = resource.getSchemeSpecificPart();
 			String[] part = acc.split("@");
+			if (part.length!=2) {
+				return new ResponseEntity<String>(
+						"{\"error\":\"Resource expected to be acct:username@host: "+resource.toString()+"\"}", 
+						HttpStatus.BAD_REQUEST);
+			}
 			final String username = part[0];
 			final String host = part[1];
 			
 			if (!networkInfo.getHostName().equalsIgnoreCase(host)) {
-				throw new UserNotFoundException("Resource host "+host+" not found on this server");
+				return new ResponseEntity<String>(
+						"{\"error\":\"Resource host not found on this server: "+host+"\"}", 
+						HttpStatus.BAD_REQUEST);
 			}
 			
 			User profileUser = userRepository.findByUsername(username)
@@ -56,13 +65,14 @@ public class WebfingerController {
 			resource = URI.create("acct:"+profileUser.getUsername()+"@"+networkInfo.getHostName());
 			actorUri = activityPubManager.getActorUri(profileUser.getUsername());
 		} else {
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(
+					"{\"error\":\"Resource expected to be acct:username@host: "+resource.toString()+"\"}", 
+					HttpStatus.BAD_REQUEST);
 		}
 		
 		WebfingerResponse response = new WebfingerResponse(resource, List.of(
 				new Link("self","application/activity+json",actorUri.toString())));
 		
-		ObjectMapper mapper = new ObjectMapper();
 		String t =  mapper.writeValueAsString(response);
 		return new ResponseEntity<String>(t, HttpStatus.OK);
 	}
