@@ -2,13 +2,18 @@ package org.w3c.activitypub;
 
 import static net.mixednutz.api.activitypub.ActivityPubManager.URI_PREFIX;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.Base64;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +26,9 @@ import net.mixednutz.api.activitypub.ActivityPubManager;
 import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.app.server.controller.BaseUserController;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
+import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.manager.ApiManager;
+import net.mixednutz.app.server.repository.UserKeyRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
 @Controller
@@ -69,4 +76,65 @@ public class ActorController extends BaseUserController {
 		});
 	}
 		
+	
+	/*
+	 * DELETE EVERYTHING BELOW HERE
+	 */
+	
+	@Autowired
+	UserKeyRepository userKeyRepository;
+	
+	@RequestMapping(value="/test/publicKey")
+	public void downloadPublicKey(@AuthenticationPrincipal User user, HttpServletResponse response) {
+		downloadPublicKey(user).ifPresent(data->{
+			try {
+				response.getOutputStream().write(data.getBytes());
+				response.setHeader("Content-Disposition", "attachment; filename=\"public.pem\"");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+	
+	@RequestMapping(value="/test/privateKey")
+	public void downloadPrivateKey(@AuthenticationPrincipal User user, HttpServletResponse response) {
+		downloadPrivateKey(user).ifPresent(data->{
+			try {
+				response.getOutputStream().write(data.getBytes());
+				response.setHeader("Content-Disposition", "attachment; filename=\"private.pem\"");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+	
+	private Optional<String> downloadPublicKey(User user) {
+		return userKeyRepository.findById(user.getUserId())
+			.map(userKey->publicKeyBytesToPem(userKey.getPublicKey()));
+	}
+	private Optional<String> downloadPrivateKey(User user) {
+		return userKeyRepository.findById(user.getUserId())
+			.map(userKey->privateKeyBytesToPem(userKey.getPrivateKey()));
+	}
+	
+	private String publicKeyBytesToPem(byte[] key) {
+		return new StringBuffer()
+				.append("-----BEGIN PUBLIC KEY-----")
+					.append(System.lineSeparator())
+				.append(Base64.getMimeEncoder().encodeToString(key))
+					.append(System.lineSeparator())
+				.append("-----END PUBLIC KEY-----")
+				.toString();
+	}
+	
+	private String privateKeyBytesToPem(byte[] key) {
+		return new StringBuffer()
+				.append("-----BEGIN PRIVATE KEY-----")
+					.append(System.lineSeparator())
+				.append(Base64.getMimeEncoder().encodeToString(key))
+					.append(System.lineSeparator())
+				.append("-----END PRIVATE KEY-----")
+				.toString();
+	}
+	
 }
