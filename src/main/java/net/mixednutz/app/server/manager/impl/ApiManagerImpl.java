@@ -83,11 +83,13 @@ public class ApiManagerImpl implements ApiManager{
 	
 	private String getBaseUrl() {
 		try {
-			URL baseUrl = new URL(
-					request.getScheme(), 
-					request.getServerName(), 
-					request.getServerPort(), 
-					"");
+			URL baseUrl;
+			if (request.getScheme().equals("https") && request.getServerPort() == 443) {
+				baseUrl = new URL(request.getScheme(), request.getServerName(), "");
+			} else {
+				baseUrl = new URL(request.getScheme(), request.getServerName(), 
+						request.getServerPort(), "");
+			}
 			return baseUrl.toExternalForm();
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("Something's wrong with creating the baseUrl!", e);
