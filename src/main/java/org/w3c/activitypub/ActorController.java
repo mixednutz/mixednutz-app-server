@@ -84,29 +84,29 @@ public class ActorController extends BaseUserController {
 	@Autowired
 	UserKeyRepository userKeyRepository;
 	
-	@RequestMapping(value="/test/publicKey")
-	public void downloadPublicKey(@AuthenticationPrincipal User user, HttpServletResponse response) {
-		downloadPublicKey(user).ifPresent(data->{
-			try {
-				response.getOutputStream().write(data.getBytes());
-				response.setHeader("Content-Disposition", "attachment; filename=\"public.pem\"");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
-	
-	@RequestMapping(value="/test/privateKey")
-	public void downloadPrivateKey(@AuthenticationPrincipal User user, HttpServletResponse response) {
-		downloadPrivateKey(user).ifPresent(data->{
-			try {
-				response.getOutputStream().write(data.getBytes());
-				response.setHeader("Content-Disposition", "attachment; filename=\"private.pem\"");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
+//	@RequestMapping(value="/test/publicKey")
+//	public void downloadPublicKey(@AuthenticationPrincipal User user, HttpServletResponse response) {
+//		downloadPublicKey(user).ifPresent(data->{
+//			try {
+//				response.getOutputStream().write(data.getBytes());
+//				response.setHeader("Content-Disposition", "attachment; filename=\"public.pem\"");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		});
+//	}
+//	
+//	@RequestMapping(value="/test/privateKey")
+//	public void downloadPrivateKey(@AuthenticationPrincipal User user, HttpServletResponse response) {
+//		downloadPrivateKey(user).ifPresent(data->{
+//			try {
+//				response.getOutputStream().write(data.getBytes());
+//				response.setHeader("Content-Disposition", "attachment; filename=\"private.pem\"");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		});
+//	}
 	
 	private Optional<String> downloadPublicKey(User user) {
 		return userKeyRepository.findById(user.getUserId())
