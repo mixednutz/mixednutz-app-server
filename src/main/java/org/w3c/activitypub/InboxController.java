@@ -15,13 +15,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import org.w3c.activitystreams.Link;
 import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.ActorImpl;
@@ -45,7 +45,7 @@ import net.mixednutz.app.server.repository.UserRepository;
 import net.mixednutz.app.server.repository.activitypub.InboxRepository;
 import net.mixednutz.app.server.util.HttpSignaturesUtil;
 
-@RestController
+@Controller
 @RequestMapping(URI_PREFIX)
 public class InboxController {
 	
@@ -78,9 +78,7 @@ public class InboxController {
 	@Autowired
 	ObjectMapper objectMapper;
 	
-	@RequestMapping(value={USER_INBOX_ENDPOINT}, 
-			method = RequestMethod.POST,
-			consumes = {ActivityImpl.APPLICATION_ACTIVITY_VALUE,"application/ld+json"})
+	@PostMapping(value={USER_INBOX_ENDPOINT},consumes = {ActivityImpl.APPLICATION_ACTIVITY_VALUE,"application/ld+json"})
 	public ResponseEntity<String> handleInbox(
 			@PathVariable String username, 
 			@RequestBody String activityStr, 

@@ -100,6 +100,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    		.headers()
 //    			.addHeaderWriter(headerWriter)
     			.and()
+    		.csrf()
+    			.ignoringAntMatchers(new String[]{
+    					"/api/**",
+    					"/activitypub/**"})
+    			.and()
     		.sessionManagement()
     			.enableSessionUrlRewriting(false)
     			.and()
