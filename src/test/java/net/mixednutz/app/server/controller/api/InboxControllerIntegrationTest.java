@@ -3,7 +3,6 @@ package net.mixednutz.app.server.controller.api;
 import static net.mixednutz.api.activitypub.ActivityPubManager.URI_PREFIX;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,7 +123,6 @@ public class InboxControllerIntegrationTest {
 				.content(mapper.writeValueAsBytes(follow))
 				.headers(headers)
 				.contentType(ActivityImpl.APPLICATION_ACTIVITY)
-				.with(csrf())
 				.secure(true))
 			.andExpect(status().isOk())
 			.andDo(print());
