@@ -12,7 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.BaseObjectOrLink;
 import org.w3c.activitystreams.model.LinkImpl;
 import org.w3c.activitystreams.model.OrderedCollectionImpl;
@@ -44,8 +46,9 @@ public class FollowersController {
 	@Autowired
 	private ActivityPubManager activityPubManager;
 	
-	@RequestMapping(value=USER_FOLLOWERS_ENDPOINT, method = RequestMethod.GET)
-	public OrderedCollectionImpl getFollowers(@PathVariable String username, 
+	@RequestMapping(value=USER_FOLLOWERS_ENDPOINT, method = RequestMethod.GET, 
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
+	public @ResponseBody OrderedCollectionImpl getFollowers(@PathVariable String username, 
 			@AuthenticationPrincipal User user) {
 		
 		return toOrderedCollection(followerManager.getFollowers(user), username);

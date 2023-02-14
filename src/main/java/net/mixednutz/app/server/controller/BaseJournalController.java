@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import net.mixednutz.api.activitypub.ActivityPubManager;
+import net.mixednutz.api.activitypub.client.ActivityPubClientManager;
 import net.mixednutz.app.server.controller.exception.NotAuthorizedException;
 import net.mixednutz.app.server.controller.exception.ResourceMovedPermanentlyException;
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
@@ -94,6 +96,11 @@ public class BaseJournalController {
 	@Autowired
 	protected ApiManager apiManager;
 	
+	@Autowired
+	protected ActivityPubManager activityPubManager;
+	@Autowired
+	protected ActivityPubClientManager activityPubClient;
+	
 	protected Journal get(String username, int year, int month, int day, @PathVariable String subjectKey) {
 		User profileUser = userRepository.findByUsername(username)
 				.orElseThrow(new Supplier<UserNotFoundException>(){
@@ -120,7 +127,7 @@ public class BaseJournalController {
 			.orElseThrow(()->new ResourceNotFoundException("Comment not found"));
 	}
 	
-	protected String getJournal(final Journal journal, Authentication auth, Model model) {		
+	protected void assertVisibility(final Journal journal, Authentication auth) {
 		if (auth==null &&
 				!VisibilityType.WORLD.equals(journal.getVisibility().getVisibilityType())) {
 			throw new AuthenticationCredentialsNotFoundException("This is not a public journal.");
@@ -129,6 +136,10 @@ public class BaseJournalController {
 				throw new NotAuthorizedException("User does not have permission to view this journal.");
 			}
 		}
+	}
+	
+	protected String getJournal(final Journal journal, Authentication auth, Model model) {		
+		assertVisibility(journal, auth);
 		
 		model.addAttribute("journal", journal);
 		User user = auth!=null?(User) auth.getPrincipal():null;
@@ -252,6 +263,12 @@ public class BaseJournalController {
 		//Feed Actions
 		if (journal.getScheduled()==null) {
 			InternalTimelineElement exportableEntity = apiManager.toTimelineElement(journal, null);
+			
+			activityPubClient.sendActivity(user, activityPubManager.toCreate(
+					exportableEntity, 
+					activityPubManager.toNote(exportableEntity, journal.getAuthor().getUsername(), false),
+					journal.getAuthor().getUsername()));
+			
 			if (externalFeedId!=null) {
 				for (Long feedId: externalFeedId) {
 					AbstractFeed feed= externalFeedRepository.findById(feedId).get();

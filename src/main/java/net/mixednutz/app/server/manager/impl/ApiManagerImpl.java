@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,6 +29,7 @@ import net.mixednutz.api.model.IImage;
 import net.mixednutz.api.model.IUser;
 import net.mixednutz.api.model.IUserProfile;
 import net.mixednutz.api.model.IUserSmall;
+import net.mixednutz.api.model.IVisibility;
 import net.mixednutz.app.server.controller.BasePhotoController;
 import net.mixednutz.app.server.controller.api.OembedController;
 import net.mixednutz.app.server.entity.CommentsAware;
@@ -40,6 +42,7 @@ import net.mixednutz.app.server.entity.TagScore;
 import net.mixednutz.app.server.entity.TagsAware;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserProfile;
+import net.mixednutz.app.server.entity.Visibility;
 import net.mixednutz.app.server.entity.post.Post;
 import net.mixednutz.app.server.entity.post.PostComment;
 import net.mixednutz.app.server.manager.ApiElementConverter;
@@ -68,6 +71,29 @@ public class ApiManagerImpl implements ApiManager{
 	private static final String AVATARS_QUERY = "size=avatar";
 	private static final String DEFAULT_AVATAR_URI = "/img/nophoto.gif";
 	private static final String OEMBED_DIR = OembedController.OEMBED_DIR;
+	
+	public IVisibility toVisibility(Visibility visibility) {
+		switch (visibility.getVisibilityType()) {
+		case ALL_FOLLOWERS:
+			return net.mixednutz.api.core.model.Visibility.toAllFollowers();
+		case ALL_FRIENDS:
+			return net.mixednutz.api.core.model.Visibility.toAllFriends();
+		case ALL_USERS:
+			return net.mixednutz.api.core.model.Visibility.toAllUsers();
+		case SELECT_FOLLOWERS:
+			return net.mixednutz.api.core.model.Visibility.toSelectFollowers(
+					visibility.getSelectFollowers()
+					.stream()
+					.map(user->toUser(user))
+					.collect(Collectors.toSet()));
+		case WORLD:
+			return net.mixednutz.api.core.model.Visibility.toWorld();
+		case FRIEND_GROUPS:
+		case PRIVATE:
+		default:
+			return net.mixednutz.api.core.model.Visibility.asPrivate();
+		}
+	}
 	
 	public String getAvatarUri(String avatarFilename) {
 		if (avatarFilename!=null && !"".equals(avatarFilename.trim())) {
@@ -182,12 +208,14 @@ public class ApiManagerImpl implements ApiManager{
 		InternalTimelineElement api = new InternalTimelineElement();
 		api.setUri(entity.getUri());
 		api.setUrl(baseUrl+entity.getUri());
+		api.setVisibility(toVisibility(entity.getVisibility()));
 		api.setPostedByUser(toUser(entity.getAuthor(), baseUrl));
 		api.setPostedOnDate(entity.getDatePublished());
 		api.setDescription(entity.getDescription());
 		api.setAlternateLinks(new ArrayList<>());
 		api.getAlternateLinks().add(new AlternateLink(
 				getOembedUri(api.getUrl()), APPLICATION_JSON_OEMBED));
+		
 		return api;
 	}
 	
@@ -199,6 +227,7 @@ public class ApiManagerImpl implements ApiManager{
 		InternalTimelineElement api = new InternalTimelineElement();
 		api.setUri(entity.getUri());
 		api.setUrl(baseUrl+entity.getUri());
+		api.setVisibility(toVisibility(entity.getPost().getVisibility()));
 		api.setPostedByUser(toUser(entity.getAuthor(), baseUrl));
 		api.setPostedOnDate(entity.getDateCreated());
 		api.setUpdatedOnDate(entity.getDateUpdated());

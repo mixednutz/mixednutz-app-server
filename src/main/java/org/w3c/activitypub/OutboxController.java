@@ -8,16 +8,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.LinkImpl;
 import org.w3c.activitystreams.model.OrderedCollectionImpl;
 import org.w3c.activitystreams.model.OrderedCollectionPageImpl;
@@ -58,45 +56,44 @@ public class OutboxController {
 	
 	
 	@RequestMapping(value={USER_OUTBOX_ENDPOINT}, 
-			method = RequestMethod.GET)
+			method = RequestMethod.GET, 
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public OrderedCollectionImpl getUserOutbox(
-			@PathVariable String username,
-			@AuthenticationPrincipal User user, HttpServletRequest request) {
+			@PathVariable String username) {
 		return toOrderedCollection(PageRequest.first(30, Direction.LESS_THAN, String.class), username);
 	}
 	
 	@RequestMapping(value={USER_OUTBOX_NEXTPAGE_ENDPOINT}, 
 			method = RequestMethod.GET,
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE,
 			params = {"!start"})
 	public OrderedCollectionPageImpl getUserOutboxFirstPage(
 			@PathVariable String username,
-			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
-			@AuthenticationPrincipal User user, HttpServletRequest request) {
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
 		
 		return getUserOutbox(username, 
 				PageRequest.first(pageSize, Direction.LESS_THAN, String.class),
-				pageSize, user, request);
+				pageSize);
 	}
 	
 	@RequestMapping(value={USER_OUTBOX_NEXTPAGE_ENDPOINT}, 
 			method = RequestMethod.GET,
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE,
 			params = {"start"})
 	public OrderedCollectionPageImpl getUserOutboxNextPage(
 			@PathVariable String username,
 			@RequestParam(value="start") String start, 
-			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize,
-			@AuthenticationPrincipal User user, HttpServletRequest request) {
+			@RequestParam(value="pageSize", defaultValue=PAGE_SIZE_STR) int pageSize) {
 		
 		return getUserOutbox(username, 
 				PageRequest.next(start, pageSize, Direction.LESS_THAN),
-				pageSize, user, request);
+				pageSize);
 	}
 
 	protected OrderedCollectionPageImpl getUserOutbox(
 			String username,
 			PageRequest<String> prevPage, 
-			int pageSize,
-			User user, HttpServletRequest request) {
+			int pageSize) {
 		
 		URI collectionId = UriComponentsBuilder
 			.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+USER_OUTBOX_ENDPOINT)
@@ -112,13 +109,13 @@ public class OutboxController {
 			prevPage.setPageSize(pageSize);
 		}
 		
-		final long totalItems = timelineManager.countUserTimeline(profileUser.get(), user);
+		final long totalItems = timelineManager.countUserTimeline(profileUser.get(), null);
 		
 		final IPage<? extends ITimelineElement,Instant> internalContent = 
-				timelineManager.getUserTimeline(profileUser.get(), user, prevPage, 
+				timelineManager.getUserTimeline(profileUser.get(), null, prevPage, 
 						true);
 				
-		return toOrderedCollectionPage(collectionId, request, internalContent, totalItems, username);
+		return toOrderedCollectionPage(collectionId, internalContent, totalItems, username);
 	}
 	
 	protected OrderedCollectionImpl toOrderedCollection(
@@ -137,14 +134,13 @@ public class OutboxController {
 	
 	protected OrderedCollectionPageImpl toOrderedCollectionPage(
 			URI partOf,
-			HttpServletRequest request, 
 			IPage<? extends ITimelineElement,Instant> page, long totalItems,
 			String username) {
 			
 		OrderedCollectionPageImpl orderedcollection = new OrderedCollectionPageImpl();
 		activityPubManager.initRoot(orderedcollection);
 		orderedcollection.setItems(page.getItems().stream()
-				.map(element->activityPubManager.toCreate(element, username, request))
+				.map(element->activityPubManager.toCreateNote(element, username))
 				.collect(Collectors.toList()));
 		orderedcollection.setTotalItems(totalItems); 
 		orderedcollection.setPartOf(partOf);

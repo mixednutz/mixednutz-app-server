@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.actor.Person;
 
 import net.mixednutz.api.activitypub.ActivityPubManager;
@@ -43,7 +44,9 @@ public class ActorController extends BaseUserController {
 	@Autowired
 	private ActivityPubManager activityPubManager;
 	
-	@RequestMapping(value=ActivityPubManager.USER_ACTOR_ENDPOINT, method = RequestMethod.GET)
+	@RequestMapping(value=ActivityPubManager.USER_ACTOR_ENDPOINT, 
+			method = RequestMethod.GET,
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public @ResponseBody Actor getActor(@PathVariable String username) {
 		
 		return userRepository.findByUsername(username)
@@ -55,8 +58,12 @@ public class ActorController extends BaseUserController {
 			URI inbox = UriComponentsBuilder
 					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+InboxController.USER_INBOX_ENDPOINT)
 					.buildAndExpand(Map.of("username",username)).toUri();
+			URI followers = UriComponentsBuilder
+					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+FollowersController.USER_FOLLOWERS_ENDPOINT)
+					.buildAndExpand(Map.of("username",username)).toUri();
 			
-			Person person = activityPubManager.toPerson(apiManager.toUser(user), user, request, id, outbox, inbox, true);
+			Person person = activityPubManager.toPerson(apiManager.toUser(user), user, request, 
+					id, outbox, inbox, followers, null, true);
 			return person;
 		})
 		.orElseThrow(new Supplier<UserNotFoundException>() {
