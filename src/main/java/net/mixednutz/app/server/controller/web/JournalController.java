@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.w3c.activitystreams.model.ActivityImpl;
 
 import net.mixednutz.api.activitypub.ActivityPubManager;
 import net.mixednutz.app.server.controller.BaseJournalController;
@@ -198,18 +199,20 @@ public class JournalController extends BaseJournalController {
 	 * @param subjectKey
 	 * @return
 	 */
-	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}", method = RequestMethod.GET)
+	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
+			method = RequestMethod.GET,
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public @ResponseBody org.w3c.activitystreams.Object getJournalActivity(
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
-			@AuthenticationPrincipal final User user) {
+			Authentication auth) {
 		
 		final Journal journal = get(username, year, month, day, subjectKey);
+		assertVisibility(journal, auth);
 		
-		return activityPubManager.toNote(apiManager.toTimelineElement(journal, user), 
-				user.getUsername(),
-				journal.getVisibility(), true);
+		return activityPubManager.toNote(apiManager.toTimelineElement(journal, null), 
+				journal.getAuthor().getUsername(), true);
 	}
 		
 	/**
@@ -222,18 +225,18 @@ public class JournalController extends BaseJournalController {
 	 * @param subjectKey
 	 * @return
 	 */
-	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", method = RequestMethod.GET)
+	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
+			method = RequestMethod.GET,
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public @ResponseBody org.w3c.activitystreams.Object getJournalCommentActivity(
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
-			@PathVariable long commentId,
-			@AuthenticationPrincipal final User user) {
+			@PathVariable long commentId) {
 		
 		final Journal journal = get(username, year, month, day, subjectKey);
 		final JournalComment comment = get(journal, commentId);
-		return activityPubManager.toNote(apiManager.toTimelineElement(comment, user), 
-				user.getUsername(),
-				journal.getVisibility(), true);
+		return activityPubManager.toNote(apiManager.toTimelineElement(comment, null), 
+				journal.getAuthor().getUsername(), true);
 	}
 }

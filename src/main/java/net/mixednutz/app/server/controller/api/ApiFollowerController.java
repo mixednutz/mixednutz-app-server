@@ -26,6 +26,8 @@ import net.mixednutz.app.server.repository.UserRepository;
 @RequestMapping(value="/api")
 public class ApiFollowerController extends BaseFollowerController {
 	
+	public static final String AUTO_ACCEPTED = "Auto Accepted";
+	
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -104,7 +106,7 @@ public class ApiFollowerController extends BaseFollowerController {
 					userToFollow.getUserId().equals(siteSettings.getAdminUserId())) {
 				followerManager.acceptFollow(followerId, x->{});
 				
-				return "Auto accepted";
+				return AUTO_ACCEPTED;
 			}
 			
 			//TODO Send follow request

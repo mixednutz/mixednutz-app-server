@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.mixednutz.api.activitypub.ActivityPubManager;
+import net.mixednutz.api.activitypub.client.ActivityPubClientManager;
 import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.app.server.entity.CrosspostsAware;
 import net.mixednutz.app.server.entity.ExternalFeedContent;
@@ -41,6 +43,11 @@ public class PublishPostJob {
 	@Autowired
 	private ApiManager apiManager;
 	
+	@Autowired
+	protected ActivityPubManager activityPubManager;
+	@Autowired
+	protected ActivityPubClientManager activityPubClient;
+	
 	private static NetworkInfo networkInfo;
 	
 	@Autowired
@@ -61,6 +68,12 @@ public class PublishPostJob {
 			
 			InternalTimelineElement exportableEntity = 
 					apiManager.toTimelineElement(post, null, networkInfo.getBaseUrl());
+			
+			activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreate(
+					exportableEntity, 
+					activityPubManager.toNote(exportableEntity, post.getAuthor().getUsername(),false),
+					post.getAuthor().getUsername()));
+			
 			String[] tags = null;
 			if (exportableEntity.getTags()!=null) {
 				tags = exportableEntity.getTags().stream()
