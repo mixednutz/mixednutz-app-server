@@ -199,10 +199,10 @@ public class JournalController extends BaseJournalController {
 	 * @param subjectKey
 	 * @return
 	 */
-	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
+	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Note/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
 			method = RequestMethod.GET,
 			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
-	public @ResponseBody org.w3c.activitystreams.Object getJournalActivity(
+	public @ResponseBody org.w3c.activitystreams.Object getJournalActivityNote(
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
@@ -213,6 +213,21 @@ public class JournalController extends BaseJournalController {
 		
 		return activityPubManager.toNote(apiManager.toTimelineElement(journal, null), 
 				journal.getAuthor().getUsername(), true);
+	}
+	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Create/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
+			method = RequestMethod.GET,
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
+	public @ResponseBody org.w3c.activitystreams.Object getJournalActivityCreate(
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			Authentication auth) {
+		
+		final Journal journal = get(username, year, month, day, subjectKey);
+		assertVisibility(journal, auth);
+		
+		return activityPubManager.toCreateNote(apiManager.toTimelineElement(journal, null), 
+				journal.getAuthor().getUsername());
 	}
 		
 	/**
@@ -225,10 +240,10 @@ public class JournalController extends BaseJournalController {
 	 * @param subjectKey
 	 * @return
 	 */
-	@RequestMapping(value="/activitypub/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
+	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Note/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
 			method = RequestMethod.GET,
 			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
-	public @ResponseBody org.w3c.activitystreams.Object getJournalCommentActivity(
+	public @ResponseBody org.w3c.activitystreams.Object getJournalCommentActivityNote(
 			@PathVariable String username, 
 			@PathVariable int year, @PathVariable int month, 
 			@PathVariable int day, @PathVariable String subjectKey,
@@ -238,5 +253,19 @@ public class JournalController extends BaseJournalController {
 		final JournalComment comment = get(journal, commentId);
 		return activityPubManager.toNote(apiManager.toTimelineElement(comment, null), 
 				journal.getAuthor().getUsername(), true);
+	}
+	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Create/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
+			method = RequestMethod.GET,
+			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
+	public @ResponseBody org.w3c.activitystreams.Object getJournalCommentActivityCreate(
+			@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@PathVariable long commentId) {
+		
+		final Journal journal = get(username, year, month, day, subjectKey);
+		final JournalComment comment = get(journal, commentId);
+		return activityPubManager.toCreateNote(apiManager.toTimelineElement(comment, null), 
+				journal.getAuthor().getUsername());
 	}
 }
