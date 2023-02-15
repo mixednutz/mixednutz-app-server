@@ -59,7 +59,7 @@ public class ActorController extends BaseUserController {
 					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+InboxController.USER_INBOX_ENDPOINT)
 					.buildAndExpand(Map.of("username",username)).toUri();
 			URI followers = UriComponentsBuilder
-					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+FollowersController.USER_FOLLOWERS_ENDPOINT)
+					.fromHttpUrl(networkInfo.getBaseUrl()+URI_PREFIX+ActivityPubManager.USER_FOLLOWERS_ENDPOINT)
 					.buildAndExpand(Map.of("username",username)).toUri();
 			
 			Person person = activityPubManager.toPerson(apiManager.toUser(user), user, request, 
