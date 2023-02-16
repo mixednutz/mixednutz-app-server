@@ -27,6 +27,7 @@ import net.mixednutz.app.server.repository.UserRepository;
 public class ApiFollowerController extends BaseFollowerController {
 	
 	public static final String AUTO_ACCEPTED = "Auto Accepted";
+	public static final String ALREADY_ACCEPTED = "Already Accepted";
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -114,7 +115,28 @@ public class ApiFollowerController extends BaseFollowerController {
 			return "Follow request sent";
 		}
 		
+		if (existing.isPresent() && !existing.get().isPending()) {
+			return ALREADY_ACCEPTED;
+		}
+		
 		return "Follow request already sent";
+	}
+	
+	@RequestMapping(value="/{username}/unfollow", method = RequestMethod.POST)
+	public String unfollow(@PathVariable String username, 
+			@AuthenticationPrincipal User user) {
+		User userToUnfollow = userRepository.findByUsername(username)
+				.orElseThrow(new Supplier<UserNotFoundException>(){
+					@Override
+					public UserNotFoundException get() {
+						throw new UserNotFoundException("User "+username+" not found");
+					}});
+		
+		FollowerPK followerId = new FollowerPK(userToUnfollow.getUserId(), user.getUserId());
+				
+		followerManager.unfollow(followerId, x->{});
+		
+		return "Unfollowed";
 	}
 	
 	public static class FollowingList extends ApiList<IUserSmall> {

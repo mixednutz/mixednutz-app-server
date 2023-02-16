@@ -199,7 +199,7 @@ public class JournalController extends BaseJournalController {
 	 * @param subjectKey
 	 * @return
 	 */
-	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Note/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
+	@RequestMapping(value=ActivityPubManager.NOTE_URI_PREFIX+"/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
 			method = RequestMethod.GET,
 			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public @ResponseBody org.w3c.activitystreams.Object getJournalActivityNote(
@@ -214,7 +214,7 @@ public class JournalController extends BaseJournalController {
 		return activityPubManager.toNote(apiManager.toTimelineElement(journal, null), 
 				journal.getAuthor().getUsername(), true);
 	}
-	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Create/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
+	@RequestMapping(value=ActivityPubManager.CREATE_URI_PREFIX+"/{username}/journal/{year}/{month}/{day}/{subjectKey}", 
 			method = RequestMethod.GET,
 			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public @ResponseBody org.w3c.activitystreams.Object getJournalActivityCreate(
@@ -240,7 +240,7 @@ public class JournalController extends BaseJournalController {
 	 * @param subjectKey
 	 * @return
 	 */
-	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Note/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
+	@RequestMapping(value=ActivityPubManager.NOTE_URI_PREFIX+"/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
 			method = RequestMethod.GET,
 			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public @ResponseBody org.w3c.activitystreams.Object getJournalCommentActivityNote(
@@ -254,7 +254,7 @@ public class JournalController extends BaseJournalController {
 		return activityPubManager.toNote(apiManager.toTimelineElement(comment, null), 
 				journal.getAuthor().getUsername(), true);
 	}
-	@RequestMapping(value=ActivityPubManager.URI_PREFIX+"/Create/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
+	@RequestMapping(value=ActivityPubManager.CREATE_URI_PREFIX+"/Create/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}", 
 			method = RequestMethod.GET,
 			produces=ActivityImpl.APPLICATION_ACTIVITY_VALUE)
 	public @ResponseBody org.w3c.activitystreams.Object getJournalCommentActivityCreate(

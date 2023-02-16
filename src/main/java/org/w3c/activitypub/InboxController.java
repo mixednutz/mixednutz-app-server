@@ -4,6 +4,7 @@ import static net.mixednutz.api.activitypub.ActivityPubManager.URI_PREFIX;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,8 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.w3c.activitystreams.Link;
 import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.ActorImpl;
+import org.w3c.activitystreams.model.BaseObjectOrLink;
 import org.w3c.activitystreams.model.activity.Accept;
+import org.w3c.activitystreams.model.activity.Delete;
 import org.w3c.activitystreams.model.activity.Follow;
+import org.w3c.activitystreams.model.activity.Undo;
+import org.w3c.activitystreams.model.activity.Update;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -95,7 +100,7 @@ public class InboxController {
 				username);
 		
 		ActivityImpl activity = objectMapper.readValue(activityStr, ActivityImpl.class);
-		loggedActivity.setActivityId(activity.getId());
+		loggedActivity.setActivityId(activity.getId().toString());
 		loggedActivity.setType(activity.getType());
 		
 		URI actorUri = null;
@@ -104,7 +109,7 @@ public class InboxController {
 		} else if (activity.getActor() instanceof ActorImpl) {
 			actorUri = ((ActorImpl)activity.getActor()).getId();
 		}
-		loggedActivity.setActor(actorUri);
+		loggedActivity.setActor(actorUri.toString());
 		
 		inboxRepository.save(loggedActivity);
 		LOG.info("Recieved activity in {}'s inbox: {} from {}",
@@ -141,6 +146,12 @@ public class InboxController {
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		if (activity instanceof Follow) {
 			status = handleFollow(username, (Follow) activity, profileUser, remoteUser, actor);
+		} else if (activity instanceof Undo) {
+			status = handleUndo(username, (Undo)activity, profileUser, remoteUser, actor);
+		} else if (activity instanceof Delete) {
+			status = handleDelete((Delete)activity);
+		} else if (activity instanceof Update) {
+			status = handleUpdate((Update)activity);
 		}
 		
 		return new ResponseEntity<String>(status);
@@ -153,15 +164,15 @@ public class InboxController {
 		user = userRepository.save(user);
 		UserProfile up = new UserProfile(user);
 		up.setUser(user);
-		up.setActivityPubActorUri(actor.getId());
+		up.setActivityPubActorUri(actor.getId().toString());
 		up.setFediverseUsername('@'+actor.getPreferredUsername()+'@'+actor.getId().getHost());
 		return userProfileRepository.save(up);
 	}
 	
 	protected HttpStatus handleFollow(String username, Follow follow, User localUser, User remoteUser, ActorImpl actor) {
 		
-		if (ApiFollowerController.AUTO_ACCEPTED.equals(
-				followerController.follow(username, remoteUser))) {
+		if (Set.of(ApiFollowerController.AUTO_ACCEPTED, ApiFollowerController.ALREADY_ACCEPTED)
+				.contains(followerController.follow(username, remoteUser))) {
 			
 			URI inbox = actor.getInbox();
 			Accept accept = apManager.toAccept(username, follow);
@@ -173,6 +184,35 @@ public class InboxController {
 		}
 		//Processing
 		return HttpStatus.ACCEPTED;
+	}
+	
+	protected HttpStatus handleUndo(String username, Undo undo, User localUser, User remoteUser, ActorImpl actor) {
+		URI inbox = actor.getInbox();
+		
+		BaseObjectOrLink object = undo.getObject();
+		if (object instanceof Link) {
+			LOG.error("Not Implemented. Undo from Link.");
+		}
+		if (object instanceof Follow) {
+			followerController.unfollow(username, remoteUser);
+			
+			Accept accept = apManager.toAccept(username, undo);
+			
+			apClient.sendActivity(inbox, accept, localUser);
+			
+			//Accepted
+			return HttpStatus.OK;
+		}
+		return HttpStatus.ACCEPTED;
+	}
+	
+	protected HttpStatus handleDelete(Delete delete) {
+		// Not implemented yet
+		return HttpStatus.NOT_FOUND;
+	}
+	protected HttpStatus handleUpdate(Update update) {
+		// Not implemented yet
+		return HttpStatus.OK;
 	}
 	
 
