@@ -123,7 +123,15 @@ public class InboxController {
 						throw new UserNotFoundException("User "+username+" not found");
 					}});
 		
-		//get live version of actor
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		/* We do delete first because it's entirely possinle this actor doesn't 
+		 * exist and we can't retrieve the actor and verify its signature.
+		 */
+		if (activity instanceof Delete) {
+			status = handleDelete((Delete)activity, actorUri);
+			return new ResponseEntity<String>(status);
+		}
+		
 		final ActorImpl actor = apClient.getActor(actorUri);
 		
 		//verify
@@ -143,13 +151,11 @@ public class InboxController {
 					.orElseGet(()->createNewUser(actor));
 		User remoteUser = userProfile.getUser();
 						
-		HttpStatus status = HttpStatus.BAD_REQUEST;
+		
 		if (activity instanceof Follow) {
 			status = handleFollow(username, (Follow) activity, profileUser, remoteUser, actor);
 		} else if (activity instanceof Undo) {
 			status = handleUndo(username, (Undo)activity, profileUser, remoteUser, actor);
-		} else if (activity instanceof Delete) {
-			status = handleDelete((Delete)activity);
 		} else if (activity instanceof Update) {
 			status = handleUpdate((Update)activity);
 		}
@@ -206,8 +212,19 @@ public class InboxController {
 		return HttpStatus.ACCEPTED;
 	}
 	
-	protected HttpStatus handleDelete(Delete delete) {
-		// Not implemented yet
+	protected HttpStatus handleDelete(Delete delete, URI actorUri) {
+		URI objectUri = null;
+		if (delete.getObject() instanceof Link) {
+			objectUri = ((Link)delete.getObject()).getHref();
+		} else if (delete.getActor() instanceof ActorImpl) {
+			objectUri = ((ActorImpl)delete.getObject()).getId();
+		}
+		
+		if (objectUri.equals(actorUri)) {
+			//we could search and chose between GONE and NOT_FOUND
+			return HttpStatus.NOT_FOUND;
+		}
+		
 		return HttpStatus.NOT_FOUND;
 	}
 	protected HttpStatus handleUpdate(Update update) {
