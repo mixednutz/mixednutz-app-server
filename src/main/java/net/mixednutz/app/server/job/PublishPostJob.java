@@ -69,10 +69,8 @@ public class PublishPostJob {
 			InternalTimelineElement exportableEntity = 
 					apiManager.toTimelineElement(post, null, networkInfo.getBaseUrl());
 			
-			activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreate(
-					exportableEntity, 
-					activityPubManager.toNote(exportableEntity, post.getAuthor().getUsername(),false),
-					post.getAuthor().getUsername()));
+			activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreateNote(
+					exportableEntity, post.getAuthor().getUsername()));
 			
 			String[] tags = null;
 			if (exportableEntity.getTags()!=null) {

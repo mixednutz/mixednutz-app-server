@@ -264,10 +264,8 @@ public class BaseJournalController {
 		if (journal.getScheduled()==null) {
 			InternalTimelineElement exportableEntity = apiManager.toTimelineElement(journal, null);
 			
-			activityPubClient.sendActivity(user, activityPubManager.toCreate(
-					exportableEntity, 
-					activityPubManager.toNote(exportableEntity, journal.getAuthor().getUsername(), false),
-					journal.getAuthor().getUsername()));
+			activityPubClient.sendActivity(journal.getAuthor(), activityPubManager.toCreateNote(
+					exportableEntity, journal.getAuthor().getUsername()));
 			
 			if (externalFeedId!=null) {
 				for (Long feedId: externalFeedId) {
