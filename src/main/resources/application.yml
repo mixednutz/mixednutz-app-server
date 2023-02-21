@@ -51,7 +51,9 @@ logging:
     org.springframework.web: INFO
 #    org.hibernate.SQL: DEBUG
     net.mixednutz.app.server: INFO
-  file: logs/mixednutz-app-server.log
+  file:
+    path: .
+    name: mixednutz-app-server.log
 
     
 ---
