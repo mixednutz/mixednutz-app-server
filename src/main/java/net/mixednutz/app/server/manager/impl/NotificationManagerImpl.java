@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import net.mixednutz.api.core.model.NetworkInfo;
 import net.mixednutz.api.model.IUserSmall;
+import net.mixednutz.app.server.entity.Follower;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserEmailAddress;
@@ -237,10 +244,77 @@ public class NotificationManagerImpl implements NotificationManager {
 	}
 
 	@Override
+	public void markAsRead(User user, User profileUser) {
+		List<AbstractNotification> notifications = new ArrayList<>();
+		lookupFollowNotifications(user, profileUser)
+			.forEach(notif->notifications.add(notif));
+		notificationRepository.deleteAll(notifications);
+	}
+
+	@Override
 	public <G extends GroupedPosts<P, C>, P extends Post<C>, C extends PostComment> void notifyNewAddition(G group,
 			P post) {
 		//TODO this requires subscriptions 
 		
+	}
+
+	@Override
+	public void notifyNewFollower(Follower follower) {
+		AbstractNotification notification = createFollowNotification(follower);
+		notificationRepository.save(notification);
+		
+		//TODO Email
+	}
+	
+	AbstractNotification createFollowNotification(Follower follower) {
+		return new FollowNotification(follower.getId().getUserId(), follower.getId().getFollowerId());
+	}
+	
+	Iterable<? extends AbstractNotification> lookupFollowNotifications(User user, User follower) {
+		return notificationRepository.loadNotifications((criteriaBuilder, itemRoot) ->{
+			return criteriaBuilder.and(
+					criteriaBuilder.equal(itemRoot.get("followerId"), follower.getUserId()),
+					criteriaBuilder.equal(itemRoot.get("userId"), user.getUserId()));
+		}, FollowNotification.class);
+	}
+	
+	@Entity
+	@DiscriminatorValue(FollowNotification.TYPE)
+	public static class FollowNotification extends AbstractNotification {
+		
+		public static final String TYPE = "NewFollower";
+		
+		private Long followerId;
+		private User follower;
+		
+		public FollowNotification(Long userId, Long followerId) {
+			super(TYPE, userId);
+			this.followerId = followerId;
+		}
+
+		public FollowNotification() {
+			super(TYPE);
+		}
+
+		@Column(name="follower_id", insertable=true, updatable=true)
+		public Long getFollowerId() {
+			return followerId;
+		}
+
+		public void setFollowerId(Long followerId) {
+			this.followerId = followerId;
+		}
+
+		@ManyToOne
+		@JoinColumn(name="follower_id", insertable=false, updatable=false)
+		public User getFollower() {
+			return follower;
+		}
+
+		public void setFollower(User follower) {
+			this.follower = follower;
+		}
+
 	}
 		
 }

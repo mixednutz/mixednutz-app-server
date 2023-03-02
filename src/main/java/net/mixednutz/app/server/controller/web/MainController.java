@@ -26,6 +26,7 @@ import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.post.AbstractPost;
 import net.mixednutz.app.server.entity.post.NewPostFactory;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
+import net.mixednutz.app.server.manager.NotificationManager;
 import net.mixednutz.app.server.manager.SiteSettingsManager;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -49,6 +50,9 @@ public class MainController {
 	
 	@Autowired
 	SiteSettingsManager siteSettingsManager;
+	
+	@Autowired
+	NotificationManager notificationManager;
 	
 	@Autowired(required=false)
 	protected List<ComponentSettings> componentSettings;
@@ -166,6 +170,11 @@ public class MainController {
 		if (!profileUser.isPresent()) {
 			throw new UserNotFoundException("User "+username+" not found");
 		}
+		
+		if (authenticatedUser!=null) {
+			notificationManager.markAsRead(authenticatedUser, profileUser.get());
+		}
+		
 		model.addAttribute("profileUser", profileUser.get());
 		
 		/*
