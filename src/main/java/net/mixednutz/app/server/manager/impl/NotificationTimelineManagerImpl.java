@@ -345,7 +345,7 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 		//create NotificationItems
 		return notifications.stream()
 			.map(notification->getFollowNotificationItem(notification))
-			.toList();
+			.collect(Collectors.toList());
 	}
 	
 	protected Notification getFollowNotificationItem(FollowNotification entry) {
