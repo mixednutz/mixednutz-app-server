@@ -5,7 +5,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +30,7 @@ import net.mixednutz.app.server.entity.post.CommentReplyNotification;
 import net.mixednutz.app.server.entity.post.Post;
 import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.NotificationTimelineManager;
+import net.mixednutz.app.server.manager.impl.NotificationManagerImpl.FollowNotification;
 import net.mixednutz.app.server.repository.PostNotificationRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -102,6 +102,16 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 					
 					return getReactionNotificationItems(notifications);
 				}
+				if (FollowNotification.class.isAssignableFrom(e.getKey())) {
+					
+					List<FollowNotification> notifications = e.getValue().stream()
+						.map((n)->{
+							return (FollowNotification)n;
+						}).collect(Collectors.toList());
+					
+					return getFollowNotificationItems(notifications);
+					
+				}
 				return null;
 			})
 			// Remove nulls
@@ -141,10 +151,10 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 		
 	protected Notification getCommentNotificationItem(Entry<Post<?>, List<AbstractCommentNotification<?, ?>>> entry) {
 		
-		Set<Long> authors = new LinkedHashSet<>();
-		for (AbstractCommentNotification<?, ?> notification: entry.getValue()) {
-			authors.add(notification.getAuthorId());
-		}
+		Set<Long> authors = entry.getValue().stream()
+				.map(notification->notification.getAuthorId())
+				.collect(Collectors.toSet());
+		
 		final String firstAuthor = this.getAuthorName(authors.iterator().next() 
 	//			entry.getKey().getPrivateGroupId()
 				);
@@ -210,10 +220,10 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 	
 	protected Notification getCommentReplyNotificationItem(Entry<AbstractPostComment, List<CommentReplyNotification>> entry) {
 		
-		Set<Long> authors = new LinkedHashSet<>();
-		for (CommentReplyNotification notification: entry.getValue()) {
-			authors.add(notification.getAuthorId());
-		}
+		Set<Long> authors = entry.getValue().stream()
+				.map(notification->notification.getAuthorId())
+				.collect(Collectors.toSet());
+		
 		final String firstAuthor = this.getAuthorName(authors.iterator().next() 
 	//			entry.getKey().getPrivateGroupId()
 				);
@@ -279,10 +289,10 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 	
 	protected Notification getReactionNotificationItem(Entry<Post<?>, List<AbstractReactionNotification<?, ?, ?>>> entry) {
 		
-		Set<Long> authors = new LinkedHashSet<>();
-		for (AbstractReactionNotification<?, ?, ?> notification: entry.getValue()) {
-			authors.add(notification.getReactorId());
-		}
+		Set<Long> authors = entry.getValue().stream()
+				.map(notification->notification.getReactorId())
+				.collect(Collectors.toSet());
+		
 		final String firstAuthor = this.getAuthorName(authors.iterator().next());
 		final String firstAuthorPicture = this.getAuthorPicture(authors.iterator().next());
 		final AbstractReactionNotification<?, ?, ?> firstNotification = entry.getValue().get(0);
@@ -327,6 +337,38 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 				notificationIds);
 	}
 		
+	protected List<Notification> getFollowNotificationItems(List<FollowNotification> notifications) {
+		if (notifications==null) {
+			return Collections.emptyList();
+		}
+
+		//create NotificationItems
+		return notifications.stream()
+			.map(notification->getFollowNotificationItem(notification))
+			.collect(Collectors.toList());
+	}
+	
+	protected Notification getFollowNotificationItem(FollowNotification entry) {
+		
+		final String author = getAuthorName(entry.getFollowerId()) ;
+		final String authorPicture = getAuthorPicture(entry.getFollowerId());
+		final String authorUri = getAuthorUri(entry.getFollowerId());
+		
+		HtmlStringBuffer buffer = new HtmlStringBuffer();
+		
+		buffer.html("<span class=\"author\">")
+			.append(author);
+		buffer.html("</span>").append(" followed you");
+		
+		return new Notification(
+				entry.getType(),
+				authorPicture,
+				buffer.toPlainString(),
+				buffer.toHtmlString(),
+				authorUri, 
+				entry.getDateCreated(),
+				List.of(entry.getId()));
+	}
 	
 	private String getAuthorName(Long userId 
 	//		Integer fgroupId
@@ -349,6 +391,12 @@ public class NotificationTimelineManagerImpl implements NotificationTimelineMana
 			apiManager.getAvatarUri(firstAuthor.get().getAvatarFilename());
 		}
 		return apiManager.getAvatarUri(null);
+	}
+	
+	private String getAuthorUri(Long userId) {
+		return userRepository.findById(userId)
+			.map(author->"/"+author.getUsername())
+			.orElse(null);
 	}
 
 	private static class HtmlStringBuffer {
