@@ -330,7 +330,6 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 					externalFeedTimelineElementRepository.save(
 							new ExternalFeedTimelineElement(timelineElement)), 
 					timelineType);
-			System.out.println(content.getId());
 			externalFeedContentRepository.save(content);
 		}
 	}
@@ -512,7 +511,6 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 			if (persisted!=null) {
 				ExternalFeedContent content = new ExternalFeedContent(feed, persisted, 
 						ExternalFeedContent.TimelineType.CROSSPOST);
-				System.out.println(content.getId());
 				return externalFeedContentRepository.save(content);
 			}
 		}
