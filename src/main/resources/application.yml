@@ -41,6 +41,11 @@ mixednutz:
     no-reply: noreply@andrewfesta.com
     log-to: andy_festa@yahoo.com
 
+nodeinfo:
+   software:
+      repository: https://github.com/mixednutz/mixednutz-app-server
+   openRegistrations: true
+
 #ads-txt: "classpath:static/ads.txt"
 
 server.servlet.session.timeout: 60m
