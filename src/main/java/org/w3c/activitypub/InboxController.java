@@ -147,7 +147,7 @@ public class InboxController {
 				
 		//find actor in db
 		UserProfile userProfile = 
-				userProfileRepository.findOneByActivityPubActorUri(actorUri)
+				userProfileRepository.findOneByActivityPubActorUri(actorUri.toString())
 					.orElseGet(()->createNewUser(actor));
 		User remoteUser = userProfile.getUser();
 						

@@ -38,7 +38,7 @@ import net.mixednutz.app.server.repository.UserRepository;
 		
 })
 @Disabled
-public class WebfingerControllerIntegrationTest {
+public class NodeinfoControllerIntegrationTest {
 	
 	@PersistenceContext
 	EntityManager em;
@@ -52,31 +52,34 @@ public class WebfingerControllerIntegrationTest {
 	@Autowired
 	private SiteSettingsManager siteSettingsManager;
 	
+	@Transactional
+	@Test
+	public void nodeinfoRequest() throws Exception {
+		mockMvc.perform(get("/.well-known/nodeinfo")
+				.secure(true))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType("application/json"))
+			.andExpect(jsonPath("links[0].rel").value("http://nodeinfo.diaspora.software/ns/schema/2.1"))
+			.andExpect(jsonPath("links[0].href").value("http://andrewfesta.com/nodeinfo/2.1"))
+			.andDo(print());
+	}
 	
 	@Transactional
 	@Test
-	public void webfinger() throws Exception {
+	public void nodeinfoSchema() throws Exception {
 		setupAdminUser();
 		
-		mockMvc.perform(get("/.well-known/webfinger?resource=acct:admin@andrewfesta.com")
+		mockMvc.perform(get("/nodeinfo/2.1")
 				.secure(true))
 			.andExpect(status().isOk())
-			.andExpect(content().contentType("application/jrd+json"))
-			.andExpect(jsonPath("subject").value("acct:admin@andrewfesta.com"))
-			.andExpect(jsonPath("links[0].href").value("https://andrewfesta.com/activitypub/admin"))
+			.andExpect(content().contentType("application/json"))
+			.andExpect(jsonPath("software.repository").value("https://github.com/mixednutz/mixednutz-app-server"))
+			.andExpect(jsonPath("protocols[0]").value("activitypub"))
+			.andExpect(jsonPath("services.inbound[0]").value("twitter"))
+			.andExpect(jsonPath("services.outbound[0]").value("twitter"))
+			.andExpect(jsonPath("usage.users.total").value(1L))
 			.andDo(print());
-		
-		//bad request
-		mockMvc.perform(get("/.well-known/webfinger?resource=admin@andrewfesta.com")
-				.secure(true))
-			.andExpect(status().isBadRequest())
-			.andDo(print());
-		
-		//user not found
-		mockMvc.perform(get("/.well-known/webfinger?resource=acct:andy@andrewfesta.com")
-				.secure(true))
-			.andExpect(status().isNotFound())
-			.andDo(print());
+
 	}
 	
 	private void setupAdminUser() {
