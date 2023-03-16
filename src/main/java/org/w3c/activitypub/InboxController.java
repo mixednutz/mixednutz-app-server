@@ -162,6 +162,8 @@ public class InboxController {
 			status = handleUndo(username, (Undo)activity, profileUser, remoteUser, actor);
 		} else if (activity instanceof Update) {
 			status = handleUpdate((Update)activity);
+		} else {
+			LOG.warn("Unhandled Activity Type: {}", activity.getType());
 		}
 		
 		return new ResponseEntity<String>(status);

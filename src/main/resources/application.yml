@@ -57,6 +57,7 @@ logging:
 #    org.hibernate.SQL: DEBUG
     net.mixednutz.app.server: INFO
     net.mixednutz.api: INFO
+    org.w3c.activitypub: INFO
   file:
     path: .
     name: mixednutz-app-server.log
