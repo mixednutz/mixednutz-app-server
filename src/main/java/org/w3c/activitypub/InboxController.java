@@ -100,7 +100,11 @@ public class InboxController {
 				username);
 		
 		ActivityImpl activity = objectMapper.readValue(activityStr, ActivityImpl.class);
-		loggedActivity.setActivityId(activity.getId().toString());
+		if (activity.getId()!=null) {
+			loggedActivity.setActivityId(activity.getId().toString());
+		} else {
+			LOG.warn("{} activity does not have an ID. Source String: {}", activity.getType(), activityStr);
+		}
 		loggedActivity.setType(activity.getType());
 		
 		URI actorUri = null;
@@ -124,7 +128,7 @@ public class InboxController {
 					}});
 		
 		HttpStatus status = HttpStatus.BAD_REQUEST;
-		/* We do delete first because it's entirely possinle this actor doesn't 
+		/* We do delete first because it's entirely possible this actor doesn't 
 		 * exist and we can't retrieve the actor and verify its signature.
 		 */
 		if (activity instanceof Delete) {
