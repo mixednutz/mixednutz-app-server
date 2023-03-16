@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -83,7 +84,19 @@ public class InboxController {
 	@Autowired
 	ObjectMapper objectMapper;
 	
-	@PostMapping(value={USER_INBOX_ENDPOINT},consumes = {ActivityImpl.APPLICATION_ACTIVITY_VALUE,"application/ld+json"})
+	@PostMapping(value={USER_INBOX_ENDPOINT},consumes = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<String> handleInboxJson(
+			@PathVariable String username, 
+			@RequestBody String activityStr, 
+			@RequestHeader HttpHeaders httpHeaders,
+			HttpServletRequest request) throws JsonMappingException, JsonProcessingException {
+		LOG.warn("Invalid ContentType. {}. Processing anyway", httpHeaders.getContentType());
+		return handleInbox(username, activityStr,httpHeaders, request);
+	}
+	
+	@PostMapping(value={USER_INBOX_ENDPOINT},consumes = {
+			ActivityImpl.APPLICATION_ACTIVITY_VALUE,
+			"application/ld+json"})
 	public ResponseEntity<String> handleInbox(
 			@PathVariable String username, 
 			@RequestBody String activityStr, 
