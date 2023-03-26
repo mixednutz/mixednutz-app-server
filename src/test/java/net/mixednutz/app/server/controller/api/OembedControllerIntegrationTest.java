@@ -25,6 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import net.mixednutz.api.activitypub.client.ActivityPubClientManager;
 import net.mixednutz.app.server.NetworkInfoConfig;
 import net.mixednutz.app.server.entity.OembedFilterAllowlist;
 import net.mixednutz.app.server.entity.Oembeds;
@@ -41,6 +42,7 @@ import net.mixednutz.app.server.manager.post.journal.impl.JournalEntityConverter
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.MenuItemRepository;
 import net.mixednutz.app.server.repository.OembedFilterAllowlistRepository;
+import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 import net.mixednutz.app.server.security.LastonlineFilter;
 
@@ -85,6 +87,12 @@ public class OembedControllerIntegrationTest {
 	ExternalContentManagerImpl oembedFilterWhitelistManager;
 	@MockBean
 	OembedFilterAllowlistRepository oembedFilterWhitelistRepository;
+	
+	//Used by security
+	@MockBean
+	ActivityPubClientManager activityPubClientManager;
+	@MockBean
+	UserProfileRepository userProfileRepository;
 	
 		
 	@BeforeEach
