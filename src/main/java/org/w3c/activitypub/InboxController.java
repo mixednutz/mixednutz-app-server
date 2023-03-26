@@ -7,16 +7,14 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +47,6 @@ import net.mixednutz.app.server.entity.activitypub.Inbox;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 import net.mixednutz.app.server.repository.activitypub.InboxRepository;
-import net.mixednutz.app.server.util.HttpSignaturesUtil;
 
 @Controller
 @RequestMapping(URI_PREFIX)
@@ -89,9 +86,9 @@ public class InboxController {
 			@PathVariable String username, 
 			@RequestBody String activityStr, 
 			@RequestHeader HttpHeaders httpHeaders,
-			HttpServletRequest request) throws JsonMappingException, JsonProcessingException {
+			Authentication auth) throws JsonMappingException, JsonProcessingException {
 		LOG.warn("Invalid ContentType. {}. Processing anyway", httpHeaders.getContentType());
-		return handleInbox(username, activityStr,httpHeaders, request);
+		return handleInbox(username, activityStr,httpHeaders, auth);
 	}
 	
 	@PostMapping(value={USER_INBOX_ENDPOINT},consumes = {
@@ -101,7 +98,7 @@ public class InboxController {
 			@PathVariable String username, 
 			@RequestBody String activityStr, 
 			@RequestHeader HttpHeaders httpHeaders,
-			HttpServletRequest request) throws JsonMappingException, JsonProcessingException {
+			Authentication auth) throws JsonMappingException, JsonProcessingException {
 		
 		//LOG
 		Inbox loggedActivity = new Inbox();
@@ -131,8 +128,7 @@ public class InboxController {
 		inboxRepository.save(loggedActivity);
 		LOG.info("Recieved activity in {}'s inbox: {} from {}",
 				username, activity.getType().toUpperCase(), actorUri);
-		
-		
+				
 		User profileUser = userRepository.findByUsername(username)
 				.orElseThrow(new Supplier<UserNotFoundException>(){
 					@Override
@@ -151,27 +147,21 @@ public class InboxController {
 		
 		final ActorImpl actor = apClient.getActor(actorUri);
 		
-		//verify
-		HttpSignaturesUtil.verifyRequest(URI.create(request.getRequestURI()),
-				HttpMethod.valueOf(request.getMethod()), httpHeaders, 
-				keyId->{
-					if (keyId.equals(actor.getPublicKey().getId().toString())) {
-						return HttpSignaturesUtil.getPublicKeyFromPem(
-								actor.getPublicKey().getPublicKeyPem());
-					}
-					throw new RuntimeException("Unable to find key "+keyId);
-				});
-				
-		//find actor in db
-		UserProfile userProfile = 
-				userProfileRepository.findOneByActivityPubActorUri(actorUri.toString())
-					.orElseGet(()->createNewUser(actor));
-		User remoteUser = userProfile.getUser();
-						
-		
+		User remoteUser = null;			
 		if (activity instanceof Follow) {
+			
+			if (auth==null) {
+				//We need to create a user now
+				remoteUser = createNewUser(actor).getUser();
+			} else {
+				remoteUser = (User)auth.getPrincipal();
+			}
+			
 			status = handleFollow(username, (Follow) activity, profileUser, remoteUser, actor);
-		} else if (activity instanceof Undo) {
+		} 
+		
+		
+		if (activity instanceof Undo) {
 			status = handleUndo(username, (Undo)activity, profileUser, remoteUser, actor);
 		} else if (activity instanceof Update) {
 			status = handleUpdate((Update)activity);
@@ -186,6 +176,7 @@ public class InboxController {
 		User user = new User();
 		user.setUsername('@'+actor.getPreferredUsername()+'@'+actor.getId().getHost());
 		if (StringUtils.hasText(actor.getName())) user.setDisplayName(actor.getName());
+		LOG.info("Creating user {} for {}", user.getUsername(), actor.getId().toString());
 		user = userRepository.save(user);
 		UserProfile up = new UserProfile(user);
 		up.setUser(user);

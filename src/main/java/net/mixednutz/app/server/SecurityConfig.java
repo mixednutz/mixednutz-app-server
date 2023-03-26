@@ -15,13 +15,19 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.stereotype.Component;
+import org.w3c.activitypub.client.ActivityPubClient;
+import org.w3c.activitypub.security.SignedHttpHeaderAuthenticationFilter;
+import org.w3c.activitypub.security.SignedHttpHeaderAuthenticationProvider;
 
 import net.mixednutz.app.server.controller.web.AuthController;
 import net.mixednutz.app.server.controller.web.UserEmailAddressController;
 import net.mixednutz.app.server.manager.UserService;
+import net.mixednutz.app.server.repository.UserProfileRepository;
 
 
 @EnableWebSecurity
@@ -40,6 +46,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired(required=false)
 	SslConfigurer sslConfigurer;
 	
+	@Autowired
+	ActivityPubClient activityPubClient;
+	
+	@Autowired
+	UserProfileRepository userProfileRepository;
+	
+	
 	@Override
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -53,6 +66,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    daoProvider.setPasswordEncoder(passwordEncoder());
 	    return daoProvider;
 	}
+	
+	public SignedHttpHeaderAuthenticationProvider signedHttpHeaderProvider() {
+		SignedHttpHeaderAuthenticationProvider signedHttpHeaderProvider = new SignedHttpHeaderAuthenticationProvider();
+		signedHttpHeaderProvider.setActivityPubClient(activityPubClient);
+		signedHttpHeaderProvider.setUserProfileRepository(userProfileRepository);
+		return signedHttpHeaderProvider;
+	}
 		
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -63,8 +83,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
-	    auth
-	    	.authenticationProvider(daoProvider());
+	    auth.authenticationProvider(daoProvider());
+	    auth.authenticationProvider(signedHttpHeaderProvider());
 	}
 	
 	@Bean
@@ -76,6 +96,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		services.setCookieName("mixednutzcookie"); //cookie name
 		services.setUseSecureCookie(true);
 		return services;
+	}
+	
+	@Bean
+	protected SignedHttpHeaderAuthenticationFilter signedHttpHeaderAuthenticationFilter() throws Exception {
+		return new SignedHttpHeaderAuthenticationFilter(
+				new OrRequestMatcher(new AntPathRequestMatcher("/activitypub/**")), 
+				authenticationManager());
 	}
 	
 	@Override
@@ -125,6 +152,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        	.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 	        	.deleteCookies("JSESSIONID")
 	        	.and()
+//	        .addFilterBefore(signedHttpHeaderAuthenticationFilter(), AnonymousAuthenticationFilter.class)
 //	        .addFilterAfter(lastonlineFilter, AnonymousAuthenticationFilter.class)
         	.authorizeRequests()
 	        	.antMatchers(
@@ -167,6 +195,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.requiresChannel().anyRequest().requiresSecure();
 		}
 
+	}
+	
+	@Component
+	public class ActivityPubConfigurer extends AbstractHttpConfigurer<ActivityPubConfigurer, HttpSecurity> {
+		
+		@Override
+		public void init(HttpSecurity http) throws Exception {
+			http.addFilterBefore(signedHttpHeaderAuthenticationFilter(), AnonymousAuthenticationFilter.class);
+		}
+		
 	}
 
 }
