@@ -33,7 +33,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.w3c.activitypub.client.ActivityPubClient;
 import org.w3c.activitypub.util.ProblemHandler;
 import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.ActorImpl;
@@ -95,10 +94,7 @@ public class InboxControllerIntegrationTest {
 	
 	@MockBean
 	private ActivityPubClientManager activityPubClientManager;
-	
-	@MockBean
-	private ActivityPubClient activityPubClient;
-	
+		
 	@Autowired
 	FollowerManager followerManager;
 	
@@ -118,8 +114,6 @@ public class InboxControllerIntegrationTest {
 		remoteActor.setPublicKey(new PublicKey("main-key", remoteActor.getId(),
 				HttpSignaturesUtil.publicKeyToPem(remoteUserKeyPair.getPublic())));
 		when(activityPubClientManager.getActor(eq(remoteActor.getId()))).thenReturn(remoteActor);
-		when(activityPubClient.getActor(eq(remoteActor.getId()))).thenReturn(remoteActor);
-		
 		
 		
 		activityPubManager.getActorUri("admin");
@@ -175,8 +169,7 @@ public class InboxControllerIntegrationTest {
 		remoteActor.setPublicKey(new PublicKey("main-key", remoteActor.getId(),
 				HttpSignaturesUtil.publicKeyToPem(remoteUserKeyPair.getPublic())));
 		when(activityPubClientManager.getActor(eq(remoteActor.getId()))).thenReturn(remoteActor);
-		when(activityPubClient.getActor(eq(remoteActor.getId()))).thenReturn(remoteActor);
-		
+	
 		
 		activityPubManager.getActorUri("admin");
 		

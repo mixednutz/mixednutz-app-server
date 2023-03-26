@@ -20,10 +20,10 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.stereotype.Component;
-import org.w3c.activitypub.client.ActivityPubClient;
 import org.w3c.activitypub.security.SignedHttpHeaderAuthenticationFilter;
 import org.w3c.activitypub.security.SignedHttpHeaderAuthenticationProvider;
 
+import net.mixednutz.api.activitypub.client.ActivityPubClientManager;
 import net.mixednutz.app.server.controller.web.AuthController;
 import net.mixednutz.app.server.controller.web.UserEmailAddressController;
 import net.mixednutz.app.server.manager.UserService;
@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	SslConfigurer sslConfigurer;
 	
 	@Autowired
-	ActivityPubClient activityPubClient;
+	ActivityPubClientManager activityPubClientManager;
 	
 	@Autowired
 	UserProfileRepository userProfileRepository;
@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	public SignedHttpHeaderAuthenticationProvider signedHttpHeaderProvider() {
 		SignedHttpHeaderAuthenticationProvider signedHttpHeaderProvider = new SignedHttpHeaderAuthenticationProvider();
-		signedHttpHeaderProvider.setActivityPubClient(activityPubClient);
+		signedHttpHeaderProvider.setActivityPubClientManager(activityPubClientManager);
 		signedHttpHeaderProvider.setUserProfileRepository(userProfileRepository);
 		return signedHttpHeaderProvider;
 	}
