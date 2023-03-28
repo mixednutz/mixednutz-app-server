@@ -53,7 +53,7 @@ server.servlet.session.timeout: 60m
 logging:
   level: 
     root: WARN
-    org.springframework.web: DEBUG
+#    org.springframework.web: DEBUG
 #    org.hibernate.SQL: DEBUG
     net.mixednutz.app.server: INFO
     net.mixednutz.api: INFO
