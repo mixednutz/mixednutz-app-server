@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.w3c.activitystreams.model.ActorImpl;
 
 import net.mixednutz.api.activitypub.client.ActivityPubClientManager;
@@ -32,7 +32,8 @@ public class SignedHttpHeaderAuthenticationProvider implements AuthenticationPro
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		if (authentication.getPrincipal()==null) {
-			throw new AccessDeniedException("Missing Signature header");
+			LOG.info("Missing Signature header.");
+			return authentication;
 		}
 		SignedHttpHeaderToken token = (SignedHttpHeaderToken)authentication;
 		
@@ -45,7 +46,13 @@ public class SignedHttpHeaderAuthenticationProvider implements AuthenticationPro
 					String[] parts = keyId.split("#");
 					URI actorURI = URI.create(parts[0]);
 					
-					ActorImpl actor = activityPubClientManager.getActor(actorURI);
+					ActorImpl actor;
+					try {
+						actor = activityPubClientManager.getActor(actorURI);
+					} catch (HttpClientErrorException.Gone e) {
+						LOG.info("Actor is Gone: {}", actorURI);
+						return null;
+					}
 					ctx.actor = actor;
 					
 					if (!actor.getPublicKey().getId().toString().equals(keyId)) {
