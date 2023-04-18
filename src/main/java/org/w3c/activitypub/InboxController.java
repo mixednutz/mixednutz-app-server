@@ -145,16 +145,22 @@ public class InboxController {
 			return new ResponseEntity<String>(status);
 		}
 		
+		//Check if authenticated (DELETEs wont get this far)
+		if (auth.getAuthorities().stream()
+				.noneMatch(role->role.getAuthority().equals("USER_ROLE"))) {
+			return new ResponseEntity<String>("Not authenticated",status);
+		}
+		
 		final ActorImpl actor = apClient.getActor(actorUri);
 		
 		User remoteUser = null;			
 		if (activity instanceof Follow) {
 			
-			if (auth==null) {
+			if (auth.getPrincipal() instanceof User) {
+				remoteUser = (User)auth.getPrincipal();
+			} else {
 				//We need to create a user now
 				remoteUser = createNewUser(actor).getUser();
-			} else {
-				remoteUser = (User)auth.getPrincipal();
 			}
 			
 			status = handleFollow(username, (Follow) activity, profileUser, remoteUser, actor);

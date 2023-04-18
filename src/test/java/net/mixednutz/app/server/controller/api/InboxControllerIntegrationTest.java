@@ -29,10 +29,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.w3c.activitypub.util.ProblemHandler;
 import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.ActorImpl;
@@ -211,6 +214,98 @@ public class InboxControllerIntegrationTest {
 		Follower follower = followers.get(0);
 		assertFalse(follower.isPending()); 
 		assertEquals("sally",follower.getFollower().getUsername());
+	}
+	
+	@Transactional
+	@Test
+	public void testGoneUser() throws Exception {
+		setupAdminUser();
+				
+		ActorImpl remoteActor = remoteActor();
+		KeyPair remoteUserKeyPair = HttpSignaturesUtil.generateKeyPair();
+		remoteActor.setPublicKey(new PublicKey("main-key", remoteActor.getId(),
+				HttpSignaturesUtil.publicKeyToPem(remoteUserKeyPair.getPublic())));
+		when(activityPubClientManager.getActor(eq(remoteActor.getId()))).thenThrow(
+				HttpClientErrorException.create(HttpStatus.GONE, URI_PREFIX, null, null, null));
+		
+		
+		activityPubManager.getActorUri("admin");
+		
+		Follow follow = new Follow();
+		activityPubManager.initRoot(follow);
+		follow.setSummary("Sally follows Admin");
+		follow.setActor(new LinkImpl(remoteActor.getId()));
+		follow.setObject(new LinkImpl(activityPubManager.getActorUri("admin")));
+		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.addHandler(new ProblemHandler());
+		System.out.println(
+				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(follow));
+			
+		
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(ActivityImpl.APPLICATION_ACTIVITY);
+		HttpSignaturesUtil.signRequest(
+				URI.create("https://andrewfesta.com"+URI_PREFIX+"/admin/inbox"), 
+				HttpMethod.POST, headers, mapper.writeValueAsBytes(follow), 
+				remoteUserKeyPair.getPrivate(), "https://example.com/sally#main-key");
+		
+		headers.setHost(new InetSocketAddress(InetAddress.getByName("andrewfesta.com"),0));
+		
+		mockMvc.perform(post(URI_PREFIX+"/admin/inbox")
+				.content(mapper.writeValueAsBytes(follow))
+				.headers(headers)
+				.contentType(ActivityImpl.APPLICATION_ACTIVITY)
+				.secure(true))
+			.andExpect(status().isBadRequest())
+			.andDo(print());
+	}
+	
+	@Transactional
+	@Test
+	public void testBadServer() throws Exception {
+		setupAdminUser();
+				
+		ActorImpl remoteActor = remoteActor();
+		KeyPair remoteUserKeyPair = HttpSignaturesUtil.generateKeyPair();
+		remoteActor.setPublicKey(new PublicKey("main-key", remoteActor.getId(),
+				HttpSignaturesUtil.publicKeyToPem(remoteUserKeyPair.getPublic())));
+		when(activityPubClientManager.getActor(eq(remoteActor.getId()))).thenThrow(
+				HttpServerErrorException.create(HttpStatus.SERVICE_UNAVAILABLE, URI_PREFIX, null, null, null));
+		
+		
+		activityPubManager.getActorUri("admin");
+		
+		Follow follow = new Follow();
+		activityPubManager.initRoot(follow);
+		follow.setSummary("Sally follows Admin");
+		follow.setActor(new LinkImpl(remoteActor.getId()));
+		follow.setObject(new LinkImpl(activityPubManager.getActorUri("admin")));
+		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.addHandler(new ProblemHandler());
+		System.out.println(
+				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(follow));
+			
+		
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(ActivityImpl.APPLICATION_ACTIVITY);
+		HttpSignaturesUtil.signRequest(
+				URI.create("https://andrewfesta.com"+URI_PREFIX+"/admin/inbox"), 
+				HttpMethod.POST, headers, mapper.writeValueAsBytes(follow), 
+				remoteUserKeyPair.getPrivate(), "https://example.com/sally#main-key");
+		
+		headers.setHost(new InetSocketAddress(InetAddress.getByName("andrewfesta.com"),0));
+		
+		mockMvc.perform(post(URI_PREFIX+"/admin/inbox")
+				.content(mapper.writeValueAsBytes(follow))
+				.headers(headers)
+				.contentType(ActivityImpl.APPLICATION_ACTIVITY)
+				.secure(true))
+			.andExpect(status().isBadRequest())
+			.andDo(print());
 	}
 	
 	private void setupAdminUser() {
