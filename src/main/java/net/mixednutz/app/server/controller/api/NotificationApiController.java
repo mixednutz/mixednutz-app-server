@@ -15,6 +15,7 @@ import net.mixednutz.api.model.INotification;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest.Direction;
 import net.mixednutz.app.server.entity.User;
+import net.mixednutz.app.server.manager.NotificationManager;
 import net.mixednutz.app.server.manager.NotificationTimelineManager;
 
 
@@ -28,6 +29,14 @@ public class NotificationApiController {
 	@Autowired
 	private NotificationTimelineManager notificationTimelineManager;
 	
+	@Autowired
+	private NotificationManager notificationManager;
+	
+	@RequestMapping(value="/markAllAsRead", method = RequestMethod.POST)
+	public @ResponseBody String markAsRead(@AuthenticationPrincipal User user) {
+		notificationManager.markAllAsRead(user);
+		return "Success";
+	}
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public @ResponseBody IPage<? extends INotification,Instant> getNotificationTimeline(
