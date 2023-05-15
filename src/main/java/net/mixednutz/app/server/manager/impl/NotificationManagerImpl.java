@@ -14,6 +14,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -249,6 +250,11 @@ public class NotificationManagerImpl implements NotificationManager {
 		lookupFollowNotifications(user, profileUser)
 			.forEach(notif->notifications.add(notif));
 		notificationRepository.deleteAll(notifications);
+	}
+	
+	@Transactional
+	public void markAllAsRead(User user) {
+		notificationRepository.deleteByUserId(user.getUserId());
 	}
 
 	@Override

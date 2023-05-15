@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.w3c.activitystreams.model.ActorImpl;
 
 import net.mixednutz.api.activitypub.client.ActivityPubClientManager;
@@ -52,6 +52,9 @@ public class SignedHttpHeaderAuthenticationProvider implements AuthenticationPro
 					} catch (HttpClientErrorException.Gone e) {
 						LOG.info("Actor is Gone: {}", actorURI);
 						return null;
+					} catch (HttpServerErrorException e) {
+						LOG.info("Cant verify actor from server: {}", actorURI);
+						return null;
 					}
 					ctx.actor = actor;
 					
@@ -62,18 +65,26 @@ public class SignedHttpHeaderAuthenticationProvider implements AuthenticationPro
 							actor.getPublicKey().getPublicKeyPem());
 				});
 		
+		if (ctx.actor==null) {
+			LOG.info("Signature unable to be verified for {}",authentication.getPrincipal());
+			return authentication;
+		}
+		
 		LOG.info("Signature verified for {}",authentication.getPrincipal());
 		Optional<UserProfile> userProfile = userProfileRepository.
 				findOneByActivityPubActorUri(ctx.actor.getId().toString());
-					
+						
 		if (userProfile.isPresent()) {
 			LOG.info("User {} exists for {}",
 					userProfile.get().getUser().getUsername(), authentication.getPrincipal());
-			return this.createSuccessAuthentication(ctx.actor.getId().toString(), 
+			return createSuccessAuthentication(ctx.actor.getId().toString(), 
 					authentication, userProfile.get().getUser());
 		}
-		return new AnonymousAuthenticationToken(ctx.actor.getId().toString(), ctx.actor, List.of(new Role(null, "USER_ROLE")));
 		
+		LOG.info("Actor {} is not a current user",
+				ctx.actor.getId());
+		return createSuccessNewUserAuthentication(ctx.actor.getId().toString(), 
+				authentication);
 	}
 	
 	protected Authentication createSuccessAuthentication(Object principal, Authentication authentication,
@@ -82,6 +93,14 @@ public class SignedHttpHeaderAuthenticationProvider implements AuthenticationPro
 				authentication.getCredentials(), List.of(new Role(user, "USER_ROLE")));
 		result.setDetails(authentication.getDetails());
 		LOG.debug("Authenticated user");
+		return result;
+	}
+	
+	protected Authentication createSuccessNewUserAuthentication(Object principal, Authentication authentication) {
+		UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(principal,
+				authentication.getCredentials(), List.of(new Role(null, "USER_ROLE")));
+		result.setDetails(authentication.getDetails());
+		LOG.debug("Authenticated new user");
 		return result;
 	}
 	
