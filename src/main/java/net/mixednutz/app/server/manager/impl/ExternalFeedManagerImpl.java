@@ -571,6 +571,10 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 
 		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);
+		if (provider==null) {
+			LOG.warn("Provider for {} not found",creds.getProviderId());
+			return null;
+		}
 		
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
@@ -604,9 +608,12 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 
 		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
+		if (provider==null) {
+			LOG.warn("Provider for {} not found",creds.getProviderId());
+			return null;
+		}
 		
 		MixednutzClient api = provider.getApi(creds);
-		
 		if (api.getUserClient()==null) {
 			return null;
 		}
