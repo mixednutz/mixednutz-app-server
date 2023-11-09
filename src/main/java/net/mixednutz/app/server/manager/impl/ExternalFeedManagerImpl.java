@@ -92,7 +92,12 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		final Map<INetworkInfoSmall, List<AbstractFeed>> newMap = new LinkedHashMap<>();
 		for (Entry<String, List<AbstractFeed>> entry: map.entrySet()) {
 			ApiProvider<?, ?> provider = apiProviderRegistry.getSocialNetworkClient(entry.getKey());
-			newMap.put(provider.getNetworkInfo(), entry.getValue());
+			if (provider!=null) {
+				newMap.put(provider.getNetworkInfo(), entry.getValue());
+			} else {
+				LOG.warn("Unable to find provider for {}", entry.getKey());
+			}
+			
 		}
 		return newMap;
 	}

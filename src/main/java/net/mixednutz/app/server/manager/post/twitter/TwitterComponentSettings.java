@@ -3,11 +3,13 @@ package net.mixednutz.app.server.manager.post.twitter;
 import java.util.Collections;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
 import net.mixednutz.app.server.entity.ComponentSettings;
 
 @Component
+@ConditionalOnClass(name="net.mixednutz.api.TwitterConfig")
 public class TwitterComponentSettings implements ComponentSettings {
 
 	@Override
