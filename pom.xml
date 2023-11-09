@@ -106,11 +106,11 @@
 	
 		<!-- MixedNutz API -->
 		
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.mixednutz</groupId>
 			<artifactId>mixednutz-java-api-twitter</artifactId>
 			<version>${mixednutz-java-api-twitter.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>net.mixednutz</groupId>
 			<artifactId>mixednutz-java-api-discord</artifactId>
