@@ -1,6 +1,6 @@
 package org.w3c.activitypub;
 
-import static net.mixednutz.api.hostmeta.server.HostMetaSettings.HOSTMETA_ENDPOINT;
+import static org.ietf.hostmeta.server.HostMetaSettings.HOSTMETA_ENDPOINT;
 
 import java.io.StringWriter;
 
@@ -15,6 +15,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.ietf.hostmeta.server.HostMetaServer;
+import org.ietf.hostmeta.server.HostMetaServer.Xrd;
+import org.ietf.hostmeta.server.HostMetaSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import net.mixednutz.api.hostmeta.server.HostMetaServer;
-import net.mixednutz.api.hostmeta.server.HostMetaServer.Xrd;
-import net.mixednutz.api.hostmeta.server.HostMetaSettings;
 
 @Controller
 public class HostMetaController {

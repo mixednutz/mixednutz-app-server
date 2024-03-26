@@ -8,7 +8,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import net.mixednutz.api.nodeinfo.server.NodeinfoSchema;
+import net.mixednutz.api.nodeinfo.server.NodeinfoSchemaImpl;
+import software.diaspora.nodeinfo.server.NodeinfoSchema;
 
 @Configuration
 @ConfigurationProperties(prefix="nodeinfo")
@@ -45,7 +46,7 @@ public class NodeInfoConfig {
 		
 		setup();
 		
-		NodeinfoSchema schema = new NodeinfoSchema();
+		NodeinfoSchemaImpl schema = new NodeinfoSchemaImpl();
 		schema.getSoftware().put("version",software.version);
 		if (software.repository!=null) {
 			schema.getSoftware().put("repository",software.repository);

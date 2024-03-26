@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.ietf.webfinger.client.WebfingerClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.w3c.activitystreams.model.ActivityImpl;
 import org.w3c.activitystreams.model.ActorImpl;
 import org.w3c.activitystreams.model.BaseObjectOrLink;
 import org.w3c.activitystreams.model.activity.Accept;
+import org.w3c.activitystreams.model.activity.Create;
 import org.w3c.activitystreams.model.activity.Delete;
 import org.w3c.activitystreams.model.activity.Follow;
 import org.w3c.activitystreams.model.activity.Undo;
@@ -38,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.mixednutz.api.activitypub.ActivityPubManager;
 import net.mixednutz.api.activitypub.client.ActivityPubClientManager;
-import net.mixednutz.api.webfinger.client.WebfingerClient;
 import net.mixednutz.app.server.controller.api.ApiFollowerController;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.User;
@@ -171,10 +172,12 @@ public class InboxController {
 			status = handleUndo(username, (Undo)activity, profileUser, remoteUser, actor);
 		} else if (activity instanceof Update) {
 			status = handleUpdate((Update)activity);
+		} else if (activity instanceof Create) {
+			status = handleCreate((Create)activity);
 		} else {
 			LOG.warn("Unhandled Activity Type: {}", activity.getType());
 		}
-		
+				
 		return new ResponseEntity<String>(status);
 	}
 	
@@ -197,7 +200,7 @@ public class InboxController {
 				.contains(followerController.follow(username, remoteUser))) {
 			
 			URI inbox = actor.getInbox();
-			Accept accept = apManager.toAccept(username, follow);
+			Accept accept = apManager.toAccept(username, actor.getId(), follow);
 			
 			apClient.sendActivity(inbox, accept, localUser);
 			
@@ -218,7 +221,7 @@ public class InboxController {
 		if (object instanceof Follow) {
 			followerController.unfollow(username, remoteUser);
 			
-			Accept accept = apManager.toAccept(username, undo);
+			Accept accept = apManager.toAccept(username, actor.getId(), undo);
 			
 			apClient.sendActivity(inbox, accept, localUser);
 			
@@ -242,6 +245,18 @@ public class InboxController {
 		}
 		
 		return HttpStatus.NOT_FOUND;
+	}
+	protected HttpStatus handleCreate(Create create) {
+		// Cheeck if its public
+		
+		//Check duplicate
+		
+		
+		//delegate to callback
+		
+		
+		// how am i going to do this?
+		return HttpStatus.OK;
 	}
 	protected HttpStatus handleUpdate(Update update) {
 		// Not implemented yet

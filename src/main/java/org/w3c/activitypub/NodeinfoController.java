@@ -5,10 +5,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import net.mixednutz.api.nodeinfo.server.NodeinfoResponse;
-import net.mixednutz.api.nodeinfo.server.NodeinfoSchema;
-import net.mixednutz.api.nodeinfo.server.NodeinfoServer;
-import net.mixednutz.api.nodeinfo.server.NodeinfoSettings;
+import software.diaspora.nodeinfo.server.NodeinfoResponse;
+import software.diaspora.nodeinfo.server.NodeinfoSchema;
+import software.diaspora.nodeinfo.server.NodeinfoServer;
+import software.diaspora.nodeinfo.server.NodeinfoSettings;
+
 
 @Controller
 public class NodeinfoController {

@@ -10,7 +10,11 @@ import org.w3c.activitypub.util.ProblemHandler;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Configuration
-@ComponentScan("org.w3c.activitypub")
+@ComponentScan({
+	"org.w3c.activitypub",
+	"org.ietf.hostmeta",
+	"org.ietf.webfinger",
+	"software.diaspora.nodeinfo"})
 public class ActivityPubConfig {
 	
 	
