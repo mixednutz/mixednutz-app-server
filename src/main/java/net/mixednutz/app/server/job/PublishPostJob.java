@@ -69,8 +69,13 @@ public class PublishPostJob {
 			InternalTimelineElement exportableEntity = 
 					apiManager.toTimelineElement(post, null, networkInfo.getBaseUrl());
 			
-			activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreateNote(
-					exportableEntity, post.getAuthor().getUsername()));
+			try {
+				activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreateNote(
+						exportableEntity, post.getAuthor().getUsername()));
+			} catch (Exception e) {
+				// Log and swallow error
+				LOGGER.error("Unable to cross activitypub.", e);
+			}
 			
 			String[] tags = null;
 			if (exportableEntity.getTags()!=null) {
