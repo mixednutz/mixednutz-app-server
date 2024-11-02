@@ -103,10 +103,10 @@ public class ExternalContentManagerImpl implements ExternalContentManager {
 				} else {
 					this.urlLookups.put(whitelisted.getName(),urlLookup);
 				}
-				LOG.debug("Registered Oembed Whitelist Pattern for {} : {} {}",
-						whitelisted.getDescription(), whitelisted.getUrlPattern(), whitelisted.getOembedUrlPattern());
+				LOG.debug("Registered Embed Whitelist Pattern for {} : {} {}",
+						whitelisted.getDescription(), whitelisted.getUrlPattern(), whitelisted.getUrlPattern());
 			} catch (PatternSyntaxException e) {
-				LOG.warn("Unable to register Oembed Whitelist Pattern for "+
+				LOG.warn("Unable to register Embed Whitelist Pattern for "+
 						whitelisted.getName()+" : "+whitelisted.getUrlPattern(), e);
 			}
 			
