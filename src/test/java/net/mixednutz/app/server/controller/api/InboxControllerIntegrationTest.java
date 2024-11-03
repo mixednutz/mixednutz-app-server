@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,7 +79,7 @@ import net.mixednutz.app.server.util.HttpSignaturesUtil;
 		"spring.mail.host=smtp.mail.yahoo.com",
 		
 })
-//@Disabled
+@Disabled
 public class InboxControllerIntegrationTest {
 
 	@PersistenceContext
