@@ -505,7 +505,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		ipost.setUrl(url);
 		ipost.setTags(tags);
 		if (inReplyTo!=null) {
-			ipost.setInReplyTo(inReplyTo.getElement().getProviderId());
+			ipost.setInReplyTo(inReplyTo.getElement().getReference());
 		}
 		
 		ITimelineElement timelineElement = post(feed, ipost);

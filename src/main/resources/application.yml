@@ -113,6 +113,18 @@ mixednutz:
       default-channel-id: ${DISCORD_CHANNEL_ID}
 
 ---
+# Optionally link up with Bluesky
+spring:
+  config.activate.on-profile: bluesky
+  
+mixednutz:
+  social: 
+    bluesky:
+      handle: ${BLUESKY_HANDLE}
+      password: ${BLUESKY_PASSWORD}
+      pdsHost: ${BLUESKY_PDS_HOST}
+
+---
 spring:
   config.activate.on-profile: ssl
   
