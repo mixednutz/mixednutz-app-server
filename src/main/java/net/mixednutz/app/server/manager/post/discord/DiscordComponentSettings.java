@@ -3,11 +3,13 @@ package net.mixednutz.app.server.manager.post.discord;
 import java.util.Collections;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
 import net.mixednutz.app.server.entity.ComponentSettings;
 
 @Component
+@ConditionalOnClass(name="net.mixednutz.api.DiscordConfig")
 public class DiscordComponentSettings implements ComponentSettings {
 
 	@Override

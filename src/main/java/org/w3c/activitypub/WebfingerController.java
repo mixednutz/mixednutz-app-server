@@ -1,9 +1,12 @@
 package org.w3c.activitypub;
 
-import static net.mixednutz.api.webfinger.WebfingerSettings.WEBFINGER_ENDPOINT;
+import static org.ietf.webfinger.WebfingerSettings.WEBFINGER_ENDPOINT;
 
 import java.net.URI;
 
+import org.ietf.webfinger.WebfingerResponse;
+import org.ietf.webfinger.WebfingerResponse.WebfingerError;
+import org.ietf.webfinger.server.WebfingerServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.mixednutz.api.webfinger.WebfingerResponse;
-import net.mixednutz.api.webfinger.WebfingerResponse.WebfingerError;
-import net.mixednutz.api.webfinger.server.WebfingerServer;
 
 @Controller
 public class WebfingerController {

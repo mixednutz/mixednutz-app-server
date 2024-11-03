@@ -40,6 +40,11 @@ public class ExternalContentManagerImplIntegrationTest {
 		
 		List<OembedFilterAllowlist> whitelist = List.of(
 				new OembedFilterAllowlist(
+						"self","Self",
+						"^https?:\\/\\/?(www\\.)?andrewfesta.com\\/.*",
+						"^(http|https):\\/\\/?(www\\.)?andrewfesta.com\\/oembed.*",
+						"https://andrewfesta.com/oembed?url={url}",null),
+				new OembedFilterAllowlist(
 						"twitter","Twitter",
 						"^https?:\\/\\/?(www\\.)?twitter.com\\/(?!i)(?<username>.*)\\/status\\/(?<id>[0-9]*)",
 						"^(http|https):\\/\\/?(publish\\.)?twitter.com\\/oembed.*",
@@ -219,6 +224,27 @@ public class ExternalContentManagerImplIntegrationTest {
 			OembedRich rich = (OembedRich) obj.getOembed();
 			System.out.println(rich.getHtml());
 		});
+			
+	}
+	
+	@Disabled
+	@Test
+	public void testlookupMetadata_External() {
+
+		ExternalContentManagerImpl manager = new ExternalContentManagerImpl(oembedFilterWhitelistRepository, Optional.empty(), List.of());
+		manager.loadWhitelist();
+		
+		ExtractedMetadata url= manager.lookupMetadata(
+				"https://andrewfesta.com/andy/journal/2022/10/18/test"
+				);
+		
+		System.out.println("URL:             "+url.getUrl());
+		System.out.println("ContentType:     "+url.getContentType());
+		System.out.println("Title:           "+url.getTitle());
+		System.out.println("oEmbed:          "+url.getOembedUrl());
+		System.out.println("oEmbed Title:    "+url.getOembedTitle());
+		System.out.println("Image Url:       "+url.getImageUrl());
+		System.out.println("Description:     "+url.getDescription());
 						
 	}
 	

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.social.mixednutz.v1_9.connect.MixednutzConnectionFactory;
-import org.springframework.social.twitter4j.connect.TwitterConnectionFactory;
+//import org.springframework.social.twitter4j.connect.TwitterConnectionFactory;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -68,8 +68,8 @@ public class FeedPollerIntegrationTest {
 	@Autowired
 	MixednutzConnectionFactory mnConnFactory;
 	
-	@Autowired
-	TwitterConnectionFactory twitterFactory;
+//	@Autowired
+//	TwitterConnectionFactory twitterFactory;
 	
 	@PersistenceContext
 	EntityManager em;
@@ -94,21 +94,21 @@ public class FeedPollerIntegrationTest {
 		return externalFeedRepository.save(feed);
 	}
 	
-	private AbstractFeed createTwitterFeed() {
-		
-		LOG.info("Creating feed for {}", twitterFactory.getProviderId());
-		//Save credentials
-		Oauth1Credentials creds = new Oauth1Credentials();
-		creds.setProviderId(twitterFactory.getProviderId());
-		creds.setAccessToken(TWITTER_ACCESS_ID);
-		creds.setSecret(TWITTER_ACCESS_SECRET);
-		creds = credentialsRepository.save(creds);
-				
-		Oauth1AuthenticatedFeed feed = new Oauth1AuthenticatedFeed();
-		feed.setProviderId(twitterFactory.getProviderId());
-		feed.setCredentials(creds);
-		return externalFeedRepository.save(feed);
-	}
+//	private AbstractFeed createTwitterFeed() {
+//		
+//		LOG.info("Creating feed for {}", twitterFactory.getProviderId());
+//		//Save credentials
+//		Oauth1Credentials creds = new Oauth1Credentials();
+//		creds.setProviderId(twitterFactory.getProviderId());
+//		creds.setAccessToken(TWITTER_ACCESS_ID);
+//		creds.setSecret(TWITTER_ACCESS_SECRET);
+//		creds = credentialsRepository.save(creds);
+//				
+//		Oauth1AuthenticatedFeed feed = new Oauth1AuthenticatedFeed();
+//		feed.setProviderId(twitterFactory.getProviderId());
+//		feed.setCredentials(creds);
+//		return externalFeedRepository.save(feed);
+//	}
 	
 	
 	@Test
@@ -127,7 +127,7 @@ public class FeedPollerIntegrationTest {
 	
 	@Test
 	public void testPollTwitter() {
-		createTwitterFeed();
+//		createTwitterFeed();
 		
 		em.flush();
 		em.clear();

@@ -92,7 +92,12 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		final Map<INetworkInfoSmall, List<AbstractFeed>> newMap = new LinkedHashMap<>();
 		for (Entry<String, List<AbstractFeed>> entry: map.entrySet()) {
 			ApiProvider<?, ?> provider = apiProviderRegistry.getSocialNetworkClient(entry.getKey());
-			newMap.put(provider.getNetworkInfo(), entry.getValue());
+			if (provider!=null) {
+				newMap.put(provider.getNetworkInfo(), entry.getValue());
+			} else {
+				LOG.warn("Unable to find provider for {}", entry.getKey());
+			}
+			
 		}
 		return newMap;
 	}
@@ -500,7 +505,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		ipost.setUrl(url);
 		ipost.setTags(tags);
 		if (inReplyTo!=null) {
-			ipost.setInReplyTo(inReplyTo.getElement().getProviderId());
+			ipost.setInReplyTo(inReplyTo.getElement().getReference());
 		}
 		
 		ITimelineElement timelineElement = post(feed, ipost);
@@ -566,6 +571,10 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 
 		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);
+		if (provider==null) {
+			LOG.warn("Provider for {} not found",creds.getProviderId());
+			return null;
+		}
 		
 		MixednutzClient api = provider.getApi(creds);
 		IUserSmall user = api.getUserClient().getUser();
@@ -599,9 +608,12 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 
 		ApiProvider<MixednutzClient,IOauth1Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth1Credentials.class);
+		if (provider==null) {
+			LOG.warn("Provider for {} not found",creds.getProviderId());
+			return null;
+		}
 		
 		MixednutzClient api = provider.getApi(creds);
-		
 		if (api.getUserClient()==null) {
 			return null;
 		}

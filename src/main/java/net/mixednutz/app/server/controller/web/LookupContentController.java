@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.manager.ExternalContentManager;
@@ -47,6 +48,19 @@ public class LookupContentController {
 		model.addAttribute("content", xcontent);
 		
 		return "lookup/embed";
+	}
+	
+	@RequestMapping(value="/embed/metadata", method = RequestMethod.GET)
+	public @ResponseBody ExtractedMetadata getMetadata(
+			@RequestParam("url") String url, 
+			Model model) {
+		ExtractedMetadata xcontent = externalContentManager.lookupMetadata(url);
+		
+		if (xcontent==null) {
+			throw new ResourceNotFoundException("Resource "+url+" not found");
+		}
+				
+		return xcontent;
 	}
 
 }
