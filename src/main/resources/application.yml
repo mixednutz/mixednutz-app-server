@@ -123,6 +123,7 @@ mixednutz:
       handle: ${BLUESKY_HANDLE}
       password: ${BLUESKY_PASSWORD}
       pdsHost: ${BLUESKY_PDS_HOST}
+      embedMetadataServiceUrl: https://andrewfesta.com/embed/metadata?url=
 
 ---
 spring:
