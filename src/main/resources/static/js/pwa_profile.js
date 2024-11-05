@@ -212,6 +212,11 @@ page.setupProfile = function() {
 		} else {
 			$('.socmed-author-twitter').remove();
 		}
+		if (page.ownerBundle.user.profileData.blueskyHandle!=null) {
+			$('.socmed-author-bluesky a').attr('href','https://bsky.app/profile/'+page.ownerBundle.user.profileData.blueskyHandle);
+		} else {
+			$('.socmed-author-bluesky').remove();
+		}
 		if (page.ownerBundle.user.profileData.discordInviteCode!=null) {
 			$('.socmed-author-discord a').attr('href','https://discord.gg/'+page.ownerBundle.user.profileData.discordInviteCode);
 		} else {

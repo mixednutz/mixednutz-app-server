@@ -114,6 +114,9 @@ public class UserProfileController {
 		if (notEquals(form.getTwitterAccountId(), profile.getTwitterAccountId())) {
 			profile.setTwitterAccountId(form.getTwitterAccountId());
 		}
+		if (notEquals(form.getBlueskyHandle(), profile.getBlueskyHandle())) {
+			profile.setBlueskyHandle(form.getBlueskyHandle());
+		}
 		if (notEquals(form.getDiscordInviteCode(), profile.getDiscordInviteCode())) {
 			profile.setDiscordInviteCode(form.getDiscordInviteCode());
 		}
@@ -161,6 +164,7 @@ public class UserProfileController {
 		private String pronouns;
 		private String website;
 		private Integer twitterAccountId;
+		private String blueskyHandle;
 		private String discordInviteCode;
 		private String deviantArtUsername;
 		private String fediverseUsername;
@@ -177,6 +181,7 @@ public class UserProfileController {
 			pronouns = profile.getPronouns();
 			website = profile.getWebsite();
 			twitterAccountId = profile.getTwitterAccountId();
+			blueskyHandle = profile.getBlueskyHandle();
 			discordInviteCode = profile.getDiscordInviteCode();
 			deviantArtUsername = profile.getDeviantArtUsername();
 			fediverseUsername = profile.getFediverseUsername();
@@ -228,6 +233,12 @@ public class UserProfileController {
 		}
 		public void setTwitterAccountId(Integer twitterAccountId) {
 			this.twitterAccountId = twitterAccountId;
+		}
+		public String getBlueskyHandle() {
+			return blueskyHandle;
+		}
+		public void setBlueskyHandle(String blueskyHandle) {
+			this.blueskyHandle = blueskyHandle;
 		}
 		public String getDiscordInviteCode() {
 			return discordInviteCode;

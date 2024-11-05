@@ -394,6 +394,10 @@ public class ApiManagerImpl implements ApiManager{
 			return userProfile.getTwitterAccount();
 		}
 		
+		public String getBlueskyHandle() {
+			return userProfile.getBlueskyHandle();
+		}
+
 		public String getDiscordInviteCode() {
 			return userProfile.getDiscordInviteCode();
 		}
