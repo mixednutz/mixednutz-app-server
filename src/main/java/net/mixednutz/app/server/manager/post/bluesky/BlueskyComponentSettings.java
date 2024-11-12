@@ -1,5 +1,6 @@
 package net.mixednutz.app.server.manager.post.bluesky;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -28,8 +29,7 @@ public class BlueskyComponentSettings implements ComponentSettings {
 
 	@Override
 	public Map<String, ?> getSettings() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptyMap();
 	}
 
 	@Override

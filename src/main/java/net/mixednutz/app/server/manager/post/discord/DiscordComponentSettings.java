@@ -30,7 +30,6 @@ public class DiscordComponentSettings implements ComponentSettings {
 	
 	@Override
 	public Map<String, ?> getSettings() {
-		// TODO Auto-generated method stub
 		return Collections.emptyMap();
 	}
 
