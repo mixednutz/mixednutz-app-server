@@ -3,6 +3,8 @@ package net.mixednutz.app.server.job;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,8 @@ public class PublishPostJob {
 	protected ActivityPubClientManager activityPubClient;
 	
 	private static NetworkInfo networkInfo;
+	
+	private ExecutorService executor = Executors.newFixedThreadPool(2);
 	
 	@Autowired
 	public void setNetworkInfo(NetworkInfo networkInfo) {
@@ -98,29 +102,37 @@ public class PublishPostJob {
 									inReplyToCrosspost.getId());
 						}
 					}	
+					final String[] finalTags = tags;
+					final ExternalFeedContent finalInReplyToCrosspost=null;
 					
-					try {
-						externalFeedManager.crosspost(feed, 
-								exportableEntity.getTitle(), 
-								exportableEntity.getUrl(), 
-								tags, inReplyToCrosspost,
-								scheduledPost.getExternalFeedData())
-						.ifPresent(crosspost->{
-							if (post instanceof CrosspostsAware) {
-								CrosspostsAware crosspostAware = (CrosspostsAware) post;
-								if (crosspostAware.getCrossposts()==null) {
-									crosspostAware.setCrossposts(new HashSet<>());
+					executor.submit(()->{
+						try {
+							//Sleep 2sec before crossposting
+							Thread.sleep(2000);
+							
+							externalFeedManager.crosspost(feed, 
+									exportableEntity.getTitle(), 
+									exportableEntity.getUrl(), 
+									finalTags, finalInReplyToCrosspost,
+									scheduledPost.getExternalFeedData())
+							.ifPresent(crosspost->{
+								if (post instanceof CrosspostsAware) {
+									CrosspostsAware crosspostAware = (CrosspostsAware) post;
+									if (crosspostAware.getCrossposts()==null) {
+										crosspostAware.setCrossposts(new HashSet<>());
+									}
+									crosspostAware.getCrossposts().add(crosspost);
+								} else {
+									LOGGER.warn("Unable to crosspost to {} {} because {} doesn't implement CrosspostsAware",
+											feed.getType(),feed.getFeedId(),post.getClass());
 								}
-								crosspostAware.getCrossposts().add(crosspost);
-							} else {
-								LOGGER.warn("Unable to crosspost to {} {} because {} doesn't implement CrosspostsAware",
-										feed.getType(),feed.getFeedId(),post.getClass());
-							}
-						});
-					} catch (Exception e) {
-						// Log and swallow error
-						LOGGER.error("Unable to crosspost to "+feed.getType()+" "+feed.getFeedId(), e);
-					}
+							});
+						} catch (Throwable e) {
+							// Log and swallow error
+							LOGGER.error("Unable to crosspost to "+feed.getType()+" "+feed.getFeedId(), e);
+						}
+					});
+					
 					
 				}
 			}
