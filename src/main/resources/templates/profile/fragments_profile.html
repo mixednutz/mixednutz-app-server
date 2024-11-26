@@ -139,7 +139,7 @@
 						<span class="socmed-author socmed-author-rss"><a th:href="@{|/rss/${author.username}|}" target="_blank" ><i class="fas fa-rss fa-2x"></i></a></span> 
 						<!--  <span class="socmed-author socmed-author-yahoo"><a href="#" target="_blank" ><i class="fa fa-yahoo fa-2x"></i></a></span> -->
 						<span th:if="${profile.twitterAccount!=null}" class="socmed-author socmed-author-twitter"><a th:href="@{|https://twitter.com/${profile.twitterAccount.username}|}" href="#" target="_blank" ><i class="fab fa-twitter fa-2x"></i></a></span>
-						<span th:if="${profile.blueskyHandle!=null}" class="socmed-author socmed-author-bluesky"><a th:href="@{|https://bsky.social/profile/${profile.blueskyHandle}|}" href="#" target="_blank" ><i class="fab fa-bluesky fa-2x"></i></a></span>
+						<span th:if="${profile.blueskyHandle!=null}" class="socmed-author socmed-author-bluesky"><a th:href="@{|https://bsky.app/profile/${profile.blueskyHandle}|}" href="#" target="_blank" ><i class="fab fa-bluesky fa-2x"></i></a></span>
 						<!-- <span th:if="${profile.instagramAccount!=null}" class="socmed-author socmed-author-instagram"><a th:href="@{|https://www.instagram.com/${profile.instagramAccount.instagramScreenname}|}" href="#" target="_blank" ><i class="fa fa-instagram fa-2x"></i></a></span>
 						<span class="socmed-author socmed-author-facebook"><a href="#" target="_blank" ><i class="fa fa-facebook fa-2x"></i></a></span>
 						<span class="socmed-author socmed-author-gplus"><a href="#" target="_blank" ><i class="fa fa-google-plus fa-2x"></i></a></span>
