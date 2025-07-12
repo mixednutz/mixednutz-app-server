@@ -17,6 +17,8 @@
 	
 	<meta name="_csrf" th:content="${_csrf.token}"/>
 	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	
+	<script th:replace="google_recaptcha :: script"></script>
 </head>
 <body>
 
@@ -26,7 +28,7 @@
 	
 	<p>Register to join <span th:text="#{site.title}">site.title</span>.</p>
 
-	<form th:action="@{/signup} " th:object="${user}" method="post">
+	<form th:action="@{/signup} " th:object="${user}" method="post" id="signup-form">
 	
 		<div class="username form-group required has-feedback">
 			<label for="username" th:text="#{form.username.label}">form.username.label</label>
@@ -49,8 +51,22 @@
 			<span class="message text-danger"></span>
 		</div>
 		
-		<input class="btn btn-success btn-lg disabled" type="submit" disabled="disabled" th:value="#{signup.user_new.form.submit}" value="signup.user_new.form.submit"/>
-	
+		<button class="btn btn-success-disabled btn-lg disabled" 
+			disabled="disabled" 
+			th:text="#{signup.user_new.form.submit}">signup.user_new.form.submit</button>
+		
+		<button class="g-recaptcha btn btn-success btn-lg" 
+            th:attr="data-sitekey=${captchaSettings.site}"
+	        data-callback='onSubmit' 
+	        data-action='submit'
+	        disabled="disabled" 
+	        th:text="#{signup.user_new.form.submit}">signup.user_new.form.submit</button>
+		
+		<script>		
+		   function onSubmit(token) {
+		     document.getElementById("signup-form").submit();
+		   }
+		 </script>
 	</form>
 	
 	</div>
@@ -97,13 +113,22 @@
 		}
     }
     function validate() {
+    	var usernameVal = $('form input[name="username"]').val();
+    	var passVal = $('form input[name="passwordRaw"]').val();
+		var confirmVal = $('form input[name="passwordConfirm"]').val();
+    	
     	//check for feedback and disable success button if needed
     	if ( $('.username.has-feedback').hasClass('has-error') || 
 				$('.passwordRaw.has-feedback').hasClass('has-error') || 
 				$('.passwordConfirm.has-feedback').hasClass('has-error')) {
-			$('.btn-success').prop("disabled",true).addClass('disabled');	 
+			$('.btn-success').hide();	 
+			$('.btn-success-disabled').show();	 
+    	} else if (usernameVal.length==0 || passVal.length==0 || confirmVal.length==0) {
+    		$('.btn-success').hide();	 
+			$('.btn-success-disabled').show();
 		} else {
-			$('.btn-success').prop("disabled",false).removeClass('disabled');
+			$('.btn-success').show();
+			$('.btn-success-disabled').hide();
 		}
     }
     
@@ -167,6 +192,7 @@
     	
     	validate();
     });
+    validate();
     /*]]>*/
     </script>
 

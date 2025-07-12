@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<body>
+ 
+	<script th:fragment="script" th:inline="javascript" src='https://www.google.com/recaptcha/api.js'></script>
+	
+	<div th:fragment="formField">
+          
+        <button class="g-recaptcha" 
+            th:attr="data-sitekey=${captchaSettings.site}"
+	        data-callback='onSubmit' 
+	        data-action='submit'>Submit</button>
+        
+        <span id="captchaError" class="alert alert-danger col-sm-4"
+          style="display:none"></span>
+	</div>
+  
+</body>
+  
+ </html>
