@@ -22,6 +22,7 @@ import net.mixednutz.app.server.entity.ResetPasswordToken;
 import net.mixednutz.app.server.entity.User;
 import net.mixednutz.app.server.entity.UserEmailAddress;
 import net.mixednutz.app.server.manager.ResetPasswordTokenManager;
+import net.mixednutz.app.server.manager.impl.CaptchaService;
 import net.mixednutz.app.server.repository.ResetPasswordTokenRepository;
 import net.mixednutz.app.server.repository.UserEmailAddressRepository;
 
@@ -47,19 +48,26 @@ public class UserController extends BaseUserController {
 	protected ResetPasswordTokenManager resetPasswordTokenManager;
 	@Autowired
 	protected ResetPasswordTokenRepository resetPasswordTokenRepository;
+	
+	@Autowired
+	protected CaptchaService captchaService;
 		
 	@RequestMapping(value={"/signup"}, method=RequestMethod.GET)
 	public String signupForm(Model model) {
 		User user = new User();
 		model.addAttribute(user);
+		model.addAttribute(captchaService.getSettings());
 		return USER_SIGNUP_FORM_VIEW;
 	}
 	
 	@RequestMapping(value={"/signup"}, method=RequestMethod.POST)
 	public String signup(@Valid User user, BindingResult result, 
 			@RequestParam(value="inviteKey", defaultValue="") String inviteKey,
+			@RequestParam(value="g-recaptcha-response", defaultValue="") String recaptchaResponse,
 			HttpServletRequest request,
 			SessionStatus sessionStatus) {
+		
+        captchaService.processResponse(recaptchaResponse);
 		
 		user = saveNewUser(user);
 		
