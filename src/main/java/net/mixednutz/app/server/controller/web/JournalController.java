@@ -76,6 +76,7 @@ public class JournalController extends BaseJournalController {
 	@RequestMapping(value="/journal/new", method = RequestMethod.POST, params="submit")
 	public String saveNew(@ModelAttribute(JournalFactory.MODEL_ATTRIBUTE) Journal journal, 
 //			@RequestParam("fgroup_id") Integer friendGroupId, 
+			@RequestParam(value="externalListId", required=false) String[] externalListId,
 			@RequestParam(value="group_id",required=false) Long groupId,
 			@RequestParam(value="externalFeedId", required=false) Long[] externalFeedId,
 			@RequestParam(value="tagsString", defaultValue="") String tagsString,
@@ -83,7 +84,7 @@ public class JournalController extends BaseJournalController {
 			@DateTimeFormat(iso=ISO.DATE_TIME) @RequestParam(value="localPublishDate", required=false) LocalDateTime localPublishDate,
 			@AuthenticationPrincipal User user, Model model, Errors errors,
 			NativeWebRequest request) {
-		journal = save(journal, groupId, externalFeedId, 
+		journal = save(journal, externalListId, groupId, externalFeedId, 
 				tagsString, emailFriendGroup, localPublishDate, user, request);
 
 		return "redirect:"+journal.getUri();
@@ -98,13 +99,15 @@ public class JournalController extends BaseJournalController {
 	public String updateModal(@ModelAttribute("journal") Journal journal, 
 			@PathVariable Long journalId, 
 //			@RequestParam("fgroup_id") Integer friendGroupId, 
-			@RequestParam(value="group_id",required=false) Integer groupId,
+			@RequestParam(value="externalListId", required=false) String[] externalListId,
+			@RequestParam(value="group_id",required=false) Long groupId,
+			@RequestParam(value="externalFeedId", required=false) Long[] externalFeedId,
 			@RequestParam(value="tagsString", defaultValue="") String tagsString,
 			@DateTimeFormat(iso=ISO.DATE_TIME) @RequestParam(value="localPublishDate", required=false) LocalDateTime localPublishDate,
 			@AuthenticationPrincipal User user, Model model, Errors errors) {
 		
-		Journal savedJournal = update(journal, journalId, groupId, 
-				tagsString, localPublishDate, user);
+		Journal savedJournal = update(journal, journalId, externalListId, groupId, 
+				externalFeedId, tagsString, localPublishDate, user);
 		
 		return "redirect:"+savedJournal.getUri();
 	}

@@ -405,6 +405,10 @@ public class ApiManagerImpl implements ApiManager{
 		public String getDeviantArtUsername() {
 			return userProfile.getDeviantArtUsername();
 		}
+		
+		public String getPatreonUri() {
+			return userProfile.getPatreonUri();
+		}
 				
 	}
 

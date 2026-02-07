@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,10 +37,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import net.mixednutz.api.client.MixednutzClient;
 import net.mixednutz.api.client.PostClient;
+import net.mixednutz.api.client.RoleClient;
 import net.mixednutz.api.client.TimelineClient;
 import net.mixednutz.api.client.UserClient;
 import net.mixednutz.api.core.model.PageBuilder;
 import net.mixednutz.api.core.provider.ApiProviderRegistry;
+import net.mixednutz.api.model.IExternalRole;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.api.model.IPage;
 import net.mixednutz.api.model.IPageRequest;
@@ -86,7 +89,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	
 	@Autowired
 	private ExternalAccountCredentialsManager externalAccountCredentialsManager;
-		
+			
 	public Map<INetworkInfoSmall, List<AbstractFeed>> feedsForUser(User user) {
 		final Map<String, List<AbstractFeed>> map = collate(externalFeedRepository.findByUser(user));
 		final Map<INetworkInfoSmall, List<AbstractFeed>> newMap = new LinkedHashMap<>();
@@ -457,7 +460,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	public Optional<ExternalFeedContent> crosspost(AbstractFeed feed, 
 			String text, String url, String[] tags, ExternalFeedContent inReplyTo, 
 			HttpServletRequest request) {
-		if (request!=null) {
+		if (request!=null && canPost(feed)) {
 			ExternalFeedContent content = crosspost(feed, text, url, tags, inReplyTo,
 					new ServletRequestParameterPropertyValues(request));
 			if (content!=null) {
@@ -525,6 +528,35 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	@Override
 	public Map<String, Object> referenceData(AbstractFeed feed) {
 		return withPostClient(feed, client->client.referenceDataForPosting());
+	}
+	
+	@Cacheable(value="externalListsAvailable")
+	@Override
+	public List<? extends IExternalRole> getExternalLists(AbstractFeed feed) {
+		return withRoleClient(feed, client->client.getAvailableRoles());
+	}
+	
+	@Cacheable(value="externalListsAssigned")
+	@Override
+	public List<? extends IExternalRole> getExternalListsUserIsOn(AbstractFeed feed) {
+		return withRoleClient(feed, client->{
+			if (client.hasRoles()) {
+				return client.getRolesAssigned();
+			}
+			return Collections.emptyList();
+		});
+	}
+
+
+	@Override
+	public Map<AbstractFeed, List<? extends IExternalRole>> getExternalVisibility(List<AbstractFeed> feeds, String[] externalListIdArray) {
+		//getExternalLists ensures a live list of available feed roles
+		List<String> externaListIdList = Arrays.asList(externalListIdArray);
+		
+		return feeds.stream()
+			.collect(Collectors.toMap(Function.identity(), feed->getExternalLists(feed).stream()
+					.filter(role->externaListIdList.contains(role.getId()))
+					.collect(Collectors.toList())));
 	}
 
 	protected IPage<? extends ITimelineElement, Object> getOauth1Timeline(
@@ -649,8 +681,15 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 
 		ApiProvider<MixednutzClient,IOauth2Credentials> provider = 
 				this.getProvider(creds, MixednutzClient.class, IOauth2Credentials.class);
+		if (provider==null) {
+			LOG.warn("Provider for {} not found",creds.getProviderId());
+			return null;
+		}
 		
 		MixednutzClient api = provider.getApi(creds);
+		if (api.getUserClient()==null) {
+			return null;
+		}
 		IUserSmall user = api.getUserClient().getUser();
 		if (user.isPrivate()) {
 			feed.setVisibility(VisibilityType.PRIVATE);
@@ -672,6 +711,20 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		}
 		
 		return page;
+	}
+	
+	/**
+	 * Does this feed's API support posting?
+	 * 
+	 * @param feed
+	 * @return
+	 */
+	protected boolean canPost(AbstractFeed feed) {
+		return withPostClient(feed, PostClient::canPost);
+	}
+	
+	protected boolean hasRole(AbstractFeed feed) {
+		return withRoleClient(feed, RoleClient::hasRoles);
 	}
 	
 	protected <P extends IPost> Optional<P> instantiatePost(Oauth1AuthenticatedFeed feed, 
@@ -837,6 +890,15 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		});
 	}
 	
+	protected <T> T withRoleClient(AbstractFeed feed, Function<RoleClient, T> function) {
+		return withMixednutzClient(feed, (api)->{
+			RoleClient roleClient = api.getRoleClient();
+			if (roleClient!=null) {
+				return function.apply(roleClient);
+			}
+			return null;
+		});
+	}
 	
 	
 	@Override

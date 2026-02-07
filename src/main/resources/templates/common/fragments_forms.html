@@ -46,6 +46,19 @@
 					th:field="*{visibility.visibilityType}" value='WORLD' /> 
 					<span th:text="#{form.visibility.visibilityType.WORLD.label}">WORLD.label</span></label>
 			</div>
+			<div class="radio">
+				<label><input tabindex='1' type='radio'
+					th:field="*{visibility.visibilityType}" value='EXTERNAL_LIST' /> 
+					<span th:text="#{form.visibility.visibilityType.EXTERNAL_LIST.label}">EXTERNAL_LIST.label</span>
+				</label>
+				<div class="externalLists">
+					<select class="form-control" name="externalListId" multiple="multiple">
+					<!--  
+						This is filled by pwa.js
+					-->
+					</select>
+				</div>
+			</div>
 		</div>
 
 		<div class="form-group" th:if="${showPublishDate}">
@@ -74,11 +87,18 @@
 			<div class="form-group externalFeedId">
 			</div>
 		</div>
+		<div th:if="${!showCrosspostOptions}" style="display:none;">
+			<!-- Hidden form so we can preserve externalFeedId in the request -->
+			<div class="externalFeedId">
+			</div>
+		</div>
+		
+		<!-- Reference Data -->
 		<div class="form-group channels" th:if="${showCrosspostOptions}">
 			<label>Channel:</label>
 			<select name="channelIdAsString">
 			<!--  
-				This is filled by pwa.js
+				This is filled by pwa_main.js, pwa_profile.js, or pwa_view.js
 			-->
 			</select>
 		</div>
@@ -107,6 +127,34 @@
 			// Immediate
 			$('[name=localPublishDate]').hide();
 		}
+	});
+	
+	if ($('[name=externalListId]').val()=="") {
+		$('[name=externalListId]').hide();
+	} else {
+		$('[name=externalListId]').show();
+	}
+	$('[name="visibility.visibilityType"]').on('change',function(){
+		if ($(this).val()=='EXTERNAL_LIST') {
+			$('[name=externalListId]').show();
+		} else {
+			$('[name=externalListId]').hide();
+			$('[name=externalListId]').val("");
+		}
+	});
+	
+	
+	if ($('[name="visibility.visibilityType"]:checked').val() == 'EXTERNAL_LIST') {
+		$('[name=externalListId]').show();
+	}
+	
+	$('[name=channelIdAsString]').on('change', function(){
+		var feedId = $(this).find('option:selected').data('feedId');
+		$('[name=externalFeedId][value='+feedId+']').prop('checked',true);
+	});
+	$('[name=externalListId]').on('change', function(){
+		var feedId = $(this).find('option:selected').data('feedId');
+		$('[name=externalFeedId][value='+feedId+']').prop('checked',true);
 	});
 	/*]]>*/
 	</script>

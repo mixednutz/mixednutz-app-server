@@ -126,6 +126,9 @@ public class UserProfileController {
 		if (notEquals(form.getFediverseUsername(), profile.getFediverseUsername())) {
 			profile.setFediverseUsername(form.getFediverseUsername());
 		}
+		if (notEquals(form.getPatreonUri(), profile.getPatreonUri())) {
+			profile.setPatreonUri(form.getPatreonUri());
+		}
 		profileRepository.save(profile);
 				
 		return "redirect:/"+currentUser.getUsername();
@@ -168,6 +171,7 @@ public class UserProfileController {
 		private String discordInviteCode;
 		private String deviantArtUsername;
 		private String fediverseUsername;
+		private String patreonUri;
 		
 		public ProfileForm() {
 			super();
@@ -185,6 +189,7 @@ public class UserProfileController {
 			discordInviteCode = profile.getDiscordInviteCode();
 			deviantArtUsername = profile.getDeviantArtUsername();
 			fediverseUsername = profile.getFediverseUsername();
+			patreonUri = profile.getPatreonUri();
 		}
 		public boolean isClearAvatar() {
 			return clearAvatar;
@@ -257,6 +262,12 @@ public class UserProfileController {
 		}
 		public void setFediverseUsername(String fediverseUsername) {
 			this.fediverseUsername = fediverseUsername;
+		}
+		public String getPatreonUri() {
+			return patreonUri;
+		}
+		public void setPatreonUri(String patreonUri) {
+			this.patreonUri = patreonUri;
 		}
 		
 	}
