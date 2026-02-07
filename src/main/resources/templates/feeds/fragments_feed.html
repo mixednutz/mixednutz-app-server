@@ -55,6 +55,28 @@
   		});
   	/*]]>*/
   	</script>
+  	
+  	
+  	<div th:fragment="deleteAccountForm_model">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+			<h4>Delete Feed</h4>
+		</div>
+		<form id="deleteAccount_form" th:action="@{|/feed/${chapter.series.id}/chapter/${chapter.id}/delete|}" th:object="${chapter}" method="post">
+		<div class="modal-body">
+			Are you sure you want to delete:
+			
+			<h4 th:text="${chapter.title}">title</h4>
+			<small>created on <span th:text="${chapter.dateCreated}">date</span></small>
+	
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-danger" type="submit" name="confirm">Yes, Delete Now</button>
+  			<button class="btn" type="button" data-dismiss="modal">Cancel</button>
+		</div>
+		</form>
+		
+	</div>
   
   
   </body>
