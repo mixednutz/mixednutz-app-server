@@ -9,28 +9,32 @@
   	<div th:fragment="newAccountForm_model">
   		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-			<h4>New Feed</h4>
+			<h4>Connect Account</h4>
 		</div>
 		<form th:action="@{|/credentials/new|}" th:object="${newaccount}" method="post"> 
 		
 		<div class="modal-body">
 			
 			<div class="form-group">
-				<label for="providerId">Feed Type</label>
-				<select id="providerId" th:field="*{providerId}" th:errorclass="error">
+				<label for="providerId">Account Type</label>
+				<select class="form-control" id="providerId" th:field="*{providerId}" th:errorclass="error">
 					<option 
 						th:each="opt:${accountTypes.entrySet()}"
 						th:value="${opt.key}" th:text="${opt.value}">Google</option>
 				</select>
+				<small class="form-text text-muted">After clicking 'Connect' you will be redirected to that service to authenticate.</small>
 			</div>
 			
-			<div class="form-group">
+			<div class="form-group" sec:authorize="hasRole('ROLE_ADMIN')" >
 				<label for="visibility">Visibility</label>
-				<select id="visibility" th:field="*{visibility}" th:errorclass="error">
+				<select class="form-control" id="visibility" th:field="*{visibility}" th:errorclass="error">
 					<option value="PRIVATE" selected="selected">Private to only you</option>
 					<option value="WORLD">World</option>
 				</select>
-				<small class="form-text text-muted">Will you let others see your posts from this feed?</small>
+				<small class="form-text text-muted">Will you let others see your public posts from this feed?</small>
+			</div>
+			<div class="form-group" sec:authorize="!hasRole('ROLE_ADMIN')" >
+				<input type="hidden" name="visibility" value="PRIVATE"/>
 			</div>
 				  		
 		</div>
