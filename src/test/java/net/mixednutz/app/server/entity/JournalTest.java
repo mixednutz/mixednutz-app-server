@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -237,9 +238,11 @@ public class JournalTest {
 		em.flush();
 		em.clear();
 		
+		List<String> externalListIds = Collections.emptyList();
+		
 		System.out.println(ZonedDateTime.now());
 		List<Journal> results = repository.getUsersPostsByDatePublishedLessThanEquals(
-				user2, user, ZonedDateTime.now(), PageRequest.of(0, 20));
+				user2, user, ZonedDateTime.now(), externalListIds, PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(4, results.size());
 		for (Journal j: results) {
@@ -247,7 +250,7 @@ public class JournalTest {
 		}
 		
 		results = repository.getUsersPostsByDatePublishedGreaterThan(
-				user2, user, beginTime, PageRequest.of(0, 20));
+				user2, user, beginTime, externalListIds, PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(4, results.size());
 		for (Journal j: results) {
@@ -257,7 +260,7 @@ public class JournalTest {
 		
 		//viewer not authenticated
 		results = repository.getUsersPostsByDatePublishedLessThanEquals(
-				user2, null, ZonedDateTime.now(), PageRequest.of(0, 20));
+				user2, null, ZonedDateTime.now(), externalListIds, PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(1, results.size());
 		for (Journal j: results) {
@@ -265,7 +268,7 @@ public class JournalTest {
 		}
 		
 		results = repository.getUsersPostsByDatePublishedGreaterThan(
-				user2, null, beginTime, PageRequest.of(0, 20));
+				user2, null, beginTime, externalListIds, PageRequest.of(0, 20));
 		assertFalse(results.isEmpty());
 		assertEquals(1, results.size());
 		for (Journal j: results) {

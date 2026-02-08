@@ -156,8 +156,19 @@
     <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modalmanager.js|}"></script>
     <script th:src="@{|/webjars/bootstrap-modal/js/bootstrap-modal.js|}"></script>
     
+    <!-- IDB-Keyval -->
+    <script th:src="@{|/webjars/idb-keyval/dist/idb-keyval-iife.js|}"></script>
+    
     <!-- My JavaScript 
     ================================================== -->
+    <script th:inline="javascript">
+  	/*<![CDATA[*/
+  	var selectedExternalList = /*[[${externalListId}]]*/ [];
+  	/*]]>*/
+  	</script>
+    <script type="text/javascript" th:src="@{|/js/pwa.js|}" src="../js/pwa.js"></script>
+    <script type="text/javascript" th:src="@{|/js/pwa_view.js|}" src="../js/pwa_view.js"></script>
+    
 	<script th:replace="common/fragments_forms :: post_options_JS" th:inline="javascript"></script>
     <script th:include="journal/fragments_journal :: editJournalForm_JS" th:inline="javascript"></script>
     <script th:replace="common/fragments_comments :: post_comment_form_JS" th:inline="javascript"></script>

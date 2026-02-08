@@ -1,19 +1,10 @@
-var page = {
-		homeTimelineTemplate: $('#home_input_template'),
-		elementCallbacks: []
-  	};
+var page = {};
 
 page.setup = function() {
 	page.updateExternalFeeds();
-	page.updateTimelineInput();
 	page.setupForms();
 };
 
-page.registerElementCallback = function(callback) {
-	console.log('Register callback:'+callback);
-	page.elementCallbacks.push(callback);
-}
-	
 page.updateExternalFeeds = function() {
 	var lastTab = '#home_tab';
 	$("#newpost_form .externalFeedId").empty();
@@ -88,53 +79,8 @@ page.updateExternalFeeds = function() {
 	
 };	
 
-page.updateTimelineInput = function() {
-	if (app.user!=null) {
-		
-		//TODO we want to show this publicly if settings allow it
-		var template = page.homeTimelineTemplate.clone();
-  		template.attr("id","homeTimeline"+app.user.username); 
-  		if (app.user.avatar!=null && app.user.avatar.src!=null) { 
-			template.find(".defaultPicture").attr("src", app.user.avatar.src);	
-		} else {
-			template.find(".defaultPicture").attr("src", defaultPicture);
-		}
-  		$("#timeline_inputs").append(template).removeClass("hidden");
-
-  	}
-	page.reloadTimeline();
-}
-  	
-page.reloadTimeline = function() {
-	if (app.hash){
-  		var optionElement = $("#externalFeedAccount_"+app.hash);
-        var feedId = optionElement.attr('data-feed-id');
-        var feedType = optionElement.attr('data-feed-type');
-        var imageUrl = optionElement.attr('data-image-url');
-        var name = optionElement.text();
-        
-        //load feed 
-        showFeedInput(feedId, feedType, name, imageUrl); 
-		loadFeedTimeline(feedId);
-	} else {
-		//load timeline
-		loadTimeline();
-		showTimelineInput();
-	}
-}
-
 page.setupForms = function() {
-		
+	console.log(selectedExternalList);
+	console.log($('[name="externalListId"] option'));
+	$('[name="externalListId"]').val(selectedExternalList);
 }
-
-$( window ).on( 'hashchange', function( e ) {
-	var hash = window.location.hash;
-	if(hash.length>1) {		
-		app.hash = hash.substring(1);
-	} else {
-		app.hash = null;
-	}
-	page.reloadTimeline();
-});
-
-	

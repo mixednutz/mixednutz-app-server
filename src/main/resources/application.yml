@@ -1,6 +1,6 @@
 spring: 
   
-  profiles.active: jpa-dev, db-local-hsqldb, uploads-dev, mixednutz_base, twitter, discord, aws-local
+  profiles.active: jpa-dev, db-local-hsqldb, uploads-dev, mixednutz_base, twitter, discord, patreon, aws-local
 #  profiles.active: jpa-dev, db-local-hsqldb-file, uploads-dev, twitter, aws-local
 
   main:
@@ -124,6 +124,17 @@ mixednutz:
       password: ${BLUESKY_PASSWORD}
       pdsHost: ${BLUESKY_PDS_HOST}
       embedMetadataServiceUrl: https://andrewfesta.com/embed/metadata?url=
+
+---
+# Optionally link up with Bluesky
+spring:
+  config.activate.on-profile: patreon
+  
+mixednutz:
+  social: 
+    patreon:
+      client-id: ${PATREON_CLIENT_ID}
+      client-secret: ${PATREON_CLIENT_SECRET}
 
 ---
 spring:

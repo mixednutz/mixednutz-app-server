@@ -34,11 +34,11 @@
 						<div class="url">
 							<div th:class="${content.imageUrl!=null?'withImage':'noImage'}">
 		  				
-			  					<a class="title" th:text="${content.title}" th:href="${content.url}">title</a>
+			  					<a class="title" th:text="${content.title}" th:href="${content.url}" target="_blank">title</a>
 			  					
 			  					<div class="description" th:text="${content.description}"></div>
 			  				
-			  					<a class="image" th:if="${content.imageUrl!=null}" th:href="${content.url}">
+			  					<a class="image" th:if="${content.imageUrl!=null}" th:href="${content.url}" target="_blank">
 			  						<img th:src="${content.imageUrl}" th:title="${content.title}" width="160"/>
 			  					</a>
 			  				</div>

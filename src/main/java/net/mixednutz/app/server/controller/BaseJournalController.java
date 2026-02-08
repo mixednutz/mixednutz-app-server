@@ -6,7 +6,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,9 +28,10 @@ import net.mixednutz.app.server.controller.exception.ResourceMovedPermanentlyExc
 import net.mixednutz.app.server.controller.exception.ResourceNotFoundException;
 import net.mixednutz.app.server.controller.exception.UserNotFoundException;
 import net.mixednutz.app.server.entity.ExternalFeeds.AbstractFeed;
+import net.mixednutz.app.server.entity.ExternalVisibility;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.User;
-import net.mixednutz.app.server.entity.VisibilityType;
+import net.mixednutz.app.server.entity.Visibility;
 import net.mixednutz.app.server.entity.post.journal.Journal;
 import net.mixednutz.app.server.entity.post.journal.JournalComment;
 import net.mixednutz.app.server.entity.post.journal.JournalFactory;
@@ -40,6 +43,8 @@ import net.mixednutz.app.server.manager.ExternalFeedManager;
 import net.mixednutz.app.server.manager.NotificationManager;
 import net.mixednutz.app.server.manager.ReactionManager;
 import net.mixednutz.app.server.manager.TagManager;
+import net.mixednutz.app.server.manager.post.PostManager.NotVisibleType;
+import net.mixednutz.app.server.manager.post.VisibilityManager;
 import net.mixednutz.app.server.manager.post.journal.JournalManager;
 import net.mixednutz.app.server.repository.EmojiRepository;
 import net.mixednutz.app.server.repository.ExternalFeedRepository;
@@ -68,6 +73,9 @@ public class BaseJournalController {
 	
 	@Autowired
 	private List<HtmlFilter> htmlFilters;
+	
+	@Autowired
+	protected VisibilityManager visibilityManager;
 	
 	@Autowired
 	protected TagManager tagManager;
@@ -128,12 +136,22 @@ public class BaseJournalController {
 	}
 	
 	protected void assertVisibility(final Journal journal, Authentication auth) {
-		if (auth==null &&
-				!VisibilityType.WORLD.equals(journal.getVisibility().getVisibilityType())) {
-			throw new AuthenticationCredentialsNotFoundException("This is not a public journal.");
-		} else if (auth!=null) {
-			if (!journalManager.isVisible(journal, (User) auth.getPrincipal())) {
+		Optional<NotVisibleType> assertion = auth==null 
+				? this.journalManager.assertVisible(journal) 
+						: this.journalManager.assertVisible(journal, (User) auth.getPrincipal());
+				
+		if (assertion.isPresent()) {
+			switch (assertion.get()) {
+			case NOT_PUBLISHED_YET:
+				throw new NotAuthorizedException("This journal hasn't been published yet.");
+			case NOT_IN_EXTERNAL_LIST:
+			case NOT_IN_SELECT_FOLLOWERS:
+			case PRIVATE:
 				throw new NotAuthorizedException("User does not have permission to view this journal.");
+			case NOT_PUBLIC:
+				throw new AuthenticationCredentialsNotFoundException("This is not a public journal.");
+			default:
+				break;
 			}
 		}
 	}
@@ -143,6 +161,10 @@ public class BaseJournalController {
 		
 		model.addAttribute("journal", journal);
 		User user = auth!=null?(User) auth.getPrincipal():null;
+		
+		//externalLists
+		model.addAttribute("externalListId", journal.getVisibility().getExternalList().stream()
+				.map(ExternalVisibility::getProviderListId).collect(Collectors.toList()));
 		
 		//HTML Filter
 		String filteredHtml = journal.getBody();
@@ -211,6 +233,7 @@ public class BaseJournalController {
 	
 	protected Journal save(Journal journal, 
 //			Integer friendGroupId, 
+			String[] externalListId,
 			Long groupId, 
 			Long[] externalFeedId, String tagsString, boolean emailFriendGroup, 
 			LocalDateTime localPublishDate,
@@ -256,7 +279,11 @@ public class BaseJournalController {
 			journal.setOwnerId(user.getUserId());
 		}
 		
-//		journal.parseVisibility(user, friendGroupId, groupId);
+		Visibility v = visibilityManager.parseVisibility(journal.getVisibility().getVisibilityType(), 
+				user, externalListId, groupId, externalFeedId);
+		if (v!=null) {
+			journal.setVisibility(v);
+		}
 		
 		Journal savedjournal = journalRepository.save(journal);
 		
@@ -313,7 +340,9 @@ public class BaseJournalController {
 	
 	protected Journal update(Journal form, Long journalId, 
 //			Integer friendGroupId, 
-			Integer groupId, String tagsString, 
+			String[] externalListId,
+			Long groupId, 
+			Long[] externalFeedId, String tagsString, 
 			LocalDateTime localPublishDate,
 			User user) {
 		if (user==null) {
@@ -340,10 +369,10 @@ public class BaseJournalController {
 		entity.setSubjectKey(form.getSubjectKey());
 		entity.setDescription(form.getDescription());
 		entity.setBody(form.getBody());
-		entity.setVisibility(form.getVisibility());
 		
-//		journal.parseVisibility(user, friendGroupId, groupId);
-		
+		visibilityManager.updateVisibility(entity.getVisibility(), form.getVisibility().getVisibilityType(),
+				user, externalListId, groupId, externalFeedId);
+				
 //		String[] tagArray = tagManager.splitTags(tagsString);
 //		mergeTags(tagArray, journal);
 		
@@ -363,7 +392,7 @@ public class BaseJournalController {
 			throw new AccessDeniedException("Journal #"+journalId+" - That's not yours to edit!");
 		}
 		
-		journalRepository.delete(entity);
+		journalManager.delete(entity);
 	}
 	
 	protected JournalComment getComment(Long commentId) {

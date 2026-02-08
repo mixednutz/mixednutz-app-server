@@ -9,15 +9,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Language" content="en" />
 	<title th:text="|#{timeline.window-title} - #{site.title}|">My Timeline - MixedNutz.net</title>
+	
+	<!-- Bootstrap Core CSS -->
 	<link th:href="@{|/webjars/bootstrap/css/bootstrap.min.css|}" rel="stylesheet"/>
+	
+	<!-- Bootstrap Modal CSS -->
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal-bs3patch.css|}" rel="stylesheet"/>
 	<link th:href="@{|/webjars/bootstrap-modal/css/bootstrap-modal.css|}" rel="stylesheet"/>
+	
+	<!-- Mixednutz CSS -->
 	<link th:href="@{|/css/mixednutz_timeline.css|}" href="../css/mixednutz_timeline.css" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/css/forms.css|}" href="../css/forms.css" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/css/default_theme.css|}" href="../css/default_theme.css" rel="stylesheet" type="text/css" />
+	
 	<link th:each="cssHref : ${componentCss}" th:href="@{|${cssHref}|}" rel="stylesheet" type="text/css" />
+	
+	<!-- Custom Fonts -->
 	<link th:href="@{|/webjars/font-awesome/css/fontawesome.css|}" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/webjars/font-awesome/css/solid.css|}" rel="stylesheet" type="text/css" />
+	<link th:href="@{|/webjars/font-awesome/css/brands.css|}" rel="stylesheet" type="text/css" />
+	
 	<link th:href="@{|/webjars/snackbarjs/dist/snackbar.min.css|}" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/webjars/snackbarjs/themes-css/material.css|}" rel="stylesheet" type="text/css" />
 	<link th:href="@{|/webjars/github-com-skywalkapps-bootstrap-notifications/1.0.3/dist/stylesheets/bootstrap-notifications.min.css|}" rel="stylesheet" type="text/css" />

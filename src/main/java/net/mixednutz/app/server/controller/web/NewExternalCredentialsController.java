@@ -1,6 +1,9 @@
 package net.mixednutz.app.server.controller.web;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
@@ -15,6 +18,8 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.ConnectInterceptor;
 import org.springframework.social.connect.web.CredentialsCallback;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
@@ -153,6 +158,26 @@ public class NewExternalCredentialsController {
 		@Autowired(required=false)
 		private List<ConnectInterceptor<?>> connectInterceptors;
 		
+		@Autowired
+		private ExternalFeedManager externalFeedManager;
+		
+//		/**
+//		 * Overrides the default connection status so i can inject stuff into the model
+//		 * 
+//		 * @param providerId
+//		 * @param request
+//		 * @param model
+//		 * @return
+//		 */
+//		@RequestMapping(value="/{providerId}/new", method=RequestMethod.GET)
+//		public String connectionStatusOverride(@PathVariable String providerId, NativeWebRequest request, Model model) {
+//			//New External Feed
+////			final ExternalAccountCredentials credentials = new ExternalAccountCredentials();
+////			model.addAttribute(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME, credentials);
+//			
+//			return super.connectionStatus(providerId, request, model);
+//		}
+
 		@Value("${applicationUrl:#{null}}")
 		@Override
 		public void setApplicationUrl(String applicationUrl) {
@@ -168,12 +193,12 @@ public class NewExternalCredentialsController {
 		
 		@Override
 		protected String connectedView(String providerId) {
-			return "redirect:/main";
+			return "redirect:/";
 		}
 
 		@Override
 		protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
-			return new RedirectView("/main", true);
+			return new RedirectView("/", true);
 		}
 
 		@PostConstruct
@@ -183,6 +208,25 @@ public class NewExternalCredentialsController {
 					this.addInterceptor(connectInterceptor);
 				}
 			}
+		}
+		
+		@ModelAttribute("accountTypes")
+		public Map<String, String> accountTypes() {
+			Map<String, String> types = new TreeMap<String, String>();
+			for (Entry<String, INetworkInfoSmall> entry: externalFeedManager.getProviders().entrySet()) {
+				types.put(entry.getKey(), entry.getValue().getDisplayName());
+			}
+			return types;
+		}
+		
+		@ModelAttribute(CREDENTIALS_SESSION_NAME)
+		public ExternalAccountCredentials newAccountForm(@PathVariable String providerId) {
+			ExternalAccountCredentials form = new ExternalAccountCredentials();
+			if (providerId!=null) {
+				form.setProviderId(providerId);
+			}
+			return form;
+			
 		}
 		
 	}

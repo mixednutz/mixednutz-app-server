@@ -207,26 +207,32 @@ page.setupProfile = function() {
 		$('.profile .followers').attr('href',page.owner.url+'/followers');
 		
 		$('.socmed-author-rss a').attr('href','/rss/'+page.owner.username);
-		if (page.ownerBundle.user.profileData.twitterAccount!=null) {
+		if (page.ownerBundle.user.profileData.twitterAccount) {
 			$('.socmed-author-twitter a').attr('href','https://twitter.com/'+page.ownerBundle.user.profileData.twitterAccount.username);
 		} else {
 			$('.socmed-author-twitter').remove();
 		}
-		if (page.ownerBundle.user.profileData.blueskyHandle!=null) {
+		if (page.ownerBundle.user.profileData.blueskyHandle) {
 			$('.socmed-author-bluesky a').attr('href','https://bsky.app/profile/'+page.ownerBundle.user.profileData.blueskyHandle);
 		} else {
 			$('.socmed-author-bluesky').remove();
 		}
-		if (page.ownerBundle.user.profileData.discordInviteCode!=null) {
+		if (page.ownerBundle.user.profileData.discordInviteCode) {
 			$('.socmed-author-discord a').attr('href','https://discord.gg/'+page.ownerBundle.user.profileData.discordInviteCode);
 		} else {
 			$('.socmed-author-discord').remove();
 		}
-		if (page.ownerBundle.user.profileData.deviantArtUsername!=null) {
+		if (page.ownerBundle.user.profileData.deviantArtUsername) {
 			$('.socmed-author-deviantart a').attr('href','https://deviantart.com/'+page.ownerBundle.user.profileData.deviantArtUsername);
 		} else {
 			$('.socmed-author-deviantart').remove();
 		}
+		if (page.ownerBundle.user.profileData.patreonUri) {
+			$('.socmed-author-patreon a').attr('href','https://patreon.com/'+page.ownerBundle.user.profileData.patreonUri);
+		} else {
+			$('.socmed-author-patreon').remove();
+		}
+		
 		//if (page.ownerBundle.page.instagramAccount!=null) {
 		//	$('.socmed-author-instagram a').attr('href',page.ownerBundle.page.instagramAccount.userProfileUrl.href);
 		//} else {

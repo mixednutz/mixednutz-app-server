@@ -169,6 +169,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        			UserEmailAddressController.REGISTRATION_CONFIRMATION_URL
 	        			).permitAll()
 	        	.antMatchers(
+	        			"/connect/**",
 	        			"/main/**",
 	        			"/v1/main/**",
 	        			"/search/**",

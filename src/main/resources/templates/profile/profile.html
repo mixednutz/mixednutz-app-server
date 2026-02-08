@@ -41,6 +41,14 @@
 	<div th:replace="header :: navbar">navbar</div>
 	
 	<div class="container">
+	
+		<!-- New Feed Form -->
+		<div id="newFeedModal" class="modal fade" tabindex="-1" role="dialog">
+			<div>
+				<div class="modal-content" th:include="feeds/fragments_feed :: newAccountForm_model">
+				</div>
+			</div>
+		</div>
 			
         <div class="row">
 	  		<div class="col-lg-3"> 
@@ -104,6 +112,7 @@
  	<script th:replace="common/fragments_js :: common"></script>
  	<script th:replace="common/fragments_js :: feed_timeline"></script>
  	<script th:replace="common/fragments_js :: timeline"></script>
+ 	<script th:replace="feeds/fragments_feed :: newAccountForm_JS"></script>
  	<script type="text/javascript" th:src="@{|/js/pwa_profile.js|}" src="../js/pwa_profile.js"></script>
  	<script type="text/javascript" th:src="@{|/js/pwa.js|}" src="../js/pwa.js"></script>
     <div class="componentScriptTemplates" th:each="fragmentName : ${componentScriptTemplates}">

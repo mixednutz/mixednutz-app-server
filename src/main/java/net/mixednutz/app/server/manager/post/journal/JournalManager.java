@@ -38,5 +38,4 @@ public interface JournalManager extends PostManager<Journal, JournalComment>,
 	
 	void incrementViewCount(Journal journal, User viewer);
 	
-	boolean isVisible(Journal journal, User viewer);
 }

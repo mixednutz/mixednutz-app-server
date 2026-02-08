@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+  <body>
+  
+  	<div th:fragment="visibility (visibility)">
+  		<p th:if="${visibility.visibilityType.toString() == 'PRIVATE'}" class="visibility">
+			<span class="private">
+				<span class="glyphicon glyphicon-eye-close"></span> Private
+			</span>
+  		</p>
+  		
+  		<p th:if="${visibility.visibilityType.toString() == 'EXTERNAL_LIST'}" class="visibility">
+	  		<span th:each="externalList : ${visibility.externalList}">
+	  			<span class="externalList">
+	  				<span th:class="'fab fa-' + ${externalList.providerId}"></span> <span th:text="${externalList.name}">name</span>
+	  			</span>
+	  		</span>	
+  		</p>
+  	</div>
+  
+  </body>
+</html>
