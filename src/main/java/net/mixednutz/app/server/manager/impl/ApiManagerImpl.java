@@ -25,6 +25,7 @@ import net.mixednutz.api.core.model.Link;
 import net.mixednutz.api.core.model.ReactionCount;
 import net.mixednutz.api.core.model.TagCount;
 import net.mixednutz.api.model.IAction;
+import net.mixednutz.api.model.IExternalRole;
 import net.mixednutz.api.model.IImage;
 import net.mixednutz.api.model.IUser;
 import net.mixednutz.api.model.IUserProfile;
@@ -34,6 +35,7 @@ import net.mixednutz.app.server.controller.BasePhotoController;
 import net.mixednutz.app.server.controller.api.OembedController;
 import net.mixednutz.app.server.entity.CommentsAware;
 import net.mixednutz.app.server.entity.ExternalFeeds.Oauth1AuthenticatedFeed;
+import net.mixednutz.app.server.entity.ExternalVisibility;
 import net.mixednutz.app.server.entity.InternalTimelineElement;
 import net.mixednutz.app.server.entity.Oembeds.Oembed;
 import net.mixednutz.app.server.entity.ReactionScore;
@@ -84,10 +86,16 @@ public class ApiManagerImpl implements ApiManager{
 			return net.mixednutz.api.core.model.Visibility.toSelectFollowers(
 					visibility.getSelectFollowers()
 					.stream()
-					.map(user->toUser(user))
+					.map(this::toUser)
 					.collect(Collectors.toSet()));
 		case WORLD:
 			return net.mixednutz.api.core.model.Visibility.toWorld();
+		case EXTERNAL_LIST:
+			return net.mixednutz.api.core.model.Visibility.toExternalGroups(
+					visibility.getExternalList()
+					.stream()
+					.map(this::toExternalRole)
+					.collect(Collectors.toSet()));
 		case FRIEND_GROUPS:
 		case PRIVATE:
 		default:
@@ -142,6 +150,13 @@ public class ApiManagerImpl implements ApiManager{
 	@Override
 	public IUser toUser(User entity, UserProfile profile) {
 		return toUser(entity, profile, getBaseUrl());
+	}
+	
+	public IExternalRole toExternalRole(ExternalVisibility entity) {
+		if (entity!=null) {
+			return new ExternalVisibilityWrapper(entity);
+		}
+		return null;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -410,6 +425,37 @@ public class ApiManagerImpl implements ApiManager{
 			return userProfile.getPatreonUri();
 		}
 				
+	}
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class ExternalVisibilityWrapper implements IExternalRole{
+		
+		final private ExternalVisibility externalVisibility;
+
+		public ExternalVisibilityWrapper(ExternalVisibility externalVisibility) {
+			super();
+			this.externalVisibility = externalVisibility;
+		}
+
+		@Override
+		public String getId() {
+			return externalVisibility.getId().toString();
+		}
+
+		@Override
+		public String getName() {
+			return externalVisibility.getName();
+		}
+
+		@Override
+		public String getUrl() {
+			return externalVisibility.getProviderUri();
+		}
+
+		public String getProviderId() {
+			return externalVisibility.getProviderId();
+		}
+		
 	}
 
 }

@@ -351,6 +351,9 @@ function buildInternalTimelineElement(element) {
  	//TODO re-implement resharing
  	template.find(".reshared").remove();
  	
+    if (element.visibility!=null) {
+		populateVisibility(template.find(".visibility-list"), element.visibility)
+	}
  	if (element.tags!=null) {
  		populateTags(template.find(".tags-list"), element.tags);
  	}
@@ -366,6 +369,22 @@ function buildInternalTimelineElement(element) {
  	
 	
 	return template;
+}
+
+function populateVisibility(appendTo, visibility) {
+	console.log("visibility");
+	console.log(visibility.visibilityType);
+	if (visibility.visibilityType == 'PRIVATE') {
+		$("<span class='private'><span class='glyphicon glyphicon-eye-close'></span> Private</span>").appendTo(appendTo);
+	} else if (visibility.visibilityType == 'EXTERNAL_GROUP') {
+		console.log(visibility.externalGroups);
+		for (i in visibility.externalGroups) {
+			console.log(visibility.externalGroups[i].providerId);
+			$("<span class='externalList'><span class='fab fa-" + visibility.externalGroups[i].providerId +"'></span> <span>"+ visibility.externalGroups[i].name +"</span></span>").appendTo(appendTo);
+		}
+	} else {
+		appendTo.parent().remove();
+	}
 }
 
 function populateTags(appendTo, tags) {

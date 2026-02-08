@@ -68,12 +68,12 @@
 		<java.version>11</java.version>
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		
-		<mixednutz-app-core.version>2.1.20</mixednutz-app-core.version>
-		<mixednutz-app-series.version>2.1.22</mixednutz-app-series.version>
+		<mixednutz-app-core.version>2.1.20.1</mixednutz-app-core.version>
+		<mixednutz-app-series.version>2.1.22.1</mixednutz-app-series.version>
 		<!-- <mixednutz-java-api-twitter.version>2.1.1</mixednutz-java-api-twitter.version> -->
 		<mixednutz-java-api-discord.version>2.1.4</mixednutz-java-api-discord.version>
 		<mixednutz-java-api-bluesky.version>2.1.3</mixednutz-java-api-bluesky.version>
-		<mixednutz-java-api-patreon.version>2.1.0</mixednutz-java-api-patreon.version>
+		<mixednutz-java-api-patreon.version>2.1.0.1</mixednutz-java-api-patreon.version>
 		<io-utils.version>0.2.3</io-utils.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
