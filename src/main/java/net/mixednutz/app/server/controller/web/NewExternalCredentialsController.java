@@ -161,23 +161,6 @@ public class NewExternalCredentialsController {
 		@Autowired
 		private ExternalFeedManager externalFeedManager;
 		
-//		/**
-//		 * Overrides the default connection status so i can inject stuff into the model
-//		 * 
-//		 * @param providerId
-//		 * @param request
-//		 * @param model
-//		 * @return
-//		 */
-//		@RequestMapping(value="/{providerId}/new", method=RequestMethod.GET)
-//		public String connectionStatusOverride(@PathVariable String providerId, NativeWebRequest request, Model model) {
-//			//New External Feed
-////			final ExternalAccountCredentials credentials = new ExternalAccountCredentials();
-////			model.addAttribute(NewExternalCredentialsController.CREDENTIALS_SESSION_NAME, credentials);
-//			
-//			return super.connectionStatus(providerId, request, model);
-//		}
-
 		@Value("${applicationUrl:#{null}}")
 		@Override
 		public void setApplicationUrl(String applicationUrl) {
