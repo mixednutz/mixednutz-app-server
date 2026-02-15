@@ -73,8 +73,12 @@ public class PublishPostJob {
 			InternalTimelineElement exportableEntity = 
 					apiManager.toTimelineElement(post, null, networkInfo.getBaseUrl());
 			
-			activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreateNote(
-					exportableEntity, post.getAuthor().getUsername()));
+			try {
+				activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreateNote(
+						exportableEntity, post.getAuthor().getUsername()));
+			} catch (Exception e) {
+				LOGGER.error("Unable to send activity",e);
+			}
 			
 			String[] tags = null;
 			if (exportableEntity.getTags()!=null) {
