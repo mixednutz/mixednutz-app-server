@@ -443,7 +443,7 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 		} else if (OAUTH2.equals(feed.getType())) {
 			return instantiatePost((Oauth2AuthenticatedFeed)feed, (api) -> {
 				if (api.getPostClient()!=null) {
-					return Optional.of((P)api.getPostClient().create());
+					return Optional.ofNullable((P)api.getPostClient().create());
 				}
 				return Optional.empty();
 			});
@@ -533,7 +533,12 @@ public class ExternalFeedManagerImpl implements ExternalFeedManager {
 	@Cacheable(value="externalListsAvailable")
 	@Override
 	public List<? extends IExternalRole> getExternalLists(AbstractFeed feed) {
-		return withRoleClient(feed, client->client.getAvailableRoles());
+		return withRoleClient(feed, client->{
+			if (client.hasRoles()) {
+				return client.getAvailableRoles();
+			}
+			return Collections.emptyList();
+		});
 	}
 	
 	@Cacheable(value="externalListsAssigned")
