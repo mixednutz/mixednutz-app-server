@@ -70,6 +70,14 @@
 			</div>
 		</div>
 		
+		<!-- Schedule Edit Journal Form -->
+		<div id="scheduleEditJournalModal" class="modal container fade" tabindex="-1" role="dialog">
+			<div>
+				<div class="modal-content" th:include="journal/fragments_journal :: scheduleEditJournalForm_model">
+				</div>
+			</div>
+		</div>
+		
 		<!-- Delete Journal Form -->
 		<div id="deleteJournalModal" class="modal fade" tabindex="-1" role="dialog" data-focus-on="input:first">
 			<div>
@@ -171,6 +179,7 @@
     
 	<script th:replace="common/fragments_forms :: post_options_JS" th:inline="javascript"></script>
     <script th:include="journal/fragments_journal :: editJournalForm_JS" th:inline="javascript"></script>
+    <script th:include="journal/fragments_journal :: scheduleEditJournalForm_JS" th:inline="javascript"></script>
     <script th:replace="common/fragments_comments :: post_comment_form_JS" th:inline="javascript"></script>
     <script th:include="common/fragments_tags :: tags_JS" th:inline="javascript"></script>
     <script th:include="common/fragments_reactions :: reactions_JS" th:inline="javascript"></script>

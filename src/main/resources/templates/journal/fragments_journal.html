@@ -75,7 +75,7 @@
 						<input id="newjournal_summary" class="form-control" th:field="*{description}" size="50" type="text" placeholder="Short summary of your journal..."/>
 					</div>
 				</div>
-				<div class="journal-options col-xs-12 col-md-4" th:include="common/fragments_forms :: post_options (${newpost}, ${ {'Journal':journalCrosspostFeeds} }, true, true, true, true, false)">
+				<div class="journal-options col-xs-12 col-md-4" th:include="common/fragments_forms :: post_options (${newpost}, ${ {'Journal':journalCrosspostFeeds} }, true, false, true, true, true, false)">
 					journal-options
 				</div>
 			</div>
@@ -166,7 +166,7 @@
 						<input class="form-control" th:field="*{description}" size="50" type="text" placeholder="Short summary of your journal..."/>
 					</div>
 				</div>
-				<div class="journal-options col-xs-12 col-md-4" th:include="common/fragments_forms :: post_options (${journal}, ${ {:} }, true, true, true, false, true)">
+				<div class="journal-options col-xs-12 col-md-4" th:include="common/fragments_forms :: post_options (${journal}, ${ {:} }, true, false, true, true, false, true)">
 					journal-options
 				</div>
 			</div>
@@ -205,6 +205,47 @@
 	$('#editor').html(body);
 	$('#editor').wysiwyg();
 	$('#journal-update-btn').hide();
+	/*]]>*/
+	</script>
+	
+	<div th:fragment="scheduleEditJournalForm_model">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+			<h4>Schedule Journal Edit</h4>
+		</div>
+		<form id="editjournal_form" th:action="@{|/journal/id/${journal.id}/schedule_edit|}" th:object="${journal}" method="post">
+		<div class="modal-body">
+			<div class="row">
+				<div class="journal-form col-xs-12 col-md-8">
+					<div class="form-group">
+						<label for="editjournal_subject">Title</label>
+						<input disabled="disabled" class="form-control" type='text' th:field="*{subject}"/>
+					</div>
+					<div class="form-group">
+						<label for="editjournal_subjectey">Uri</label>
+						<input disabled="disabled" class="form-control" type='text' th:field="*{subjectKey}"/>
+					</div>
+					<p>The only fields that can be scheduled are to the right.</p>
+					
+				</div>
+				<div class="journal-options col-xs-12 col-md-4" th:include="common/fragments_forms :: post_options (${journal}, ${ {:} }, true, true, false, false, false, true)">
+					journal-options
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button id="journal-schedule-update-btn" type="submit" name="submit" value="Schedule">Schedule</button>
+  			
+			<button class="btn btn-success" type="button" name="submit" value="Schedule"
+				onclick="$('#journal-schedule-update-btn').click();">Schedule</button>
+  			<button class="btn" type="button" data-dismiss="modal">Cancel</button>
+		</div>
+		</form>
+		
+	</div>
+	<script th:fragment="scheduleEditJournalForm_JS" th:inline="javascript">
+	/*<![CDATA[*/
+	$('#journal-schedule-update-btn').hide();
 	/*]]>*/
 	</script>
 	
@@ -274,9 +315,17 @@
 
         <!-- Date/Time --> 
         <p>
-        	<span class="glyphicon glyphicon-time"></span> Posted on <time th:datetime="${#temporals.formatISO(journal.datePublished)}" th:text="${#temporals.format(journal.datePublished, #messages.msg('datetime.format.full'))}">August 24, 2013 at 9:00 PM</time>
+        	<span th:if="${journal.datePublished!=null}"><span class="glyphicon glyphicon-time"></span> Posted on <time th:datetime="${#temporals.formatISO(journal.datePublished)}" th:text="${#temporals.format(journal.datePublished, #messages.msg('datetime.format.full'))}">August 24, 2013 at 9:00 PM</time></span>
+        	<span th:if="${journal.datePublished==null && journal.scheduled!=null}"><span class="glyphicon glyphicon-time"></span> <span class="scheduled">Scheduled for</span> <time th:datetime="${#temporals.formatISO(journal.scheduled.publishDate)}" th:text="${#temporals.format(journal.scheduled.publishDate, #messages.msg('datetime.format.full'))}">August 24, 2013 at 9:00 PM</time></span>
         	<br/><span class="glyphicon glyphicon-eye-open"></span> <span th:text="${journal.hitCount}">0</span> Hits
         </p>
+        <div sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${journal.author.userId}">
+       		<div th:if="${journal.scheduledUpdates!=null}">
+        		<div th:each="scheduledUpdate : ${journal.scheduledUpdates}">
+        			Update on <time th:datetime="${#temporals.formatISO(scheduledUpdate.effectiveDate)}" th:text="${#temporals.format(scheduledUpdate.effectiveDate, #messages.msg('datetime.format.full'))}">August 24, 2013 at 9:00 PM</time> <span th:if="${scheduledUpdate.executed}">- Updated</span>
+        		</div>
+       		</div>
+       	</div>
 
 		<!-- Tags -->
   		<div th:include="common/fragments_tags :: tags (${journal.uri})">tags</div>
@@ -289,6 +338,8 @@
 		<div sec:authorize="isAuthenticated()" th:if="${#authentication.principal.userId}==${journal.author.userId}">
 			<!-- Edit -->
 			<button data-toggle="modal" data-target="#editJournalModal" class="btn btn-default" type="button" ><i class="glyphicon glyphicon-pencil"></i>&nbsp;Edit Entry</button>
+			<!-- Schedule Edit -->
+			<button data-toggle="modal" data-target="#scheduleEditJournalModal" class="btn btn-default" type="button" ><i class="glyphicon glyphicon-calendar"></i>&nbsp;Schedule Edit</button>
 			<!-- Delete -->
 			<button data-toggle="modal" data-target="#deleteJournalModal" class="btn btn-danger" type="button" ><i class="glyphicon glyphicon-remove"></i>&nbsp;Delete Entry</button>
 		</div>

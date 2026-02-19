@@ -34,6 +34,7 @@ public class Journal extends AbstractJournal<JournalComment> implements
 	CrosspostsAware {
 	
 	private ScheduledJournal scheduled;
+	private List<ScheduledJournalUpdate> scheduledUpdates;
 	
 	private LocalDate publishDateKey; //For URL lookups
 	private List<JournalComment> comments;
@@ -51,6 +52,16 @@ public class Journal extends AbstractJournal<JournalComment> implements
 
 	public void setScheduled(ScheduledJournal scheduled) {
 		this.scheduled = scheduled;
+	}
+
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy="journal", cascade=CascadeType.ALL, orphanRemoval=true)
+	public List<ScheduledJournalUpdate> getScheduledUpdates() {
+		return scheduledUpdates;
+	}
+
+	public void setScheduledUpdates(List<ScheduledJournalUpdate> scheduledUpdates) {
+		this.scheduledUpdates = scheduledUpdates;
 	}
 
 	@Override
