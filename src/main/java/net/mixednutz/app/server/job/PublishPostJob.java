@@ -77,7 +77,7 @@ public class PublishPostJob {
 				activityPubClient.sendActivity(post.getAuthor(), activityPubManager.toCreateNote(
 						exportableEntity, post.getAuthor().getUsername()));
 			} catch (Exception e) {
-				// Log and swallow error
+				// Log and swallow error 
 				LOGGER.error("Unable to cross activitypub.", e);
 			}
 			

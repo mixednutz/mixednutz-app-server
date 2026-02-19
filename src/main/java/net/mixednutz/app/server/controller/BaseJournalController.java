@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,7 @@ import net.mixednutz.app.server.entity.post.journal.JournalComment;
 import net.mixednutz.app.server.entity.post.journal.JournalFactory;
 import net.mixednutz.app.server.entity.post.journal.JournalTag;
 import net.mixednutz.app.server.entity.post.journal.ScheduledJournal;
+import net.mixednutz.app.server.entity.post.journal.ScheduledJournalUpdate;
 import net.mixednutz.app.server.format.HtmlFilter;
 import net.mixednutz.app.server.manager.ApiManager;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
@@ -51,6 +53,7 @@ import net.mixednutz.app.server.repository.ExternalFeedRepository;
 import net.mixednutz.app.server.repository.JournalCommentRepository;
 import net.mixednutz.app.server.repository.JournalRepository;
 import net.mixednutz.app.server.repository.ReactionRepository;
+import net.mixednutz.app.server.repository.ScheduledPostUpdateRepository;
 import net.mixednutz.app.server.repository.UserProfileRepository;
 import net.mixednutz.app.server.repository.UserRepository;
 
@@ -64,6 +67,9 @@ public class BaseJournalController {
 	
 	@Autowired
 	protected JournalCommentRepository journalCommentRepository;
+	
+	@Autowired
+	protected ScheduledPostUpdateRepository scheduledPostUpdateRepository;
 	
 	@Autowired
 	private UserProfileRepository profileRepository;
@@ -376,6 +382,53 @@ public class BaseJournalController {
 //		String[] tagArray = tagManager.splitTags(tagsString);
 //		mergeTags(tagArray, journal);
 		
+		return journalRepository.save(entity);
+	}
+	
+	protected Journal scheduleUpdate(Journal form, Long journalId, 
+			String[] externalListId,
+			Long groupId, 
+			Long[] externalFeedId,
+			LocalDateTime localEffectiveDate,
+			User user, NativeWebRequest request) {
+		if (user==null) {
+			throw new AuthenticationCredentialsNotFoundException("You have to be logged in to do that");
+		}
+		Journal entity = journalRepository.findById(journalId).orElseThrow(()->{
+			return new ResourceNotFoundException("");
+		});
+		if (!entity.getAuthor().equals(user)) {
+			throw new AccessDeniedException("Journal #"+journalId+" - That's not yours to edit!");
+		}
+		
+		ZonedDateTime zonedEffectiveDate = ZonedDateTime.of(localEffectiveDate, ZoneId.systemDefault());
+		ScheduledJournalUpdate scheduledUpdate = null;
+		//If this update (per the effectiveDate), use that.  if not create a new one
+		if (entity.getScheduledUpdates()==null) {
+			entity.setScheduledUpdates(new ArrayList<>());
+		} 
+		scheduledUpdate = entity.getScheduledUpdates().stream()
+			.filter(su->su.getEffectiveDate().equals(zonedEffectiveDate))
+			.findFirst()
+			.orElseGet(()->{
+				ScheduledJournalUpdate newObj = ScheduledJournalUpdate.with(zonedEffectiveDate, entity);
+				entity.getScheduledUpdates().add(newObj);
+				return newObj;
+			});
+		
+		scheduledUpdate.setExternalFeedId(externalFeedId);
+		String channelId = request.getParameter("channelIdAsString");
+		if (channelId!=null) {
+			scheduledUpdate.getExternalFeedData().put("channelIdAsString", channelId);
+		}
+		
+		// Which Journal elements do we want to update?
+		Visibility v = visibilityManager.parseVisibility(form.getVisibility().getVisibilityType(), 
+				user, externalListId, groupId, externalFeedId);
+		if (v!=null) {
+			scheduledUpdate.setVisibility(v);
+		}
+				
 		return journalRepository.save(entity);
 	}
 	

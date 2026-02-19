@@ -112,6 +112,23 @@ public class JournalController extends BaseJournalController {
 		return "redirect:"+savedJournal.getUri();
 	}
 	
+	@RequestMapping(value="/journal/id/{journalId}/schedule_edit", method = RequestMethod.POST, params="submit")
+	public String scheduleUpdateModal(@ModelAttribute("journal") Journal journal, 
+			@PathVariable Long journalId, 
+//			@RequestParam("fgroup_id") Integer friendGroupId, 
+			@RequestParam(value="externalListId", required=false) String[] externalListId,
+			@RequestParam(value="group_id",required=false) Long groupId,
+			@RequestParam(value="externalFeedId", required=false) Long[] externalFeedId,
+			@DateTimeFormat(iso=ISO.DATE_TIME) @RequestParam(value="localEffectiveDate") LocalDateTime localEffectiveDate,
+			@AuthenticationPrincipal User user, Model model, Errors errors,
+			NativeWebRequest request) {
+		
+		Journal savedJournal = scheduleUpdate(journal, journalId, externalListId, groupId, 
+				externalFeedId, localEffectiveDate, user, request);
+		
+		return "redirect:"+savedJournal.getUri();
+	}
+	
 
 	//------------
 	// Delete Mappings
