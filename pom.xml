@@ -26,7 +26,7 @@
 		<connection>scm:git:ssh://git@github.com/mixednutz/mixednutz-app-server.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/mixednutz/mixednutz-app-server.git</developerConnection>
 		<url>https://github.com/mixednutz/mixednutz-app-server</url>
-		<tag>HEAD</tag>
+		<tag>mixednutz-app-server-2.1.26.1</tag>
     </scm>
 	
 	<!-- 
