@@ -70,9 +70,11 @@
 
 		<div class="form-group" th:if="${showPublishDate}">
 			<label>Publish:</label> <label class="radio-inline"> <input
-				type='radio' name="publishDateFlag" value='0' th:checked="${post.scheduled==null}"/> Immediately
+				type='radio' name="publishDateFlag" value='0' th:data-isEdit="${isEdit}"
+				th:checked="${post.scheduled==null}"/> Immediately
 			</label> <label class="radio-inline"> <input type='radio'
-				name="publishDateFlag" value='1' th:checked="${post.scheduled!=null}"/> Pick a time
+				name="publishDateFlag" value='1' th:data-isEdit="${isEdit}"
+				th:checked="${post.scheduled!=null}"/> Pick a time
 			</label>
 			<div id="localPublishDate">
 				<input class="form-control" name="localPublishDate" type="datetime-local" th:value="${localPublishDate}"/>
@@ -130,9 +132,16 @@
 		if ($(this).val()==1) {
 			//Pick Date
 			$('[name=localPublishDate]').show();
+			// change this form's button name
+			$($(this).closest('form').find('.btn-success[name=submit]'))
+				.html("Schedule");
 		} else {
 			// Immediate
 			$('[name=localPublishDate]').hide();
+			// change this form's button name
+			var btnName = $(this).data('isedit') ? "Update Now" : "Post Now";	
+			$($(this).closest('form').find('.btn-success[name=submit]'))
+				.html(btnName);
 		}
 	});
 	
