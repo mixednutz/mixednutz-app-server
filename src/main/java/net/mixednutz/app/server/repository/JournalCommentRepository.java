@@ -2,6 +2,7 @@ package net.mixednutz.app.server.repository;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +13,8 @@ import net.mixednutz.app.server.entity.post.journal.JournalComment;
 
 @Repository
 public interface JournalCommentRepository extends CommentRepository<JournalComment> {
+	
+	Optional<JournalComment> findByCommentIdAndJournalId(Long id, Long journalId);
 
 	@Query("select c from #{#entityName} c"
 			+" left join c.journal p"

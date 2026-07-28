@@ -209,6 +209,24 @@ public class JournalController extends BaseJournalController {
 		return "redirect:"+comment.getUri();
 	}
 	
+	@RequestMapping(value="/{username}/journal/{year}/{month}/{day}/{subjectKey}/comment/{commentId}/delete", 
+			method = RequestMethod.POST, params="confirm")
+	public String commentDeleteModal(@PathVariable String username, 
+			@PathVariable int year, @PathVariable int month, 
+			@PathVariable int day, @PathVariable String subjectKey,
+			@PathVariable Long commentId,
+			Authentication auth) {
+		if (!auth.isAuthenticated()) {
+			throw new AccessDeniedException("Not logged in");
+		}
+		
+		Journal journal = get(username, year, month, day, subjectKey);
+		
+		String journalUri = deleteComment(journal.getId(), commentId, auth);
+		
+		return "redirect:"+journalUri;
+	}
+	
 	/**
 	 * Show ActivityStream Object
 	 * 

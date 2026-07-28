@@ -64,6 +64,22 @@ public class JournalNotificationFactory extends BaseNotificationFactory implemen
 
 
 
+	@Override
+	public void deleteCommentNotifications(JournalComment comment) {
+		
+		//Delete Comments to Comments
+		this.deleteCommentReplyNotifications(comment);
+		
+		//Delete Comments to Chapters
+		Iterable<JournalCommentNotification> notificationsToDelete = notificationRepository.loadNotifications((criteriaBuilder, itemRoot) ->{
+			return criteriaBuilder.equal(itemRoot.get("commentId"), comment.getCommentId());
+		}, JournalCommentNotification.class);
+				
+		notificationRepository.deleteAll(notificationsToDelete);
+	}
+
+
+
 	@Entity
 	@DiscriminatorValue(JournalCommentNotification.TYPE)
 	public static class JournalCommentNotification extends AbstractCommentNotification<Journal, JournalComment> {
