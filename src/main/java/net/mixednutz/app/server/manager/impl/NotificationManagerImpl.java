@@ -104,6 +104,19 @@ public class NotificationManagerImpl implements NotificationManager {
 		}
 	}
 	
+	@Override
+	public <P extends Post<C>, C extends PostComment> void deleteCommentNotification(C comment) {
+		for (PostNotificationFactory<?, ?, ?> iface: postNotifications) {
+			if (iface.canConvert(comment.getPost().getClass())) {
+				@SuppressWarnings("unchecked")
+				PostNotificationFactory<P, C, ?> castedIface = (PostNotificationFactory<P, C, ?>) iface;
+				castedIface.deleteCommentNotifications(comment);
+				break;
+			}
+		}
+		
+	}
+	
 	protected void sendCommentEmail(AbstractPostComment comment) {
 		LOG.info("Sending email notification for comment {}", comment.getUri());
 		Set<UserEmailAddress> emailAddressesToSend = new LinkedHashSet<>();

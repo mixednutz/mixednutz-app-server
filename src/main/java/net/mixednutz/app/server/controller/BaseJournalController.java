@@ -473,6 +473,27 @@ public class BaseJournalController {
 		return journalCommentRepository.save(comment);
 	}
 	
+	protected String deleteComment(Long journalId, Long commentId, Authentication auth) {
+		JournalComment entity = journalCommentRepository.findByCommentIdAndJournalId(commentId, journalId).orElseThrow(()->{
+			return new ResourceNotFoundException("Review Not Found");
+		});
+		
+		User user = (User) auth.getPrincipal();
+		boolean isAdmin = (auth.getAuthorities().stream()
+				.anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")));
+		
+		if (!entity.getAuthor().equals(user) && !isAdmin) {
+			throw new AccessDeniedException("Comment #"+commentId+" - That's not yours to edit!");
+		}
+		
+		//We have to delete the notifications first
+		notificationManager.deleteCommentNotification(entity);
+		
+		journalCommentRepository.delete(entity);
+				
+		return entity.getJournal().getUri();
+	}
+	
 	@ExceptionHandler(ResourceMovedPermanentlyException.class)
 	public String handleException(final ResourceMovedPermanentlyException e) {
 	    return "redirect:"+e.getRedirectUri();
