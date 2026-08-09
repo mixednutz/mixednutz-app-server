@@ -311,13 +311,21 @@ function buildInternalTimelineElement(element) {
 	template.find(".avatar a").attr({
 		'href':element.postedByUser.url});
 	template.find(".username .name").text(
-			element.postedByUser.displayName!=null?element.postedByUser.displayName:element.postedByUser.username);
+			element.postedByUser.displayName!=null && element.postedByUser.displayName.trim()!=""?element.postedByUser.displayName:element.postedByUser.username);
 	template.find(".username a")
 		.attr('href',element.postedByUser.url);
-	if (element.postedByUser.displayName!=null) {
+	if (element.postedByUser.displayName!=null && element.postedByUser.displayName.trim()!="") {
 		template.find(".username .screenname").text(element.postedByUser.username);
 	} else {
-		template.find(".username .screenname").remove();
+		var $screenname = template.find(".username .screenname");
+    
+	    // Target the text node before .screenname and clear its text
+	    var prevNode = $screenname[0]?.previousSibling;
+	    if (prevNode && prevNode.nodeType === 3) {
+	        prevNode.nodeValue = "";
+	    }
+	    
+	    $screenname.remove();
 	}
 	
 	if (element.postedToGroup!=null) {
