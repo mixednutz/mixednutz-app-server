@@ -135,7 +135,6 @@ public class ApiManagerImpl implements ApiManager{
 			return new UserWrapper(entity, baseUrl);
 		}
 		return null;
-		
 	}
 	
 	@Override
