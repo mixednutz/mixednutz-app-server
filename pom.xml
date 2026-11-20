@@ -70,10 +70,7 @@
 		
 		<mixednutz-app-core.version>2.1.22.1</mixednutz-app-core.version>
 		<mixednutz-app-series.version>2.1.25.1</mixednutz-app-series.version>
-		<!-- <mixednutz-java-api-twitter.version>2.1.1</mixednutz-java-api-twitter.version> -->
-		<mixednutz-java-api-discord.version>2.1.5</mixednutz-java-api-discord.version>
-		<mixednutz-java-api-bluesky.version>2.1.4</mixednutz-java-api-bluesky.version>
-		<mixednutz-java-api-patreon.version>2.1.1</mixednutz-java-api-patreon.version>
+		<mixednutz-java-clients.version>2.2.0</mixednutz-java-clients.version>
 		<io-utils.version>0.2.3</io-utils.version>
 	
 		<version.spring-social>1.1.6.RELEASE</version.spring-social>
@@ -108,25 +105,20 @@
 	
 		<!-- MixedNutz API -->
 		
-		<!-- <dependency>
-			<groupId>net.mixednutz</groupId>
-			<artifactId>mixednutz-java-api-twitter</artifactId>
-			<version>${mixednutz-java-api-twitter.version}</version>
-		</dependency> -->
 		<dependency>
 			<groupId>net.mixednutz</groupId>
 			<artifactId>mixednutz-java-api-discord</artifactId>
-			<version>${mixednutz-java-api-discord.version}</version>
+			<version>${mixednutz-java-clients.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.mixednutz</groupId>
 			<artifactId>mixednutz-java-api-bluesky</artifactId>
-			<version>${mixednutz-java-api-bluesky.version}</version>
+			<version>${mixednutz-java-clients.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.mixednutz</groupId>
 			<artifactId>mixednutz-java-api-patreon</artifactId>
-			<version>${mixednutz-java-api-patreon.version}</version>
+			<version>${mixednutz-java-clients.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.mixednutz.app.core</groupId>
