@@ -68,8 +68,8 @@
 		<java.version>11</java.version>
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		
-		<mixednutz-app-core.version>2.1.22.1</mixednutz-app-core.version>
-		<mixednutz-app-series.version>2.1.25.1</mixednutz-app-series.version>
+		<mixednutz-app-core.version>2.1.23</mixednutz-app-core.version>
+		<mixednutz-app-series.version>2.1.26</mixednutz-app-series.version>
 		<mixednutz-java-clients.version>2.2.0</mixednutz-java-clients.version>
 		<io-utils.version>0.2.3</io-utils.version>
 	
