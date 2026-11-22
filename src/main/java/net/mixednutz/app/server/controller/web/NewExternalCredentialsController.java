@@ -25,12 +25,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.view.RedirectView;
 
-import net.mixednutz.api.core.provider.ApiProviderRegistry;
 import net.mixednutz.api.model.INetworkInfoSmall;
 import net.mixednutz.api.provider.ApiProvider;
 import net.mixednutz.api.provider.ICredentials;
 import net.mixednutz.api.provider.IOauth1Credentials;
 import net.mixednutz.api.provider.IOauth2Credentials;
+import net.mixednutz.app.server.ApiProviderRegistry;
 import net.mixednutz.app.server.entity.ExternalCredentials.ExternalAccountCredentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials;

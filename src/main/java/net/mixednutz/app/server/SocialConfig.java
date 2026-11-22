@@ -18,7 +18,6 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 
-import net.mixednutz.api.core.provider.ApiProviderRegistry;
 import net.mixednutz.api.provider.ApiProvider;
 import net.mixednutz.app.server.controller.web.NewExternalCredentialsController;
 import net.mixednutz.app.server.manager.ExternalFeedManager;
