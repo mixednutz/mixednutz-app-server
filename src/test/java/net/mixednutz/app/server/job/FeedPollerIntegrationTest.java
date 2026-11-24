@@ -17,7 +17,7 @@ import org.springframework.social.mixednutz.v1_9.connect.MixednutzConnectionFact
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import net.mixednutz.api.core.provider.ApiProviderRegistry;
+import net.mixednutz.app.server.ApiProviderRegistry;
 import net.mixednutz.app.server.IntegrationTest;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth1Credentials;
 import net.mixednutz.app.server.entity.ExternalCredentials.Oauth2Credentials;
