@@ -187,8 +187,11 @@ spring:
       hibernate: 
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+  sql:
+    init:
+      platform: mysql
+
   datasource: 
-    platform: mysql
     url: jdbc:mysql://${MYSQL_DB_HOST}:${MYSQL_DB_PORT}/${MYSQL_DB_NAME}
     username: ${MYSQL_DB_USERNAME}
     password: ${MYSQL_DB_PASSWORD}

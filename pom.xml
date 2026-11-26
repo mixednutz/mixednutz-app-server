@@ -65,7 +65,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		
 		<mixednutz-app-core.version>2.1.23.1</mixednutz-app-core.version>
@@ -142,13 +142,6 @@
 		</dependency>
 	
 		<!--  Spring -->
-		<!-- TEMPORARY (Boot 2.7 upgrade): reports renamed/removed config properties
-		     in the startup log. Remove in the next release. -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-properties-migrator</artifactId>
-			<scope>runtime</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
